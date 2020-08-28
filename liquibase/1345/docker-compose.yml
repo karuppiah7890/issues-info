@@ -1,0 +1,42 @@
+version: "3"
+services:
+  postgres:
+    image: "postgres"
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: public
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - "postgres_data:/var/lib/postgresql/data/pgdata"
+  postgres_wait:
+    image: dadarek/wait-for-dependencies
+    depends_on:
+      - postgres
+    command: postgres:5432
+
+  keycloak:
+    image: "quay.io/keycloak/keycloak"
+    depends_on:
+      - postgres_wait
+    ports:
+      - "8080:8080"
+    environment:
+      KEYCLOAK_LOGLEVEL: ALL
+      DB_VENDOR: POSTGRES
+
+      DB_USER: admin
+      DB_PASSWORD: password
+      DB_DATABASE: keycloak
+      DB_SCHEMA: public
+      DB_ADDR: postgres
+    volumes:
+      - "keycloak_data:/keycloak"
+
+volumes:   
+  postgres_data:
+    driver: local
+  keycloak_data:
+    driver: local
