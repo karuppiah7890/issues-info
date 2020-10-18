@@ -1,0 +1,21 @@
+When I have directories with exactly one directory
+in each of them and then a file, the hover over the
+directory does NOT work. Hmm.
+
+For example
+
+microsoft
+|
+- vscode
+  |
+  - yet-to-be-reported
+    |
+    - file-explorer-issue-file
+
+I can't hover over microsoft or vs code properly when the explorer size is
+small. I have to hover over the path separator, the slash, and then the
+underline on the directory shows up and then I can click on it. Weird.
+
+This clearly happens only when the file explorer size is small
+and is cutting some parts of the whole path which is too big, and hence it shows
+dot (...), the ellipsis or something.
