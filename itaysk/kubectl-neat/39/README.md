@@ -75,3 +75,11 @@ r := bytes.NewReader(byteData)
 ```
 
 I finally raised a PR asking for feedback. I need to add tests to start off with
+
+---
+
+Writing tests to check if color shows up :)
+
+https://duckduckgo.com/?q=print+text+in+red+color+in+bash&t=ffab&ia=web&iax=qa
+
+It's done now :D
