@@ -1,0 +1,796 @@
+{
+  "data": {
+    "repository": {
+      "defaultBranchRef": {
+        "target": {
+          "history": {
+            "edges": [
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/57a489670474bffc47762372a6f54ca840285b41",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/1b84b5e8dfd5fb0f29963d5e3f53a6f813619996",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/40da254d687abfd3561f3cd9a0e3ef47afc5dadf",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/7271adecc593412258698f402c9da78def5fe106",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/0d0b6f06fa36cabd440efda19a6023b11f139a84",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/2fb919bef908f4cdf9a841a7d9494614566335e0",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/a6317392f4e436402e4d6fed8620619e286d6f73",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/86f68b9374a8b0393745cdb1b5bebb858bee63b7",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/164a1c80f00c49a499f12908059dd9efc15dd758",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/6ef7629ec69734679c0d040f3b279e7e7ac12b33",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/f79d09d48b452f566ea442d2845ea311773afd18",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/2a0f8f073892ea5ea9a4a467dbbc16d1576fd084",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/c3fe63a65893ebdb48a71c309f96da3e87d5965c",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/dcf60888bcb1c5cb689da2becf9561528c71ab55",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/e2740b4afaa5b9ff5a56f3e61ebd16339d7a2c2a",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/3f026866194edd9ddf4d82f34854b75e949c0e38",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/dd62aebfb5bc178e6603f176ef426271c4e70119",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/8f9829cd2dd65479cca9b1497b6e62fdc74df2b6",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/3c6ace066ab991b70f752ad3b4dbaade80a5aecc",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/72cb65233257d6f24945a1c18a79e88c7fdbff41",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/69fadd41b0732f23278daff78166cad20108bfec",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/96b8049d815042d391de74ecdb1029bf0a727386",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/823f85dfc9ee14df3054cf40782d5d25015041b4",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/ab8e5a4f8eeec1c197720f736d49a6b377f9838d",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/c44d89f469de5dc3ec61e6abd7331cdebf93165c",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/6eabc41aee3cc31426ab9e91ef77f960dcd11832",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/4e060dc12725b23a6c65636d1715830c8a0791ee",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/b9d837183ad5bd186456d64c6a45d3151dde2540",
+                  "statusCheckRollup": null
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/5d6be34838d7c82425d9a67d9a4e564f2e341741",
+                  "statusCheckRollup": null
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/df696a7e76b66de06b3411651d20615be22c7db0",
+                  "statusCheckRollup": null
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/556447683112b6ccc00b27a1bd0d0a4edc361692",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/f00231951d420658e9ce69556fd32ec4c35e8a89",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/f992d697ed9269a8bbcdc4a37d1597915c18f417",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/175e235bd5143e421b997528285178223a2db19c",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/3adb2bd57c9917c47edac54a2bb828e417d288e7",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/09392c50592489c658d673469308d9e904df6a5b",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/8bfce5dc016311b4e0e89f938e6ad802946b04d2",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/76df94a8399eafb48eb8a02d6b1b90868d6b4277",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/1a943350b00b74b6ee207ffe9431b0b357c84f18",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/e1b1d93548b8cd642ea6ae3fdc10d5566fa096c5",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/56678038b5e9b076df7c95020ffcd626c9b0e389",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/c2b729d8c3adb93212fd796f2d31c5485374be87",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/9a68ee51b2dcad8fc2203974cecf5b3bbca21d4f",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/940d1e1ec57859d068d96868b74359d1e9d54bbf",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/d4b3a2867185a389cf8b81b7f51cccde66154d29",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/16477a8270b469ebec6e9b848c4d5fb16c3e6efd",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/eca086e2827e617bd49cd136f03041646c6b6b89",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/0d2dd291bd2c5ee7e42b2bf240742b516ad4dbda",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/94ae8ee78cd1daf35a7838c9b55176392058a1da",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/8a0142c8b13b5dfe38e048aa40d0c01feff7598b",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/23e6bf3671248a309a8b4c2e7e40a3093b0bcb56",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/1e18cebcff75fa701e8a05daed56a1a187401b4a",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/5f73afb256b3fc2938faaadcfdb27687063d6f76",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/ed790d96394963a73a7d33db9353afbe8d877a03",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/115c694af65165c6e09f6abbab43745b9b310b3a",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/9b03d36ffbddd2a41435c648222608551a9e7635",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/a26fa0c008e8d1d05157669a658ae88e00e27d2a",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/8552d8ec203653f4d323c4b728c2ddf805eca685",
+                  "statusCheckRollup": null
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/d563c76e92e36c53bf47e868cd71c570d7e4c1cb",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/b00803a9c112acf77e929e246052b1cf33478a6f",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/852fae73ae21cb5e3f52c82df80e5e7c4b853ce1",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/fe2c05275bbe7de49e715dc03b0d064ba9a95dc2",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/57034e1b51b4df633f8db095a5e8ee82205669fe",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/11edc76b15f0a1b8a3cf7e2d91f59978b93407b5",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/e32e91c7916107c1bdb1730c5c12fd85dd864d0a",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/404efd70f71044d280cd64240aafa12a434c9ec7",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/edcfe575cfe4bd14d0b7c885238a0ecb17e9475e",
+                  "statusCheckRollup": null
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/b240625d219005656dabb7377139e99b12004cd3",
+                  "statusCheckRollup": null
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/90cea7d4e73cebcd9e2d7ff52fe6cda9c4aaf2f4",
+                  "statusCheckRollup": null
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/576861e61757aa87479422e44f4d348c5a1d43a9",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/af6f3dcba55fed71ac04a6618f1b4269ccd6d614",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/d3ae6f25dd1acd2f1f7d71189d2315774363405e",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/bd475d8731f7b18266978df104b0bccb7c65a01c",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/9e4dd4dc4ec25a447719d4502bdbd240f9ad2f8b",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/573e055cd3bab9ddfa1572c5a05755073cbe5ab5",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/c16805a635ad3f1355c3e86405e229e115548e44",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/af5cf1ac1ccfe1b222ed7f23ceac5916dfcc69b6",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/3aae7d7823867eb0113ec4a8a418f0a2b7cc5af4",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/ddd390af012bf792f7934c4baea4ac5a5c3c92d8",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/5e67b40a9effc2e5a4c9ff77e6b14f409c7ee261",
+                  "statusCheckRollup": null
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/65cdf43e48505907bc3df2661540da638ca825a9",
+                  "statusCheckRollup": null
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/4c6c5065753dcf4a1e59b9c2673ff268930d48f1",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/c15af6df035153e1bed1d93dde5b560a346333b9",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/d669eb038d31c7fe71308c9360774539cd2b0ecf",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/0edb69ae557869483b969213839704eefb8bd1fd",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/182aef6e6b28d2f62cd7281f38c12899d8006a15",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/ea8b9e6c180d736fb5436317326e3a572202f795",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/c7cbc6befa32e09a6fa130586a7391740971cd21",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/312908c068dd8c35f19669bde33c371cbe29851c",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/71448cb5166542ac015f5f6bed514353b353f1d0",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/004081cc0827d276a899cb62e1803f7632102bd6",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/f15e0b8237059455c1ecddcd004c0e69c18b4cd6",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/0e496ca2127b09dc113f933072c1ca3c9ced3d79",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/24d8e90dbcb107ec8fbafff451a48b56648936d1",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/8389ab87511317cbf263ad3b61a182a08fbee34f",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/71934ff244ca4e06f4c60e8a0eb27f4889e5cc77",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/db556c11b22148e3f28c95a70cc68f49bf858ac0",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/2ab2b4035cb728fbd57601399693ee9d1dc3d2e1",
+                  "statusCheckRollup": {
+                    "state": "SUCCESS"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/adecd73975d54b3b7f6aa32709448f2f69649d43",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              },
+              {
+                "node": {
+                  "commitUrl": "https://github.com/etcd-io/etcd/commit/a3f14cdf538704f37bfbb7f6198ff3b14de70b95",
+                  "statusCheckRollup": {
+                    "state": "FAILURE"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
