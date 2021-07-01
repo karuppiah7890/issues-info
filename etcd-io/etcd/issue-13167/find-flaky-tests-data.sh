@@ -7,3 +7,4 @@ curl -H "Authorization: token $GITHUB_TOKEN" \
 }' \
     https://api.github.com/graphql | jq . > commit-and-check-data.json
 
+cat commit-and-check-data.json | jq '.data.repository.defaultBranchRef.target.history.edges | reduce .[] as $item (0; if $item.node.statusCheckRollup.state == "SUCCESS" then (. + 1) else . end)'
