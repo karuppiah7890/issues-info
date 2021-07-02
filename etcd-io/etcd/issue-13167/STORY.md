@@ -897,3 +897,100 @@ $ cat commit-and-check-data.json | jq '.data.repository.defaultBranchRef.target.
 And THAT is the right value :D :D
 
 So, 58% success, hmm
+
+---
+
+I need to do some math for finding the difference in case I'm finding successes.
+
+or I could find number of failures and I know the total commits is 100, so just the number of failures
+would be the percentage
+
+But if I find number of successes alone and have total, or have a total other than 100, then I need to find
+
+failure percentage = (number of failures / total number of runs) * 100
+
+For `number of failures`, it's directly the number if we have it or if we have `number of successes`, then
+
+number of failures = total number of runs - number of successes
+
+https://duckduckgo.com/?t=ffab&q=maths+in+bash&ia=web
+
+https://www.shell-tips.com/bash/math-arithmetic-calculation/
+
+There are some ways to do math ;) :D
+
+I'm gonna start with the easiest thing! :D
+
+---
+
+Things to note -
+- A check for checking if the GitHub Token environment variable is set has been done
+- We can't have verbose logging with `set -x` as that exposes the GitHub tokens which is part of the curl code or the token existence check code
+- We have added `-Ss` options for curl for showing error and for being silent
+- We have also added `-f` for failing curl when things go wrong in the http request
+- We have expanded all the options actually - `--fail --show-error --silent` to keep it clear
+
+---
+
+TODO:
+- Show the error percentage in a echo / print statement
+- Can we make the POST request body more neat? Hmm
+
+---
+
+Questions
+- Should we consider commits that don't have any status (multiple commits in a PR)? That is they have null status. Should we count them as part of the last 100 commits? The 100 commits currently have three statuses - success, null, failure. We count failures and then do calculation say that's the percentage, though it assumes that the ones with null are all runs and are all successes
+
+---
+
+https://duckduckgo.com/?t=ffab&q=bash+pipe+failures&ia=web&iax=qa
+
+http://stackoverflow.com/questions/32684119/ddg#32684221
+
+---
+
+PR Description:
+
+This PR is a part of the fix for the issue #13167
+
+## What this PR does -
+It tries to get the last 100 etcd commits and their commit status data from the GitHub GraphQL API and count the number of failures and shows the failure percentage
+
+It uses the following tools
+- bash
+- curl
+- cat
+- jq
+
+## What this PR does not do -
+
+- This PR does not introduce any GitHub Actions Workflow to run the script automatically weekly once as mentioned in #13167 . Let me know if we need to do it as part of this PR, I could add a GitHub Action Workflow config Yaml for it with cron schedule
+- This PR does **not** analyze PRs of the commits with failure status and identify flaky tests
+
+## Secrets
+
+This PR introduces a script which needs a GitHub Token to access the GitHub API and get etcd repo commit data
+
+## Documentation
+
+This script does not have any documentation as of now. Let me know if I need to add any details in some docs. Like what it does, it's purpose in some README and any other details
+
+## Questions
+- Should we consider commits that don't have any status (multiple commits in a PR)? That is they have null status. Should we count them as part of the last 100 commits? The 100 commits currently have three statuses - success, null, failure. We count failures and then do calculation and say that's the percentage, so it assumes that the ones with null are all successes
+- Should we add documentation for this script? If yes, where should we add it?
+- Should we parameterize the number of commits we want to choose from the history? Currently it's hard coded as 100 last commits
+- Does the script name look okay? Let me know if I need to change it
+- The script creates a JSON file to dump all the GitHub API data about the repo commits and then does processing on it. Is that okay? Also, I have git ignored that file too
+- Does the message `Commit status failure percentage is 31 %` make sense? Or we want to give some other message talking about test flayness directly?
+- Is the commit message okay?
+- I put `Fixes #13167` in the commit message but this is only part of fixing #13167. I think it might close #13167 with the merge of this PR. If it does, we can reopen the issue, yeah?
+
+---
+
+Commit message:
+
+scripts: add script to measure percentage of commits with failed status
+
+This is to start measuring the test flakyness and see the numbers improving once we improve and deflake flaky tests
+
+Fixes #13167
