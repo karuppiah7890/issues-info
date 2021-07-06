@@ -994,3 +994,33 @@ scripts: add script to measure percentage of commits with failed status
 This is to start measuring the test flakyness and see the numbers improving once we improve and deflake flaky tests
 
 Fixes #13167
+
+---
+
+I'm going to use `mktemp` and store the json file in a `/tmp` directory
+
+```bash
+ issues-info  main ✔  $ mktemp 
+/var/folders/fg/55xcrj215gs2n9gnpz4077y40000gq/T/tmp.u0Kilg5u
+$ mktemp -h
+mktemp: illegal option -- h
+usage: mktemp [-d] [-q] [-t prefix] [-u] template ...
+       mktemp [-d] [-q] [-u] -t prefix 
+ ✘ $ ls /var/folders/fg/55xcrj215gs2n9gnpz4077y40000gq/T/tmp.u0Kilg5u
+/var/folders/fg/55xcrj215gs2n9gnpz4077y40000gq/T/tmp.u0Kilg5u
+$ ls /var/folders/fg/55xcrj215gs2n9gnpz4077y40000gq/T/tmp.u0Kilg5u 
+/var/folders/fg/55xcrj215gs2n9gnpz4077y40000gq/T/tmp.u0Kilg5u
+$ ls -al /var/folders/fg/55xcrj215gs2n9gnpz4077y40000gq/T/tmp.u0Kilg5u 
+-rw-------  1 karuppiahn  staff  0 Jul  6 20:28 /var/folders/fg/55xcrj215gs2n9gnpz4077y40000gq/T/tmp.u0Kilg5u
+$ cat /var/folders/fg/55xcrj215gs2n9gnpz4077y40000gq/T/tmp.u0Kilg5u 
+$ man mktemp
+$ mktemp -d
+/var/folders/fg/55xcrj215gs2n9gnpz4077y40000gq/T/tmp.YjgAI02u
+$ ls -alh /var/folders/fg/55xcrj215gs2n9gnpz4077y40000gq/T/tmp.YjgAI02u
+total 0
+drwx------   2 karuppiahn  staff    64B Jul  6 20:29 .
+drwx------@ 86 karuppiahn  staff   2.7K Jul  6 20:29 ..
+$ 
+```
+
+Okay, I fixed the bash script to use `/tmp` directory to store the temporary json file ;) :D
