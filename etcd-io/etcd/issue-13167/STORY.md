@@ -1024,3 +1024,28 @@ $
 ```
 
 Okay, I fixed the bash script to use `/tmp` directory to store the temporary json file ;) :D
+
+---
+
+https://crontab.guru/#0_0_*_*_0
+
+---
+
+Commit message:
+
+workflow: add workflow to invoke script that measures percentage of commits with failed status
+    
+The workflow runs on a cron schedule
+
+Fixes #13167
+
+---
+
+The script currently looks like this - 
+
+```bash
+$ ./scripts/measure-test-flakiness.sh 
+Commit status failure percentage is - 30 %
+```
+
+Should we add a `make` target in the `Makefile` for running this? And use that in the GitHub Action Workflow config?
