@@ -144,4 +144,13 @@ Done installing documentation for batch after 0 seconds
 redis-doc $ 
 ```
 
+```bash
+redis-doc $ rg 'Check the section about Sentinel and Docker later in this document for more information'
+topics/sentinel.md
+85:6. **Sentinel, Docker, or other forms of Network Address Translation or Port Mapping should be mixed with care**: Docker performs port remapping, breaking Sentinel auto discovery of other Sentinel processes and the list of replicas for a master. Check the section about Sentinel and Docker later in this document for more information.
+redis-doc $ 
+```
 
+I finally added the hyperlinks to all the places where `section` was mentioned but it didn't have a link to the section
+
+PR - https://github.com/redis/redis-doc/pull/1626
