@@ -1437,3 +1437,31 @@ depstat $ ./dist/depstat_darwin_amd64/depstat -v
 depstat version 0.6.2-next
 depstat $ 
 ```
+
+---
+
+TODO
+- Update RELEASE.md with what someone has to do to publish a release automatically - just tag with git and push
+- workflow should run only if the tag is in the main branch
+
+---
+
+Taking inspiration from https://github.com/gojekfarm/stevedore/pull/24
+
+https://github.com/gojekfarm/stevedore/pull/24#discussion_r511482026
+
+https://github.community/t/run-workflow-on-push-tag-on-specific-branch/17519
+
+https://github.com/gojekfarm/stevedore/blob/master/.github/workflows/release.yml#L10
+
+---
+
+RELEASE.md file
+
+It can talk about how one has to just tag a git commit in `main` branch using git, like `git tag` and push and that's it
+
+It can talk about what and all GitHub Actions and goreleaser do when the tag is pushed
+
+Link to goreleaser docs like https://goreleaser.com/cmd/goreleaser_release/ , https://goreleaser.com in general
+
+
