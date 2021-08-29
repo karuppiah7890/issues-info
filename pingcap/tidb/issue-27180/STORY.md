@@ -1603,4 +1603,85 @@ tidb $
 
 ```
 
+---
 
+Finally, the tests ran ;) Let's see the output now, it still fails, but idk what the failure is, let's see, it has more output now!
+
+Wow.
+
+Too many log lines!! I saw 479178 log lines!!! It's at [tidb-unit-test.log](./tidb-unit-test.log)
+
+Failure -
+
+```
+FAIL: TestShowGrantsForCurrentUserUsingRole (0.97s)
+...
+...
+FAIL
+coverage: 84.5% of statements
+FAIL	github.com/pingcap/tidb/privilege/privileges	12.646s
+...
+FAIL
+make: *** [gotest] Error 1
+```
+
+There are also some untracked files after the test ran, hmm
+
+```bash
+tidb $ gst
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	config/config.toml
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+tidb $ cat config/config.toml
+
+enable-table-lock = true
+
+enable-telemetry = false
+
+[security]
+spilled-file-encryption-method = "aes128-ctr"
+tidb $ 
+```
+
+Lol, I couldn't push log of unit test file
+
+```bash
+issues-info $ gp
+Pushing to github.com:karuppiah7890/issues-info.git
+Enumerating objects: 12, done.
+Counting objects: 100% (12/12), done.
+Delta compression using up to 16 threads
+Compressing objects: 100% (6/6), done.
+Writing objects: 100% (7/7), 9.13 MiB | 1.61 MiB/s, done.
+Total 7 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+remote: error: Trace: 0de966cb6151078ad4978a074926bbd7767c51f3438a9bcc08db5055ff2af57c
+remote: error: See http://git.io/iEPt8g for more information.
+remote: error: File pingcap/tidb/issue-27180/tidb-unit-test.log is 128.45 MB; this exceeds GitHub's file size limit of 100.00 MB
+remote: error: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.
+To github.com:karuppiah7890/issues-info.git
+ ! [remote rejected] main -> main (pre-receive hook declined)
+error: failed to push some refs to 'github.com:karuppiah7890/issues-info.git'
+issues-info $ 
+```
+
+```bash
+issues-info $ ls -al pingcap/tidb/issue-27180/
+total 295224
+drwxr-xr-x  4 karuppiahn  staff        128 Aug 29 20:41 .
+drwxr-xr-x  3 karuppiahn  staff         96 Aug 29 19:11 ..
+-rw-r--r--  1 karuppiahn  staff     151754 Aug 29 20:44 STORY.md
+-rw-r--r--  1 karuppiahn  staff  134694501 Aug 29 20:41 tidb-unit-test.log
+issues-info $ ls -alh pingcap/tidb/issue-27180/
+total 295224
+drwxr-xr-x  4 karuppiahn  staff   128B Aug 29 20:41 .
+drwxr-xr-x  3 karuppiahn  staff    96B Aug 29 19:11 ..
+-rw-r--r--  1 karuppiahn  staff   148K Aug 29 20:44 STORY.md
+-rw-r--r--  1 karuppiahn  staff   128M Aug 29 20:41 tidb-unit-test.log
+```
