@@ -288,7 +288,7 @@ ddl/ddl_worker.go
 
 ddl/partition.go
 15:package ddl
-tidb $ 
+tidb $
 
 tidb $ rg "package ddl"
 ddl/sequence_test.go
@@ -515,7 +515,7 @@ cmd/ddltest/ddl_test.go
 cmd/ddltest/column_test.go
 cmd/ddltest/random.go
 cmd/ddltest/index_test.go
-tidb $ 
+tidb $
 ```
 
 I have to check about many packages I guess? Maybe for now just the test files in `ddl` directory I guess, let's see
@@ -662,7 +662,7 @@ ddl/table_test.go
 ddl/testutil
 ddl/testutil/testutil.go
 ddl/util/syncer_test.go
-tidb $ 
+tidb $
 ```
 
 Before I do anything, let me go read the `CONTRIBUTING.md` file first!
@@ -749,7 +749,7 @@ go: downloading github.com/grpc-ecosystem/grpc-gateway v1.12.1
 go: downloading golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 go: downloading github.com/gorilla/websocket v1.4.0
 Build TiDB Server successfully!
-tidb $ 
+tidb $
 ```
 
 ---
@@ -801,9 +801,9 @@ install: 64,739 (30 days), 204,568 (90 days), 908,371 (365 days)
 install-on-request: 64,445 (30 days), 203,560 (90 days), 897,407 (365 days)
 build-error: 0 (30 days)
 tidb $ per
-periodic        perl5.30        perlbug5.30     perldoc5.30     perlivp5.30     perlthanks5.30  
-perl            perlbug         perldoc         perlivp         perlthanks      
-perl5.18        perlbug5.18     perldoc5.18     perlivp5.18     perlthanks5.18  
+periodic        perl5.30        perlbug5.30     perldoc5.30     perlivp5.30     perlthanks5.30
+perl            perlbug         perldoc         perlivp         perlthanks
+perl5.18        perlbug5.18     perldoc5.18     perlivp5.18     perlthanks5.18
 tidb $ brew info mariadb
 mariadb: stable 10.6.4 (bottled)
 Drop-in replacement for MySQL
@@ -861,7 +861,7 @@ Or, if you don't want/need a background service you can just run:
 install: 226 (30 days), 723 (90 days), 2,308 (365 days)
 install-on-request: 220 (30 days), 701 (90 days), 2,228 (365 days)
 build-error: 0 (30 days)
-tidb $ 
+tidb $
 ```
 
 ---
@@ -960,7 +960,7 @@ owners.
 
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
-tidb> 
+tidb>
 tidb> \h
 
 For information about MySQL products and services, visit:
@@ -1005,9 +1005,9 @@ tidb> show tables
     -> ;
 Empty set (0.00 sec)
 
-tidb> 
+tidb>
 tidb> ^DBye
-tidb $ 
+tidb $
 ```
 
 No idea what to do in MySQL client :P I could create tables, but...meh
@@ -1071,9 +1071,9 @@ tidb> show tables
 +----------------+
 1 row in set (0.00 sec)
 
-tidb> 
+tidb>
 tidb> ^DBye
-tidb $ 
+tidb $
 ```
 
 Interesting! ;) It worked!!
@@ -1081,7 +1081,7 @@ Interesting! ;) It worked!!
 The TiDB server logs -
 
 ```bash
-tidb $ ./bin/tidb-server 
+tidb $ ./bin/tidb-server
 [2021/08/29 20:09:05.327 +05:30] [INFO] [printer.go:34] ["Welcome to TiDB."] ["Release Version"=v5.2.0-alpha-762-g35c27e4b1] [Edition=Community] ["Git Commit Hash"=35c27e4b1c491e1b914d566180be3febc36c335a] ["Git Branch"=master] ["UTC Build Time"="2021-08-29 13:53:18"] [GoVersion=go1.17] ["Race Enabled"=false] ["Check Table Before Drop"=false] ["TiKV Min Version"=v3.0.0-60965b006877ca7234adaced7890d7b029ed1306]
 [2021/08/29 20:09:05.327 +05:30] [INFO] [trackerRecorder.go:29] ["Mem Profile Tracker started"]
 [2021/08/29 20:09:05.328 +05:30] [INFO] [printer.go:48] ["loaded config"] [config="{\"host\":\"0.0.0.0\",\"advertise-address\":\"192.168.1.2\",\"port\":4000,\"cors\":\"\",\"store\":\"unistore\",\"path\":\"/tmp/tidb\",\"socket\":\"\",\"lease\":\"45s\",\"run-ddl\":true,\"split-table\":true,\"token-limit\":1000,\"oom-use-tmp-storage\":true,\"tmp-storage-path\":\"/var/folders/4z/09jpfvfj6c19lxl7ch78pzvc0000gn/T/501_tidb/MC4wLjAuMDo0MDAwLzAuMC4wLjA6MTAwODA=/tmp-storage\",\"oom-action\":\"cancel\",\"mem-quota-query\":1073741824,\"tmp-storage-quota\":-1,\"enable-batch-dml\":false,\"lower-case-table-names\":2,\"server-version\":\"\",\"log\":{\"level\":\"info\",\"format\":\"text\",\"disable-timestamp\":null,\"enable-timestamp\":null,\"disable-error-stack\":null,\"enable-error-stack\":null,\"file\":{\"filename\":\"\",\"max-size\":300,\"max-days\":0,\"max-backups\":0},\"enable-slow-log\":true,\"slow-query-file\":\"tidb-slow.log\",\"slow-threshold\":300,\"expensive-threshold\":10000,\"query-log-max-len\":4096,\"record-plan-in-slow-log\":1},\"security\":{\"skip-grant-table\":false,\"ssl-ca\":\"\",\"ssl-cert\":\"\",\"ssl-key\":\"\",\"require-secure-transport\":false,\"cluster-ssl-ca\":\"\",\"cluster-ssl-cert\":\"\",\"cluster-ssl-key\":\"\",\"cluster-verify-cn\":null,\"spilled-file-encryption-method\":\"plaintext\",\"enable-sem\":false,\"auto-tls\":true,\"tls-version\":\"\"},\"status\":{\"status-host\":\"0.0.0.0\",\"metrics-addr\":\"\",\"status-port\":10080,\"metrics-interval\":15,\"report-status\":true,\"record-db-qps\":false},\"performance\":{\"max-procs\":0,\"max-memory\":0,\"server-memory-quota\":0,\"memory-usage-alarm-ratio\":0.8,\"stats-lease\":\"3s\",\"stmt-count-limit\":5000,\"feedback-probability\":0,\"query-feedback-limit\":512,\"pseudo-estimate-ratio\":0.8,\"force-priority\":\"NO_PRIORITY\",\"bind-info-lease\":\"3s\",\"txn-entry-size-limit\":6291456,\"txn-total-size-limit\":104857600,\"tcp-keep-alive\":true,\"tcp-no-delay\":true,\"cross-join\":true,\"run-auto-analyze\":true,\"distinct-agg-push-down\":false,\"committer-concurrency\":128,\"max-txn-ttl\":3600000,\"mem-profile-interval\":\"1m\",\"index-usage-sync-lease\":\"0s\",\"gogc\":100,\"enforce-mpp\":false},\"prepared-plan-cache\":{\"enabled\":false,\"capacity\":100,\"memory-guard-ratio\":0.1},\"opentracing\":{\"enable\":false,\"rpc-metrics\":false,\"sampler\":{\"type\":\"const\",\"param\":1,\"sampling-server-url\":\"\",\"max-operations\":0,\"sampling-refresh-interval\":0},\"reporter\":{\"queue-size\":0,\"buffer-flush-interval\":0,\"log-spans\":false,\"local-agent-host-port\":\"\"}},\"proxy-protocol\":{\"networks\":\"\",\"header-timeout\":5},\"pd-client\":{\"pd-server-timeout\":3},\"tikv-client\":{\"grpc-connection-count\":4,\"grpc-keepalive-time\":10,\"grpc-keepalive-timeout\":3,\"grpc-compression-type\":\"none\",\"commit-timeout\":\"41s\",\"async-commit\":{\"keys-limit\":256,\"total-key-size-limit\":4096,\"safe-window\":2000000000,\"allowed-clock-drift\":500000000},\"max-batch-size\":128,\"overload-threshold\":200,\"max-batch-wait-time\":0,\"batch-wait-size\":8,\"enable-chunk-rpc\":true,\"region-cache-ttl\":600,\"store-limit\":0,\"store-liveness-timeout\":\"1s\",\"copr-cache\":{\"capacity-mb\":1000},\"ttl-refreshed-txn-size\":33554432},\"binlog\":{\"enable\":false,\"ignore-error\":false,\"write-timeout\":\"15s\",\"binlog-socket\":\"\",\"strategy\":\"range\"},\"compatible-kill-query\":false,\"plugin\":{\"dir\":\"\",\"load\":\"\"},\"pessimistic-txn\":{\"max-retry-count\":256,\"deadlock-history-capacity\":10,\"deadlock-history-collect-retryable\":false},\"check-mb4-value-in-utf8\":true,\"max-index-length\":3072,\"index-limit\":64,\"table-column-count-limit\":1017,\"graceful-wait-before-shutdown\":0,\"alter-primary-key\":false,\"treat-old-version-utf8-as-utf8mb4\":true,\"enable-table-lock\":false,\"delay-clean-table-lock\":0,\"split-region-max-num\":1000,\"stmt-summary\":{\"enable\":true,\"enable-internal-query\":false,\"max-stmt-count\":3000,\"max-sql-length\":4096,\"refresh-interval\":1800,\"history-size\":24},\"repair-mode\":false,\"repair-table-list\":[],\"isolation-read\":{\"engines\":[\"tikv\",\"tiflash\",\"tidb\"]},\"max-server-connections\":0,\"new_collations_enabled_on_first_bootstrap\":false,\"experimental\":{},\"enable-collect-execution-info\":true,\"skip-register-to-dashboard\":false,\"enable-telemetry\":true,\"labels\":{},\"enable-global-index\":false,\"deprecate-integer-display-length\":false,\"enable-enum-length-limit\":true,\"stores-refresh-interval\":60,\"enable-tcp4-only\":false,\"enable-forwarding\":false}"]
@@ -1497,7 +1497,7 @@ tidb $ ./bin/tidb-server
 [2021/08/29 20:12:05.518 +05:30] [INFO] [db.go:615] ["BlobManager finished"]
 [2021/08/29 20:12:05.518 +05:30] [INFO] [db.go:619] ["ResourceManager finished"]
 [2021/08/29 20:12:05.518 +05:30] [INFO] [db.go:625] ["Waiting for closer"]
-tidb $ 
+tidb $
 ```
 
 https://pingcap.github.io/tidb-dev-guide/get-started/setup-an-ide.html
@@ -1596,10 +1596,10 @@ PASS: builtin_time_vec_test.go:579: testVectorizeSuite2.TestVectorizedBuiltinTim
 --- PASS: TestCTEPreviewAndReport (6.81s)
 exit status 252
 make: *** [gotest] Error 1
-tidb $ 
-tidb $ 
+tidb $
+tidb $
 
-tidb $ 
+tidb $
 
 ```
 
@@ -1646,10 +1646,10 @@ enable-telemetry = false
 
 [security]
 spilled-file-encryption-method = "aes128-ctr"
-tidb $ 
+tidb $
 ```
 
-Lol, I couldn't push log of unit test file
+Lol, I couldn't push log of unit test file. It's too big it seems!
 
 ```bash
 issues-info $ gp
@@ -1668,7 +1668,7 @@ remote: error: GH001: Large files detected. You may want to try Git Large File S
 To github.com:karuppiah7890/issues-info.git
  ! [remote rejected] main -> main (pre-receive hook declined)
 error: failed to push some refs to 'github.com:karuppiah7890/issues-info.git'
-issues-info $ 
+issues-info $
 ```
 
 ```bash
@@ -1685,3 +1685,395 @@ drwxr-xr-x  3 karuppiahn  staff    96B Aug 29 19:11 ..
 -rw-r--r--  1 karuppiahn  staff   148K Aug 29 20:44 STORY.md
 -rw-r--r--  1 karuppiahn  staff   128M Aug 29 20:41 tidb-unit-test.log
 ```
+
+Weird, the failing test now passed, hmm
+
+```bash
+tidb $ make failpoint-enable
+tidb $ cd privilege/
+privilege $ ls
+privilege.go	privileges
+privilege $ cd privileges/
+privileges $ ls
+cache.go		errors.go		privileges.go
+cache_test.go		main_test.go		privileges_test.go
+privileges $ go test -v -run TestShowGrantsForCurrentUserUsingRole
+=== RUN   TestShowGrantsForCurrentUserUsingRole
+=== PAUSE TestShowGrantsForCurrentUserUsingRole
+=== CONT  TestShowGrantsForCurrentUserUsingRole
+[2021/08/29 20:49:53.208 +05:30] [INFO] [tidb.go:71] ["new domain"] [store=6b0c4dbe-2f07-40a5-9ef7-dfa0862e244b] ["ddl lease"=0s] ["stats lease"=-1ns] ["index usage sync lease"=0s]
+[2021/08/29 20:49:53.210 +05:30] [INFO] [ddl.go:343] ["[ddl] start DDL"] [ID=ff33c268-07b4-4697-bfeb-c17e7d3294a2] [runWorker=true]
+[2021/08/29 20:49:53.210 +05:30] [INFO] [ddl.go:332] ["[ddl] start delRangeManager OK"] ["is a emulator"=true]
+[2021/08/29 20:49:53.210 +05:30] [INFO] [delete_range.go:142] ["[ddl] start delRange emulator"]
+[2021/08/29 20:49:53.210 +05:30] [INFO] [ddl_worker.go:155] ["[ddl] start DDL worker"] [worker="worker 1, tp general"]
+[2021/08/29 20:49:53.210 +05:30] [INFO] [ddl_worker.go:155] ["[ddl] start DDL worker"] [worker="worker 2, tp add index"]
+[2021/08/29 20:49:53.211 +05:30] [INFO] [domain.go:156] ["full load InfoSchema success"] [currentSchemaVersion=0] [neededSchemaVersion=0] ["start time"=729.03µs]
+[2021/08/29 20:49:53.211 +05:30] [INFO] [domain.go:371] ["full load and reset schema validator"]
+[2021/08/29 20:49:53.211 +05:30] [INFO] [tidb.go:243] ["rollbackTxn called due to ddl/autocommit failure"]
+[2021/08/29 20:49:53.211 +05:30] [WARN] [session.go:1571] ["run statement failed"] [schemaVersion=0] [error="[schema:1049]Unknown database 'mysql'"] [errorVerbose="[schema:1049]Unknown database 'mysql'\ngithub.com/pingcap/errors.AddStack\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174\ngithub.com/pingcap/errors.(*Error).GenWithStackByArgs\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/normalize.go:159\ngithub.com/pingcap/tidb/executor.(*SimpleExec).executeUse\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/simple.go:556\ngithub.com/pingcap/tidb/executor.(*SimpleExec).Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/simple.go:126\ngithub.com/pingcap/tidb/executor.Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:581\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:462\ngithub.com/pingcap/tidb/executor.(*ExecStmt).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:411\ngithub.com/pingcap/tidb/session.runStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1674\ngithub.com/pingcap/tidb/session.(*session).ExecuteStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1568\ngithub.com/pingcap/tidb/session.(*session).ExecuteInternal\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1278\ngithub.com/pingcap/tidb/session.checkBootstrapped\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/bootstrap.go:598\ngithub.com/pingcap/tidb/session.bootstrap\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/bootstrap.go:358\ngithub.com/pingcap/tidb/session.runInBootstrapSession\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:2565\ngithub.com/pingcap/tidb/session.BootstrapSession\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:2418\ngithub.com/pingcap/tidb/privilege/privileges_test.newStore\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/privilege/privileges/privileges_test.go:1403\ngithub.com/pingcap/tidb/privilege/privileges_test.TestShowGrantsForCurrentUserUsingRole\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/privilege/privileges/privileges_test.go:2253\ntesting.tRunner\n\t/usr/local/Cellar/go/1.17/libexec/src/testing/testing.go:1259\nruntime.goexit\n\t/usr/local/Cellar/go/1.17/libexec/src/runtime/asm_amd64.s:1581"] [session="{\n  \"currDBName\": \"\",\n  \"id\": 0,\n  \"status\": 2,\n  \"strictMode\": true,\n  \"user\": null\n}"]
+[2021/08/29 20:49:53.211 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=0] [cur_db=] [sql="CREATE DATABASE IF NOT EXISTS test"] [user=]
+[2021/08/29 20:49:53.213 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:2, Type:create schema, State:none, SchemaState:queueing, SchemaID:1, TableID:0, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.212 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.213 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:2, Type:create schema, State:none, SchemaState:queueing, SchemaID:1, TableID:0, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.212 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE DATABASE IF NOT EXISTS test"]
+[2021/08/29 20:49:53.213 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:2, Type:create schema, State:none, SchemaState:queueing, SchemaID:1, TableID:0, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.212 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.213 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:2, Type:create schema, State:synced, SchemaState:public, SchemaID:1, TableID:0, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.212 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.213 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=2]
+[2021/08/29 20:49:53.213 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.214 +05:30] [INFO] [domain.go:156] ["full load InfoSchema success"] [currentSchemaVersion=0] [neededSchemaVersion=1] ["start time"=842.539µs]
+[2021/08/29 20:49:53.214 +05:30] [INFO] [domain.go:371] ["full load and reset schema validator"]
+[2021/08/29 20:49:53.214 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=1] [cur_db=] [sql="CREATE DATABASE IF NOT EXISTS `mysql`"] [user=]
+[2021/08/29 20:49:53.215 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:4, Type:create schema, State:none, SchemaState:queueing, SchemaID:3, TableID:0, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.215 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.215 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:4, Type:create schema, State:none, SchemaState:queueing, SchemaID:3, TableID:0, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.215 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE DATABASE IF NOT EXISTS `mysql`"]
+[2021/08/29 20:49:53.215 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:4, Type:create schema, State:none, SchemaState:queueing, SchemaID:3, TableID:0, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.215 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.216 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:4, Type:create schema, State:synced, SchemaState:public, SchemaID:3, TableID:0, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.215 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.216 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=4]
+[2021/08/29 20:49:53.216 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.217 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=1] [neededSchemaVersion=2] ["start time"=269.268µs] [phyTblIDs="[]"] [actionTypes="[]"]
+[2021/08/29 20:49:53.217 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=2] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.user (\n\t\tHost\t\t\t\t\tCHAR(64),\n\t\tUser\t\t\t\t\tCHAR(32),\n\t\tauthentication_string\tTEXT,\n\t\tplugin\t\t\t\t\tCHAR(64),\n\t\tSelect_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tInsert_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tUpdate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDelete_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tProcess_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tGrant_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReferences_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_db_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tSuper_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_tmp_table_priv\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tLock_tables_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tExecute_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_view_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_view_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tIndex_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_user_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tEvent_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tTrigger_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_role_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_role_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAccount_locked\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShutdown_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReload_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tFILE_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tConfig_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_Tablespace_Priv  ENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tRepl_slave_priv\t    \tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tRepl_client_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (Host, User));"] [user=]
+[2021/08/29 20:49:53.218 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:6, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:5, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.218 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.218 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:6, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:5, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.218 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.user (\n\t\tHost\t\t\t\t\tCHAR(64),\n\t\tUser\t\t\t\t\tCHAR(32),\n\t\tauthentication_string\tTEXT,\n\t\tplugin\t\t\t\t\tCHAR(64),\n\t\tSelect_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tInsert_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tUpdate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDelete_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tProcess_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tGrant_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReferences_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_db_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tSuper_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_tmp_table_priv\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tLock_tables_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tExecute_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_view_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_view_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tIndex_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_user_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tEvent_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tTrigger_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_role_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_role_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAccount_locked\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShutdown_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReload_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tFILE_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tConfig_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_Tablespace_Priv  ENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tRepl_slave_priv\t    \tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tRepl_client_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (Host, User));"]
+[2021/08/29 20:49:53.219 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:6, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:5, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.218 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.221 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:6, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:5, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.218 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.221 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=6]
+[2021/08/29 20:49:53.221 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.222 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=2] [neededSchemaVersion=3] ["start time"=352.013µs] [phyTblIDs="[5]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.222 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=3] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.global_priv (Host CHAR(60) NOT NULL DEFAULT '',User CHAR(80) NOT NULL DEFAULT '',Priv LONGTEXT NOT NULL DEFAULT '',PRIMARY KEY (Host, User))"] [user=]
+[2021/08/29 20:49:53.222 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:8, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:7, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.222 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.222 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:8, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:7, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.222 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.global_priv (Host CHAR(60) NOT NULL DEFAULT '',User CHAR(80) NOT NULL DEFAULT '',Priv LONGTEXT NOT NULL DEFAULT '',PRIMARY KEY (Host, User))"]
+[2021/08/29 20:49:53.223 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:8, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:7, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.222 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.224 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:8, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:7, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.222 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.224 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=8]
+[2021/08/29 20:49:53.224 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.224 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=3] [neededSchemaVersion=4] ["start time"=108.8µs] [phyTblIDs="[7]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.224 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=4] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.db (\n\t\tHost\t\t\t\t\tCHAR(60),\n\t\tDB\t\t\t\t\t\tCHAR(64),\n\t\tUser\t\t\t\t\tCHAR(32),\n\t\tSelect_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tInsert_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tUpdate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDelete_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tGrant_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReferences_priv \t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tIndex_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_tmp_table_priv\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tLock_tables_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_view_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_view_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tExecute_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tEvent_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tTrigger_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (Host, DB, User));"] [user=]
+[2021/08/29 20:49:53.225 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:10, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:9, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.225 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.225 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:10, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:9, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.225 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.db (\n\t\tHost\t\t\t\t\tCHAR(60),\n\t\tDB\t\t\t\t\t\tCHAR(64),\n\t\tUser\t\t\t\t\tCHAR(32),\n\t\tSelect_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tInsert_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tUpdate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDelete_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tGrant_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReferences_priv \t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tIndex_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_tmp_table_priv\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tLock_tables_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_view_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_view_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tExecute_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tEvent_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tTrigger_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (Host, DB, User));"]
+[2021/08/29 20:49:53.226 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:10, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:9, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.225 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.227 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:10, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:9, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.225 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.228 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=10]
+[2021/08/29 20:49:53.228 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.228 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=4] [neededSchemaVersion=5] ["start time"=247.93µs] [phyTblIDs="[9]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.228 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=5] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.tables_priv (\n\t\tHost\t\tCHAR(60),\n\t\tDB\t\t\tCHAR(64),\n\t\tUser\t\tCHAR(32),\n\t\tTable_name\tCHAR(64),\n\t\tGrantor\t\tCHAR(77),\n\t\tTimestamp\tTIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n\t\tTable_priv\tSET('Select','Insert','Update','Delete','Create','Drop','Grant','Index','Alter','Create View','Show View','Trigger','References'),\n\t\tColumn_priv\tSET('Select','Insert','Update'),\n\t\tPRIMARY KEY (Host, DB, User, Table_name));"] [user=]
+[2021/08/29 20:49:53.229 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:12, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:11, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.229 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.229 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:12, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:11, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.229 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.tables_priv (\n\t\tHost\t\tCHAR(60),\n\t\tDB\t\t\tCHAR(64),\n\t\tUser\t\tCHAR(32),\n\t\tTable_name\tCHAR(64),\n\t\tGrantor\t\tCHAR(77),\n\t\tTimestamp\tTIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n\t\tTable_priv\tSET('Select','Insert','Update','Delete','Create','Drop','Grant','Index','Alter','Create View','Show View','Trigger','References'),\n\t\tColumn_priv\tSET('Select','Insert','Update'),\n\t\tPRIMARY KEY (Host, DB, User, Table_name));"]
+[2021/08/29 20:49:53.229 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:12, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:11, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.229 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.230 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:12, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:11, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.229 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.230 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=12]
+[2021/08/29 20:49:53.230 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.231 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=5] [neededSchemaVersion=6] ["start time"=228.957µs] [phyTblIDs="[11]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.231 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=6] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.columns_priv(\n\t\tHost\t\tCHAR(60),\n\t\tDB\t\t\tCHAR(64),\n\t\tUser\t\tCHAR(32),\n\t\tTable_name\tCHAR(64),\n\t\tColumn_name\tCHAR(64),\n\t\tTimestamp\tTIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n\t\tColumn_priv\tSET('Select','Insert','Update'),\n\t\tPRIMARY KEY (Host, DB, User, Table_name, Column_name));"] [user=]
+[2021/08/29 20:49:53.231 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:14, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:13, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.231 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.231 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:14, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:13, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.231 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.columns_priv(\n\t\tHost\t\tCHAR(60),\n\t\tDB\t\t\tCHAR(64),\n\t\tUser\t\tCHAR(32),\n\t\tTable_name\tCHAR(64),\n\t\tColumn_name\tCHAR(64),\n\t\tTimestamp\tTIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n\t\tColumn_priv\tSET('Select','Insert','Update'),\n\t\tPRIMARY KEY (Host, DB, User, Table_name, Column_name));"]
+[2021/08/29 20:49:53.232 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:14, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:13, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.231 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.233 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:14, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:13, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.231 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.233 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=14]
+[2021/08/29 20:49:53.233 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.233 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=6] [neededSchemaVersion=7] ["start time"=198.511µs] [phyTblIDs="[13]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.233 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=7] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.GLOBAL_VARIABLES(\n\t\tVARIABLE_NAME  VARCHAR(64) NOT NULL PRIMARY KEY,\n\t\tVARIABLE_VALUE VARCHAR(1024) DEFAULT NULL);"] [user=]
+[2021/08/29 20:49:53.234 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:16, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:15, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.234 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.234 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:16, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:15, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.234 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.GLOBAL_VARIABLES(\n\t\tVARIABLE_NAME  VARCHAR(64) NOT NULL PRIMARY KEY,\n\t\tVARIABLE_VALUE VARCHAR(1024) DEFAULT NULL);"]
+[2021/08/29 20:49:53.234 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:16, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:15, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.234 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.235 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:16, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:15, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.234 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.235 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=16]
+[2021/08/29 20:49:53.235 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.235 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=7] [neededSchemaVersion=8] ["start time"=134.556µs] [phyTblIDs="[15]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.235 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=8] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.tidb(\n\t\tVARIABLE_NAME  \tVARCHAR(64) NOT NULL PRIMARY KEY,\n\t\tVARIABLE_VALUE \tVARCHAR(1024) DEFAULT NULL,\n\t\tCOMMENT \t\tVARCHAR(1024));"] [user=]
+[2021/08/29 20:49:53.236 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:18, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:17, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.236 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.236 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:18, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:17, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.236 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.tidb(\n\t\tVARIABLE_NAME  \tVARCHAR(64) NOT NULL PRIMARY KEY,\n\t\tVARIABLE_VALUE \tVARCHAR(1024) DEFAULT NULL,\n\t\tCOMMENT \t\tVARCHAR(1024));"]
+[2021/08/29 20:49:53.236 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:18, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:17, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.236 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.237 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:18, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:17, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.236 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.237 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=18]
+[2021/08/29 20:49:53.237 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.237 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=8] [neededSchemaVersion=9] ["start time"=144.115µs] [phyTblIDs="[17]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.237 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=9] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.help_topic (\n  \t\thelp_topic_id \t\tINT(10) UNSIGNED NOT NULL,\n  \t\tname \t\t\t\tCHAR(64) NOT NULL,\n  \t\thelp_category_id \tSMALLINT(5) UNSIGNED NOT NULL,\n  \t\tdescription \t\tTEXT NOT NULL,\n  \t\texample \t\t\tTEXT NOT NULL,\n  \t\turl \t\t\t\tTEXT NOT NULL,\n  \t\tPRIMARY KEY (help_topic_id) clustered,\n  \t\tUNIQUE KEY name (name)\n\t\t) ENGINE=InnoDB DEFAULT CHARSET=utf8 STATS_PERSISTENT=0 COMMENT='help topics';"] [user=]
+[2021/08/29 20:49:53.238 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:20, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:19, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.238 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.238 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:20, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:19, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.238 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.help_topic (\n  \t\thelp_topic_id \t\tINT(10) UNSIGNED NOT NULL,\n  \t\tname \t\t\t\tCHAR(64) NOT NULL,\n  \t\thelp_category_id \tSMALLINT(5) UNSIGNED NOT NULL,\n  \t\tdescription \t\tTEXT NOT NULL,\n  \t\texample \t\t\tTEXT NOT NULL,\n  \t\turl \t\t\t\tTEXT NOT NULL,\n  \t\tPRIMARY KEY (help_topic_id) clustered,\n  \t\tUNIQUE KEY name (name)\n\t\t) ENGINE=InnoDB DEFAULT CHARSET=utf8 STATS_PERSISTENT=0 COMMENT='help topics';"]
+[2021/08/29 20:49:53.238 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:20, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:19, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.238 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.239 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:20, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:19, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.238 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.239 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=20]
+[2021/08/29 20:49:53.239 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.240 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=9] [neededSchemaVersion=10] ["start time"=162.362µs] [phyTblIDs="[19]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.240 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=10] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_meta (\n\t\tversion \t\tBIGINT(64) UNSIGNED NOT NULL,\n\t\ttable_id \t\tBIGINT(64) NOT NULL,\n\t\tmodify_count\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tcount \t\t\tBIGINT(64) UNSIGNED NOT NULL DEFAULT 0,\n\t\tsnapshot        BIGINT(64) UNSIGNED NOT NULL DEFAULT 0,\n\t\tINDEX idx_ver(version),\n\t\tUNIQUE INDEX tbl(table_id)\n\t);"] [user=]
+[2021/08/29 20:49:53.240 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:22, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:21, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.24 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.240 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:22, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:21, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.24 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_meta (\n\t\tversion \t\tBIGINT(64) UNSIGNED NOT NULL,\n\t\ttable_id \t\tBIGINT(64) NOT NULL,\n\t\tmodify_count\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tcount \t\t\tBIGINT(64) UNSIGNED NOT NULL DEFAULT 0,\n\t\tsnapshot        BIGINT(64) UNSIGNED NOT NULL DEFAULT 0,\n\t\tINDEX idx_ver(version),\n\t\tUNIQUE INDEX tbl(table_id)\n\t);"]
+[2021/08/29 20:49:53.240 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:22, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:21, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.24 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.241 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:22, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:21, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.24 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.242 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=22]
+[2021/08/29 20:49:53.242 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.242 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=10] [neededSchemaVersion=11] ["start time"=314.34µs] [phyTblIDs="[21]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.242 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=11] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_histograms (\n\t\ttable_id \t\t\tBIGINT(64) NOT NULL,\n\t\tis_index \t\t\tTINYINT(2) NOT NULL,\n\t\thist_id \t\t\tBIGINT(64) NOT NULL,\n\t\tdistinct_count \t\tBIGINT(64) NOT NULL,\n\t\tnull_count \t\t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\ttot_col_size \t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tmodify_count \t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tversion \t\t\tBIGINT(64) UNSIGNED NOT NULL DEFAULT 0,\n\t\tcm_sketch \t\t\tBLOB(6291456),\n\t\tstats_ver \t\t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tflag \t\t\t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tcorrelation \t\tDOUBLE NOT NULL DEFAULT 0,\n\t\tlast_analyze_pos \tBLOB DEFAULT NULL,\n\t\tUNIQUE INDEX tbl(table_id, is_index, hist_id)\n\t);"] [user=]
+[2021/08/29 20:49:53.243 +05:30] [INFO] [ddl_api.go:567] ["Automatically convert BLOB(6291456) to MEDIUMBLOB"]
+[2021/08/29 20:49:53.243 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:24, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:23, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.243 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.243 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:24, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:23, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.243 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_histograms (\n\t\ttable_id \t\t\tBIGINT(64) NOT NULL,\n\t\tis_index \t\t\tTINYINT(2) NOT NULL,\n\t\thist_id \t\t\tBIGINT(64) NOT NULL,\n\t\tdistinct_count \t\tBIGINT(64) NOT NULL,\n\t\tnull_count \t\t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\ttot_col_size \t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tmodify_count \t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tversion \t\t\tBIGINT(64) UNSIGNED NOT NULL DEFAULT 0,\n\t\tcm_sketch \t\t\tBLOB(6291456),\n\t\tstats_ver \t\t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tflag \t\t\t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tcorrelation \t\tDOUBLE NOT NULL DEFAULT 0,\n\t\tlast_analyze_pos \tBLOB DEFAULT NULL,\n\t\tUNIQUE INDEX tbl(table_id, is_index, hist_id)\n\t);"]
+[2021/08/29 20:49:53.244 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:24, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:23, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.243 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.245 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:24, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:23, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.243 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.245 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=24]
+[2021/08/29 20:49:53.245 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.246 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=11] [neededSchemaVersion=12] ["start time"=215.953µs] [phyTblIDs="[23]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.246 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=12] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_buckets (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tbucket_id \tBIGINT(64) NOT NULL,\n\t\tcount \t\tBIGINT(64) NOT NULL,\n\t\trepeats \tBIGINT(64) NOT NULL,\n\t\tupper_bound BLOB NOT NULL,\n\t\tlower_bound BLOB ,\n\t\tndv         BIGINT NOT NULL DEFAULT 0,\n\t\tUNIQUE INDEX tbl(table_id, is_index, hist_id, bucket_id)\n\t);"] [user=]
+[2021/08/29 20:49:53.246 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:26, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:25, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.246 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.246 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:26, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:25, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.246 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_buckets (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tbucket_id \tBIGINT(64) NOT NULL,\n\t\tcount \t\tBIGINT(64) NOT NULL,\n\t\trepeats \tBIGINT(64) NOT NULL,\n\t\tupper_bound BLOB NOT NULL,\n\t\tlower_bound BLOB ,\n\t\tndv         BIGINT NOT NULL DEFAULT 0,\n\t\tUNIQUE INDEX tbl(table_id, is_index, hist_id, bucket_id)\n\t);"]
+[2021/08/29 20:49:53.247 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:26, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:25, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.246 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.248 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:26, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:25, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.246 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.248 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=26]
+[2021/08/29 20:49:53.248 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.249 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=12] [neededSchemaVersion=13] ["start time"=191.443µs] [phyTblIDs="[25]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.249 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=13] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.gc_delete_range (\n\t\tjob_id \t\tBIGINT NOT NULL COMMENT \"the DDL job ID\",\n\t\telement_id \tBIGINT NOT NULL COMMENT \"the schema element ID\",\n\t\tstart_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tend_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tts \t\t\tBIGINT NOT NULL COMMENT \"timestamp in uint64\",\n\t\tUNIQUE KEY delete_range_index (job_id, element_id)\n\t);"] [user=]
+[2021/08/29 20:49:53.249 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:28, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:27, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.249 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.250 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:28, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:27, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.249 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.gc_delete_range (\n\t\tjob_id \t\tBIGINT NOT NULL COMMENT \"the DDL job ID\",\n\t\telement_id \tBIGINT NOT NULL COMMENT \"the schema element ID\",\n\t\tstart_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tend_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tts \t\t\tBIGINT NOT NULL COMMENT \"timestamp in uint64\",\n\t\tUNIQUE KEY delete_range_index (job_id, element_id)\n\t);"]
+[2021/08/29 20:49:53.250 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:28, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:27, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.249 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.251 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:28, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:27, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.249 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.251 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=28]
+[2021/08/29 20:49:53.251 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.252 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=13] [neededSchemaVersion=14] ["start time"=153.191µs] [phyTblIDs="[27]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.252 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=14] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.gc_delete_range_done (\n\t\tjob_id \t\tBIGINT NOT NULL COMMENT \"the DDL job ID\",\n\t\telement_id \tBIGINT NOT NULL COMMENT \"the schema element ID\",\n\t\tstart_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tend_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tts \t\t\tBIGINT NOT NULL COMMENT \"timestamp in uint64\",\n\t\tUNIQUE KEY delete_range_done_index (job_id, element_id)\n\t);"] [user=]
+[2021/08/29 20:49:53.252 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:30, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:29, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.252 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.252 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:30, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:29, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.252 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.gc_delete_range_done (\n\t\tjob_id \t\tBIGINT NOT NULL COMMENT \"the DDL job ID\",\n\t\telement_id \tBIGINT NOT NULL COMMENT \"the schema element ID\",\n\t\tstart_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tend_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tts \t\t\tBIGINT NOT NULL COMMENT \"timestamp in uint64\",\n\t\tUNIQUE KEY delete_range_done_index (job_id, element_id)\n\t);"]
+[2021/08/29 20:49:53.252 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:30, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:29, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.252 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.253 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:30, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:29, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.252 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.254 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=30]
+[2021/08/29 20:49:53.254 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.254 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=14] [neededSchemaVersion=15] ["start time"=168.824µs] [phyTblIDs="[29]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.254 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=15] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_feedback (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tfeedback \tBLOB NOT NULL,\n\t\tINDEX hist(table_id, is_index, hist_id)\n\t);"] [user=]
+[2021/08/29 20:49:53.254 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:32, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:31, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.254 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.254 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:32, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:31, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.254 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_feedback (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tfeedback \tBLOB NOT NULL,\n\t\tINDEX hist(table_id, is_index, hist_id)\n\t);"]
+[2021/08/29 20:49:53.255 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:32, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:31, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.254 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.256 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:32, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:31, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.254 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.256 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=32]
+[2021/08/29 20:49:53.256 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.256 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=15] [neededSchemaVersion=16] ["start time"=217.509µs] [phyTblIDs="[31]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.257 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=16] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.role_edges (\n\t\tFROM_HOST \t\t\tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tFROM_USER \t\t\tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tTO_HOST \t\t\tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tTO_USER \t\t\tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tWITH_ADMIN_OPTION \tENUM('N','Y') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (FROM_HOST,FROM_USER,TO_HOST,TO_USER)\n\t);"] [user=]
+[2021/08/29 20:49:53.257 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:34, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:33, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.257 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.257 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:34, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:33, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.257 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.role_edges (\n\t\tFROM_HOST \t\t\tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tFROM_USER \t\t\tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tTO_HOST \t\t\tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tTO_USER \t\t\tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tWITH_ADMIN_OPTION \tENUM('N','Y') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (FROM_HOST,FROM_USER,TO_HOST,TO_USER)\n\t);"]
+[2021/08/29 20:49:53.257 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:34, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:33, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.257 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.258 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:34, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:33, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.257 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.259 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=34]
+[2021/08/29 20:49:53.259 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.259 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=16] [neededSchemaVersion=17] ["start time"=164.695µs] [phyTblIDs="[33]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.259 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=17] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.default_roles (\n\t\tHOST \t\t\t\tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tUSER \t\t\t\tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tDEFAULT_ROLE_HOST \tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '%',\n\t\tDEFAULT_ROLE_USER \tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tPRIMARY KEY (HOST,USER,DEFAULT_ROLE_HOST,DEFAULT_ROLE_USER)\n\t)"] [user=]
+[2021/08/29 20:49:53.260 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:36, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:35, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.259 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.260 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:36, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:35, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.259 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.default_roles (\n\t\tHOST \t\t\t\tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tUSER \t\t\t\tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tDEFAULT_ROLE_HOST \tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '%',\n\t\tDEFAULT_ROLE_USER \tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tPRIMARY KEY (HOST,USER,DEFAULT_ROLE_HOST,DEFAULT_ROLE_USER)\n\t)"]
+[2021/08/29 20:49:53.260 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:36, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:35, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.259 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.261 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:36, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:35, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.259 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.261 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=36]
+[2021/08/29 20:49:53.261 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.261 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=17] [neededSchemaVersion=18] ["start time"=166.557µs] [phyTblIDs="[35]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.261 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=18] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.bind_info (\n\t\toriginal_sql TEXT NOT NULL,\n\t\tbind_sql TEXT NOT NULL,\n\t\tdefault_db TEXT NOT NULL,\n\t\tstatus TEXT NOT NULL,\n\t\tcreate_time TIMESTAMP(3) NOT NULL,\n\t\tupdate_time TIMESTAMP(3) NOT NULL,\n\t\tcharset TEXT NOT NULL,\n\t\tcollation TEXT NOT NULL,\n\t\tsource VARCHAR(10) NOT NULL DEFAULT 'unknown',\n\t\tINDEX sql_index(original_sql(700),default_db(68)) COMMENT \"accelerate the speed when add global binding query\",\n\t\tINDEX time_index(update_time) COMMENT \"accelerate the speed when querying with last update time\"\n\t) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;"] [user=]
+[2021/08/29 20:49:53.262 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:38, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:37, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.262 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.262 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:38, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:37, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.262 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.bind_info (\n\t\toriginal_sql TEXT NOT NULL,\n\t\tbind_sql TEXT NOT NULL,\n\t\tdefault_db TEXT NOT NULL,\n\t\tstatus TEXT NOT NULL,\n\t\tcreate_time TIMESTAMP(3) NOT NULL,\n\t\tupdate_time TIMESTAMP(3) NOT NULL,\n\t\tcharset TEXT NOT NULL,\n\t\tcollation TEXT NOT NULL,\n\t\tsource VARCHAR(10) NOT NULL DEFAULT 'unknown',\n\t\tINDEX sql_index(original_sql(700),default_db(68)) COMMENT \"accelerate the speed when add global binding query\",\n\t\tINDEX time_index(update_time) COMMENT \"accelerate the speed when querying with last update time\"\n\t) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;"]
+[2021/08/29 20:49:53.262 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:38, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:37, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.262 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.263 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:38, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:37, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.262 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.264 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=38]
+[2021/08/29 20:49:53.264 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.264 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=18] [neededSchemaVersion=19] ["start time"=242.845µs] [phyTblIDs="[37]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.265 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=19] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_top_n (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tvalue \t\tLONGBLOB,\n\t\tcount \t\tBIGINT(64) UNSIGNED NOT NULL,\n\t\tINDEX tbl(table_id, is_index, hist_id)\n\t);"] [user=]
+[2021/08/29 20:49:53.266 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:40, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:39, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.266 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.266 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:40, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:39, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.266 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_top_n (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tvalue \t\tLONGBLOB,\n\t\tcount \t\tBIGINT(64) UNSIGNED NOT NULL,\n\t\tINDEX tbl(table_id, is_index, hist_id)\n\t);"]
+[2021/08/29 20:49:53.267 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:40, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:39, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.266 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.267 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:40, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:39, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.266 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.268 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=40]
+[2021/08/29 20:49:53.268 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.268 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=19] [neededSchemaVersion=20] ["start time"=165.226µs] [phyTblIDs="[39]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.268 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=20] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.expr_pushdown_blacklist (\n\t\tname \t\tCHAR(100) NOT NULL,\n\t\tstore_type \tCHAR(100) NOT NULL DEFAULT 'tikv,tiflash,tidb',\n\t\treason \t\tVARCHAR(200)\n\t);"] [user=]
+[2021/08/29 20:49:53.269 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:42, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:41, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.268 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.269 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:42, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:41, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.268 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.expr_pushdown_blacklist (\n\t\tname \t\tCHAR(100) NOT NULL,\n\t\tstore_type \tCHAR(100) NOT NULL DEFAULT 'tikv,tiflash,tidb',\n\t\treason \t\tVARCHAR(200)\n\t);"]
+[2021/08/29 20:49:53.269 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:42, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:41, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.268 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.269 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:42, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:41, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.268 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.270 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=42]
+[2021/08/29 20:49:53.270 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.270 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=20] [neededSchemaVersion=21] ["start time"=141.29µs] [phyTblIDs="[41]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.270 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=21] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.opt_rule_blacklist (\n\t\tname \tCHAR(100) NOT NULL\n\t);"] [user=]
+[2021/08/29 20:49:53.270 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:44, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:43, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.27 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.270 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:44, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:43, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.27 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.opt_rule_blacklist (\n\t\tname \tCHAR(100) NOT NULL\n\t);"]
+[2021/08/29 20:49:53.271 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:44, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:43, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.27 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.271 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:44, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:43, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.27 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.271 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=44]
+[2021/08/29 20:49:53.271 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.272 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=21] [neededSchemaVersion=22] ["start time"=142.08µs] [phyTblIDs="[43]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.272 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=22] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_extended (\n\t\tname varchar(32) NOT NULL,\n\t\ttype tinyint(4) NOT NULL,\n\t\ttable_id bigint(64) NOT NULL,\n\t\tcolumn_ids varchar(32) NOT NULL,\n\t\tstats blob DEFAULT NULL,\n\t\tversion bigint(64) unsigned NOT NULL,\n\t\tstatus tinyint(4) NOT NULL,\n\t\tPRIMARY KEY(name, table_id),\n\t\tKEY idx_1 (table_id, status, version),\n\t\tKEY idx_2 (status, version)\n\t);"] [user=]
+[2021/08/29 20:49:53.273 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:46, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:45, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.272 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.273 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:46, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:45, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.272 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_extended (\n\t\tname varchar(32) NOT NULL,\n\t\ttype tinyint(4) NOT NULL,\n\t\ttable_id bigint(64) NOT NULL,\n\t\tcolumn_ids varchar(32) NOT NULL,\n\t\tstats blob DEFAULT NULL,\n\t\tversion bigint(64) unsigned NOT NULL,\n\t\tstatus tinyint(4) NOT NULL,\n\t\tPRIMARY KEY(name, table_id),\n\t\tKEY idx_1 (table_id, status, version),\n\t\tKEY idx_2 (status, version)\n\t);"]
+[2021/08/29 20:49:53.273 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:46, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:45, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.272 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.274 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:46, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:45, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.272 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.274 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=46]
+[2021/08/29 20:49:53.274 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.274 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=22] [neededSchemaVersion=23] ["start time"=166.651µs] [phyTblIDs="[45]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.274 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=23] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.schema_index_usage (\n\t\tTABLE_ID bigint(64),\n\t\tINDEX_ID bigint(21),\n\t\tQUERY_COUNT bigint(64),\n\t\tROWS_SELECTED bigint(64),\n\t\tLAST_USED_AT timestamp,\n\t\tPRIMARY KEY(TABLE_ID, INDEX_ID)\n\t);"] [user=]
+[2021/08/29 20:49:53.275 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:48, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:47, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.275 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.275 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:48, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:47, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.275 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.schema_index_usage (\n\t\tTABLE_ID bigint(64),\n\t\tINDEX_ID bigint(21),\n\t\tQUERY_COUNT bigint(64),\n\t\tROWS_SELECTED bigint(64),\n\t\tLAST_USED_AT timestamp,\n\t\tPRIMARY KEY(TABLE_ID, INDEX_ID)\n\t);"]
+[2021/08/29 20:49:53.275 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:48, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:47, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.275 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.276 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:48, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:47, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.275 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.276 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=48]
+[2021/08/29 20:49:53.276 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.276 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=23] [neededSchemaVersion=24] ["start time"=146.599µs] [phyTblIDs="[47]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.276 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=24] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_fm_sketch (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tvalue \t\tLONGBLOB,\n\t\tINDEX tbl(table_id, is_index, hist_id)\n\t);"] [user=]
+[2021/08/29 20:49:53.277 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:50, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:49, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.276 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.277 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:50, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:49, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.276 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_fm_sketch (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tvalue \t\tLONGBLOB,\n\t\tINDEX tbl(table_id, is_index, hist_id)\n\t);"]
+[2021/08/29 20:49:53.277 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:50, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:49, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.276 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.278 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:50, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:49, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.276 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.278 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=50]
+[2021/08/29 20:49:53.278 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.278 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=24] [neededSchemaVersion=25] ["start time"=138.332µs] [phyTblIDs="[49]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.278 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=25] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.global_grants (\n\t\tUSER char(32) NOT NULL DEFAULT '',\n\t\tHOST char(255) NOT NULL DEFAULT '',\n\t\tPRIV char(32) NOT NULL DEFAULT '',\n\t\tWITH_GRANT_OPTION enum('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (USER,HOST,PRIV)\n\t);"] [user=]
+[2021/08/29 20:49:53.279 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:52, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:51, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.278 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.279 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:52, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:51, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.278 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.global_grants (\n\t\tUSER char(32) NOT NULL DEFAULT '',\n\t\tHOST char(255) NOT NULL DEFAULT '',\n\t\tPRIV char(32) NOT NULL DEFAULT '',\n\t\tWITH_GRANT_OPTION enum('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (USER,HOST,PRIV)\n\t);"]
+[2021/08/29 20:49:53.279 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:52, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:51, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.278 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.280 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:52, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:51, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.278 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.280 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=52]
+[2021/08/29 20:49:53.280 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.280 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=25] [neededSchemaVersion=26] ["start time"=134.575µs] [phyTblIDs="[51]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.280 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=26] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.capture_plan_baselines_blacklist (\n\t\tid bigint(64) auto_increment,\n\t\tfilter_type varchar(32) NOT NULL COMMENT \"type of the filter, only db, table and frequency supported now\",\n\t\tfilter_value varchar(32) NOT NULL,\n\t\tkey idx(filter_type),\n\t\tprimary key(id)\n\t);"] [user=]
+[2021/08/29 20:49:53.281 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:54, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:53, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.28 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.281 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:54, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:53, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.28 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.capture_plan_baselines_blacklist (\n\t\tid bigint(64) auto_increment,\n\t\tfilter_type varchar(32) NOT NULL COMMENT \"type of the filter, only db, table and frequency supported now\",\n\t\tfilter_value varchar(32) NOT NULL,\n\t\tkey idx(filter_type),\n\t\tprimary key(id)\n\t);"]
+[2021/08/29 20:49:53.281 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:54, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:53, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.28 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.282 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:54, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:53, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.28 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.282 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=54]
+[2021/08/29 20:49:53.282 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.282 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=26] [neededSchemaVersion=27] ["start time"=272.919µs] [phyTblIDs="[53]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.294 +05:30] [INFO] [bootstrap.go:375] ["bootstrap successful"] ["take time"=83.369935ms]
+[2021/08/29 20:49:53.294 +05:30] [INFO] [ddl_worker.go:149] ["[ddl] DDL worker closed"] [worker="worker 1, tp general"] ["take time"=221ns]
+[2021/08/29 20:49:53.294 +05:30] [INFO] [ddl_worker.go:149] ["[ddl] DDL worker closed"] [worker="worker 2, tp add index"] ["take time"=88ns]
+[2021/08/29 20:49:53.294 +05:30] [INFO] [delete_range.go:132] ["[ddl] closing delRange"]
+[2021/08/29 20:49:53.295 +05:30] [INFO] [session_pool.go:86] ["[ddl] closing sessionPool"]
+[2021/08/29 20:49:53.295 +05:30] [INFO] [ddl.go:411] ["[ddl] DDL closed"] [ID=ff33c268-07b4-4697-bfeb-c17e7d3294a2] ["take time"=104.461µs]
+[2021/08/29 20:49:53.295 +05:30] [INFO] [ddl.go:324] ["[ddl] stop DDL"] [ID=ff33c268-07b4-4697-bfeb-c17e7d3294a2]
+[2021/08/29 20:49:53.295 +05:30] [INFO] [domain.go:421] ["topNSlowQueryLoop exited."]
+[2021/08/29 20:49:53.295 +05:30] [INFO] [domain.go:478] ["topologySyncerKeeper exited."]
+[2021/08/29 20:49:53.295 +05:30] [INFO] [domain.go:630] ["domain closed"] ["take time"=255.69µs]
+[2021/08/29 20:49:53.295 +05:30] [INFO] [tidb.go:71] ["new domain"] [store=6b0c4dbe-2f07-40a5-9ef7-dfa0862e244b] ["ddl lease"=0s] ["stats lease"=-1ns] ["index usage sync lease"=0s]
+[2021/08/29 20:49:53.295 +05:30] [INFO] [domain.go:450] ["infoSyncerKeeper exited."]
+[2021/08/29 20:49:53.295 +05:30] [INFO] [ddl.go:343] ["[ddl] start DDL"] [ID=ba81702e-0d83-4696-9ba5-d81f8d53a3cd] [runWorker=true]
+[2021/08/29 20:49:53.295 +05:30] [INFO] [ddl.go:332] ["[ddl] start delRangeManager OK"] ["is a emulator"=true]
+[2021/08/29 20:49:53.295 +05:30] [INFO] [ddl_worker.go:155] ["[ddl] start DDL worker"] [worker="worker 3, tp general"]
+[2021/08/29 20:49:53.295 +05:30] [INFO] [ddl_worker.go:155] ["[ddl] start DDL worker"] [worker="worker 4, tp add index"]
+[2021/08/29 20:49:53.295 +05:30] [INFO] [delete_range.go:142] ["[ddl] start delRange emulator"]
+[2021/08/29 20:49:53.298 +05:30] [INFO] [domain.go:156] ["full load InfoSchema success"] [currentSchemaVersion=0] [neededSchemaVersion=27] ["start time"=3.282085ms]
+[2021/08/29 20:49:53.298 +05:30] [INFO] [domain.go:371] ["full load and reset schema validator"]
+[2021/08/29 20:49:53.301 +05:30] [WARN] [sysvar_cache.go:55] ["sysvar cache is empty, triggering rebuild"]
+[2021/08/29 20:49:53.309 +05:30] [INFO] [telemetry.go:174] ["Telemetry configuration"] [endpoint=https://telemetry.pingcap.com/api/v1/tidb/report] [report_interval=6h0m0s] [enabled=true]
+[2021/08/29 20:49:53.309 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=27] [cur_db=] [sql="create database if not exists test"] [user=]
+[2021/08/29 20:49:53.309 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=27] [cur_db=test] [sql="create database if not exists test;"] [user=]
+[2021/08/29 20:49:53.309 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=27] [cur_db=test] [sql="create database if not exists test1;"] [user=]
+[2021/08/29 20:49:53.310 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:56, Type:create schema, State:none, SchemaState:queueing, SchemaID:55, TableID:0, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.31 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.310 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:56, Type:create schema, State:none, SchemaState:queueing, SchemaID:55, TableID:0, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.31 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="create database if not exists test1;"]
+[2021/08/29 20:49:53.310 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:56, Type:create schema, State:none, SchemaState:queueing, SchemaID:55, TableID:0, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.31 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.311 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 3, tp general"] [job="ID:56, Type:create schema, State:synced, SchemaState:public, SchemaID:55, TableID:0, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.31 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.311 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=56]
+[2021/08/29 20:49:53.311 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.311 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=27] [neededSchemaVersion=28] ["start time"=74.156µs] [phyTblIDs="[]"] [actionTypes="[]"]
+[2021/08/29 20:49:53.311 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=28] [cur_db=test] [sql="CREATE TABLE test(id INT NOT NULL DEFAULT 1, name varchar(255), PRIMARY KEY(id));"] [user=]
+[2021/08/29 20:49:53.312 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:58, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:57, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.312 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.312 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:58, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:57, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.312 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE test(id INT NOT NULL DEFAULT 1, name varchar(255), PRIMARY KEY(id));"]
+[2021/08/29 20:49:53.312 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:58, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:57, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.312 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.313 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 3, tp general"] [job="ID:58, Type:create table, State:synced, SchemaState:public, SchemaID:1, TableID:57, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.312 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.314 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=58]
+[2021/08/29 20:49:53.314 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.314 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=28] [neededSchemaVersion=29] ["start time"=189.148µs] [phyTblIDs="[57]"] [actionTypes="[8]"]
+[2021/08/29 20:49:53.314 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=29] [cur_db=test] [sql="create database if not exists mysql;"] [user=]
+[2021/08/29 20:49:53.314 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=29] [cur_db=test] [sql="CREATE TABLE IF NOT EXISTS mysql.user (\n\t\tHost\t\t\t\t\tCHAR(64),\n\t\tUser\t\t\t\t\tCHAR(32),\n\t\tauthentication_string\tTEXT,\n\t\tplugin\t\t\t\t\tCHAR(64),\n\t\tSelect_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tInsert_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tUpdate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDelete_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tProcess_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tGrant_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReferences_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_db_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tSuper_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_tmp_table_priv\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tLock_tables_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tExecute_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_view_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_view_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tIndex_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_user_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tEvent_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tTrigger_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_role_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_role_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAccount_locked\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShutdown_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReload_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tFILE_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tConfig_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_Tablespace_Priv  ENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tRepl_slave_priv\t    \tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tRepl_client_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (Host, User));"] [user=]
+[2021/08/29 20:49:53.315 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=29] [cur_db=test] [sql="CREATE TABLE IF NOT EXISTS mysql.db (\n\t\tHost\t\t\t\t\tCHAR(60),\n\t\tDB\t\t\t\t\t\tCHAR(64),\n\t\tUser\t\t\t\t\tCHAR(32),\n\t\tSelect_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tInsert_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tUpdate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDelete_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tGrant_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReferences_priv \t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tIndex_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_tmp_table_priv\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tLock_tables_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_view_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_view_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tExecute_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tEvent_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tTrigger_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (Host, DB, User));"] [user=]
+[2021/08/29 20:49:53.315 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=29] [cur_db=test] [sql="CREATE TABLE IF NOT EXISTS mysql.tables_priv (\n\t\tHost\t\tCHAR(60),\n\t\tDB\t\t\tCHAR(64),\n\t\tUser\t\tCHAR(32),\n\t\tTable_name\tCHAR(64),\n\t\tGrantor\t\tCHAR(77),\n\t\tTimestamp\tTIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n\t\tTable_priv\tSET('Select','Insert','Update','Delete','Create','Drop','Grant','Index','Alter','Create View','Show View','Trigger','References'),\n\t\tColumn_priv\tSET('Select','Insert','Update'),\n\t\tPRIMARY KEY (Host, DB, User, Table_name));"] [user=]
+[2021/08/29 20:49:53.315 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=29] [cur_db=test] [sql="CREATE TABLE IF NOT EXISTS mysql.columns_priv(\n\t\tHost\t\tCHAR(60),\n\t\tDB\t\t\tCHAR(64),\n\t\tUser\t\tCHAR(32),\n\t\tTable_name\tCHAR(64),\n\t\tColumn_name\tCHAR(64),\n\t\tTimestamp\tTIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n\t\tColumn_priv\tSET('Select','Insert','Update'),\n\t\tPRIMARY KEY (Host, DB, User, Table_name, Column_name));"] [user=]
+[2021/08/29 20:49:53.317 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=29] [cur_db=] [sql="DROP USER IF EXISTS joe, engineering, notgranted, otherrole, delete_stuff_privilege"] [user=]
+[2021/08/29 20:49:53.338 +05:30] [INFO] [session.go:2828] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=29] ["secure text"="create user joe@%"] [user=]
+[2021/08/29 20:49:53.343 +05:30] [INFO] [session.go:2828] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=29] ["secure text"="create user engineering@%"] [user=]
+[2021/08/29 20:49:53.347 +05:30] [INFO] [session.go:2828] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=29] ["secure text"="create user admins@%"] [user=]
+[2021/08/29 20:49:53.351 +05:30] [INFO] [session.go:2828] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=29] ["secure text"="create user notgranted@%"] [user=]
+[2021/08/29 20:49:53.355 +05:30] [INFO] [session.go:2828] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=29] ["secure text"="create user otherrole@%"] [user=]
+[2021/08/29 20:49:53.359 +05:30] [INFO] [session.go:2828] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=29] ["secure text"="GRANT INSERT ON test.* TO engineering;"] [user=]
+[2021/08/29 20:49:53.365 +05:30] [INFO] [session.go:2828] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=29] ["secure text"="GRANT DELETE ON test.* TO admins;"] [user=]
+[2021/08/29 20:49:53.371 +05:30] [INFO] [session.go:2828] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=29] ["secure text"="GRANT SELECT on test.* to joe;"] [user=]
+[2021/08/29 20:49:53.397 +05:30] [INFO] [session.go:2828] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=29] ["secure text"="GRANT UPDATE ON role.* TO otherrole;"] [user=]
+[2021/08/29 20:49:53.402 +05:30] [INFO] [session.go:2828] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=29] ["secure text"="GRANT SELECT ON mysql.user TO otherrole;"] [user=]
+[2021/08/29 20:49:53.408 +05:30] [INFO] [session.go:2828] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=29] ["secure text"="create user delete_stuff_privilege@%"] [user=]
+[2021/08/29 20:49:53.414 +05:30] [INFO] [session.go:2828] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=29] ["secure text"="GRANT DELETE ON mysql.user TO delete_stuff_privilege;"] [user=]
+[2021/08/29 20:49:53.425 +05:30] [ERROR] [privileges.go:583] ["find role failed"] [role=`notgranted`@`%`] [stack="github.com/pingcap/tidb/privilege/privileges.(*UserPrivileges).FindEdge\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/privilege/privileges/privileges.go:583\ngithub.com/pingcap/tidb/executor.(*ShowExec).fetchShowGrants\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/show.go:1445\ngithub.com/pingcap/tidb/executor.(*ShowExec).fetchAll\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/show.go:155\ngithub.com/pingcap/tidb/executor.(*ShowExec).Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/show.go:102\ngithub.com/pingcap/tidb/executor.Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286\ngithub.com/pingcap/tidb/executor.(*recordSet).Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:146\ngithub.com/pingcap/tidb/session.GetRows4Test\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/tidb.go:308\ngithub.com/pingcap/tidb/testkit.(*TestKit).QueryToErr\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:87\ngithub.com/pingcap/tidb/privilege/privileges_test.TestShowGrantsForCurrentUserUsingRole\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/privilege/privileges/privileges_test.go:2282\ntesting.tRunner\n\t/usr/local/Cellar/go/1.17/libexec/src/testing/testing.go:1259"]
+[2021/08/29 20:49:53.425 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=29] [cur_db=] [sql="create database if not exists test"] [user=]
+[2021/08/29 20:49:53.425 +05:30] [INFO] [session.go:2834] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=29] [cur_db=test] [sql="drop database if exists test;"] [user=]
+[2021/08/29 20:49:53.426 +05:30] [INFO] [ddl_worker.go:319] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:59, Type:drop schema, State:none, SchemaState:queueing, SchemaID:1, TableID:0, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.425 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/08/29 20:49:53.426 +05:30] [INFO] [ddl.go:547] ["[ddl] start DDL job"] [job="ID:59, Type:drop schema, State:none, SchemaState:queueing, SchemaID:1, TableID:0, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.425 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="drop database if exists test;"]
+[2021/08/29 20:49:53.426 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:59, Type:drop schema, State:none, SchemaState:queueing, SchemaID:1, TableID:0, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.425 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.426 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:59, Type:drop schema, State:running, SchemaState:write only, SchemaID:1, TableID:0, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.425 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.427 +05:30] [INFO] [ddl_worker.go:728] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:59, Type:drop schema, State:running, SchemaState:delete only, SchemaID:1, TableID:0, RowCount:0, ArgLen:0, start time: 2021-08-29 20:49:53.425 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.427 +05:30] [INFO] [delete_range.go:441] ["[ddl] batch insert into delete-range table"] [jobID=59] [elementIDs="[57]"]
+[2021/08/29 20:49:53.428 +05:30] [INFO] [delete_range.go:107] ["[ddl] add job into delete-range table"] [jobID=59] [jobType="drop schema"]
+[2021/08/29 20:49:53.428 +05:30] [INFO] [ddl_worker.go:424] ["[ddl] finish DDL job"] [worker="worker 3, tp general"] [job="ID:59, Type:drop schema, State:synced, SchemaState:queueing, SchemaID:1, TableID:0, RowCount:0, ArgLen:1, start time: 2021-08-29 20:49:53.425 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/08/29 20:49:53.428 +05:30] [INFO] [ddl.go:602] ["[ddl] DDL job is finished"] [jobID=59]
+[2021/08/29 20:49:53.428 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/08/29 20:49:53.429 +05:30] [INFO] [domain.go:130] ["diff load InfoSchema success"] [currentSchemaVersion=29] [neededSchemaVersion=32] ["start time"=97.82µs] [phyTblIDs="[57]"] [actionTypes="[4]"]
+[2021/08/29 20:49:53.429 +05:30] [INFO] [ddl_worker.go:149] ["[ddl] DDL worker closed"] [worker="worker 3, tp general"] ["take time"=3.668µs]
+[2021/08/29 20:49:53.429 +05:30] [INFO] [ddl_worker.go:149] ["[ddl] DDL worker closed"] [worker="worker 4, tp add index"] ["take time"=142ns]
+[2021/08/29 20:49:53.429 +05:30] [INFO] [delete_range.go:132] ["[ddl] closing delRange"]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [delete_range.go:237] ["[ddl] delRange emulator complete task"] [jobID=59] [elementID=57]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [session_pool.go:86] ["[ddl] closing sessionPool"]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [ddl.go:411] ["[ddl] DDL closed"] [ID=ba81702e-0d83-4696-9ba5-d81f8d53a3cd] ["take time"=1.146712ms]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [ddl.go:324] ["[ddl] stop DDL"] [ID=ba81702e-0d83-4696-9ba5-d81f8d53a3cd]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [domain.go:421] ["topNSlowQueryLoop exited."]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [domain.go:878] ["loadPrivilegeInLoop exited."]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [domain.go:1046] ["handleEvolvePlanTasksLoop exited."]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [domain.go:1109] ["TelemetryRotateSubWindowLoop exited."]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [domain.go:1079] ["TelemetryReportLoop exited."]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [domain.go:927] ["LoadSysVarCacheLoop exited."]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [domain.go:450] ["infoSyncerKeeper exited."]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [domain.go:478] ["topologySyncerKeeper exited."]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [domain.go:1005] ["globalBindHandleWorkerLoop exited."]
+[2021/08/29 20:49:53.430 +05:30] [INFO] [domain.go:630] ["domain closed"] ["take time"=1.216309ms]
+[2021/08/29 20:49:53.450 +05:30] [INFO] [db.go:567] ["Closing database"]
+[2021/08/29 20:49:53.450 +05:30] [INFO] [db.go:592] ["Memtable flushed"]
+[2021/08/29 20:49:53.450 +05:30] [INFO] [db.go:596] ["Compaction finished"]
+[2021/08/29 20:49:53.450 +05:30] [INFO] [db.go:615] ["BlobManager finished"]
+[2021/08/29 20:49:53.450 +05:30] [INFO] [db.go:619] ["ResourceManager finished"]
+[2021/08/29 20:49:53.450 +05:30] [INFO] [db.go:625] ["Waiting for closer"]
+--- PASS: TestShowGrantsForCurrentUserUsingRole (0.33s)
+PASS
+ok  	github.com/pingcap/tidb/privilege/privileges	1.082s
+privileges $ cd ..
+privilege $ cd ..
+tidb $ make failpoint-disable
+tidb $
+```
+
+Previously the error from the log was -
+
+```bash
+=== CONT  TestShowGrantsForCurrentUserUsingRole
+    result.go:49:
+        	Error Trace:	result.go:49
+        	            				privileges_test.go:2286
+        	Error:      	Not equal:
+        	            	expected: "[GRANT USAGE ON *.* TO 'joe'@'%']\n[GRANT UPDATE ON role.* TO 'joe'@'%']\n[GRANT SELECT ON test.* TO 'joe'@'%']\n[GRANT DELETE ON mysql.user TO 'joe'@'%']\n[GRANT 'admins'@'%', 'engineering'@'%', 'otherrole'@'%' TO 'joe'@'%']\n"
+        	            	actual  : "[GRANT USAGE ON *.* TO 'joe'@'%']\n[GRANT SELECT ON test.* TO 'joe'@'%']\n[GRANT UPDATE ON role.* TO 'joe'@'%']\n[GRANT DELETE ON mysql.user TO 'joe'@'%']\n[GRANT 'admins'@'%', 'engineering'@'%', 'otherrole'@'%' TO 'joe'@'%']\n"
+
+        	            	Diff:
+        	            	--- Expected
+        	            	+++ Actual
+        	            	@@ -1,4 +1,4 @@
+        	            	 [GRANT USAGE ON *.* TO 'joe'@'%']
+        	            	+[GRANT SELECT ON test.* TO 'joe'@'%']
+        	            	 [GRANT UPDATE ON role.* TO 'joe'@'%']
+        	            	-[GRANT SELECT ON test.* TO 'joe'@'%']
+        	            	 [GRANT DELETE ON mysql.user TO 'joe'@'%']
+        	Test:       	TestShowGrantsForCurrentUserUsingRole
+        	Messages:   	sql:SHOW GRANTS FOR current_user() USING otherrole;, args:[]
+```
+
+Oops. I should have checked the error logs before hand. But it was too much and I guess I was sleepy, lol. Anyways, if it was a real failure then it would have failed when I run the test again, but it didn't. It's a flaky failure. The test passed now but failed before. Looking at the above failure log, it's clear that the expected and actual have only a small difference - the order is different. Looks like it's a list of rows for the result for a query. Test code -
+
+```go
+	tk.MustQuery("SHOW GRANTS FOR current_user() USING otherrole;").Check(testkit.Rows(
+		"GRANT USAGE ON *.* TO 'joe'@'%'",
+		"GRANT UPDATE ON role.* TO 'joe'@'%'",
+		"GRANT SELECT ON test.* TO 'joe'@'%'",
+		"GRANT DELETE ON mysql.user TO 'joe'@'%'",
+		"GRANT 'admins'@'%', 'engineering'@'%', 'otherrole'@'%' TO 'joe'@'%'",
+	))
+```
+
+I'll raise issue about this. I guess the order shouldn't matter? If it does, then there's a bug. But it doesn't make sense to force order on this - a list of grants / list of access or permissions for users
+
+I'll file an issue for flaky test
+
+https://github.com/pingcap/tidb/issues?q=is%3Aissue+is%3Aopen+TestShowGrantsForCurrentUserUsingRole
+
+as there are no current issues, hmm
+
+
