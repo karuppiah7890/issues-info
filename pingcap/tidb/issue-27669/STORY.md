@@ -12030,3 +12030,70 @@ $ go test -v github.com/pingcap/tidb/ddl/failtest
 ```
 
 I think just `go test -v` or `go test -v .` should do? For current package? If I'm in the directory of the package that is. For all packages I would have to do `go test -v ./...` , yeah
+
+---
+
+I can see 6 getting failed consistently
+
+```log
+FAIL: fail_db_test.go:399: testFailDBSuite.TestAddIndexWorkerNum
+
+fail_db_test.go:468:
+    // TODO: c, Assert and Greater seem to come from "github.com/pingcap/check"
+    c.Assert(checkNum, Greater, 5)
+... compare_one int = 0
+... compare_two int = 5
+```
+
+```log
+FAIL: fail_db_test.go:284: testFailDBSuite.TestFailSchemaSyncer
+
+fail_db_test.go:314:
+    // TODO: c, Assert and isFalse seem to come from "github.com/pingcap/check"
+    c.Assert(s.dom.SchemaValidator.IsStarted(), IsFalse)
+... obtained bool = true
+
+```
+
+```log
+FAIL: fail_db_test.go:337: testFailDBSuite.TestGenGlobalIDFail
+
+fail_db_test.go:375:
+    // TODO: c, Assert and NotNil and Commentf seem to come from "github.com/pingcap/check"
+    c.Assert(err, NotNil, Commentf("the %dth test case '%s' fail", idx, test.sql))
+... value = nil
+... the 0th test case 'create table t1(a bigint PRIMARY KEY, b int)' fail
+```
+
+```log
+FAIL: fail_db_test.go:116: testFailDBSuite.TestHalfwayCancelOperations
+
+fail_db_test.go:132:
+    // TODO: c, Assert and isNil seem to come from "github.com/pingcap/check"
+    c.Assert(err, NotNil)
+... value = nil
+```
+
+```log
+FAIL: fail_db_test.go:627: testFailDBSuite.TestPartitionAddPanic
+
+fail_db_test.go:641:
+    // TODO: c, Assert and NotNil seem to come from "github.com/pingcap/check"
+    c.Assert(err, NotNil)
+... value = nil
+```
+
+```log
+FAIL: fail_db_test.go:477: testFailDBSuite.TestRunDDLJobPanic
+
+fail_db_test.go:487:
+    // TODO: c, Assert and NoNil seem to come from "github.com/pingcap/check"
+    c.Assert(err, NotNil)
+... value = nil
+```
+
+---
+
+Hmm, I tried again and it passed. Maybe because I messed up while running the tests? Maybe. Specifically the failpoint stuff. I disabled it and enabled it again. Also, I got the latest code from master and updated the branch I have by rebasing with master. Hmm
+
+Gotta learn the failpoint stuff!
