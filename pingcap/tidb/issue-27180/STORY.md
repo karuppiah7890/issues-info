@@ -2076,4 +2076,331 @@ https://github.com/pingcap/tidb/issues?q=is%3Aissue+is%3Aopen+TestShowGrantsForC
 
 as there are no current issues, hmm
 
+---
+
+```bash
+tidb $ rg '/check' ddl
+ddl/attributes_sql_test.go
+18:	. "github.com/pingcap/check"
+
+ddl/placement/bundle_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/placement/constraint_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/placement/rule_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/placement/common_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/placement/constraints_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/column_type_change_test.go
+26:	. "github.com/pingcap/check"
+
+ddl/stat_test.go
+20:	. "github.com/pingcap/check"
+86:	c.Assert(failpoint.Enable("github.com/pingcap/tidb/ddl/checkBackfillWorkerNum", `return(true)`), IsNil)
+88:		c.Assert(failpoint.Disable("github.com/pingcap/tidb/ddl/checkBackfillWorkerNum"), IsNil)
+
+ddl/db_change_test.go
+26:	. "github.com/pingcap/check"
+
+ddl/rollingback_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/ddl_test.go
+23:	. "github.com/pingcap/check"
+
+ddl/index_change_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/column_change_test.go
+24:	. "github.com/pingcap/check"
+
+ddl/testutil/testutil.go
+20:	"github.com/pingcap/check"
+
+ddl/restart_test.go
+23:	. "github.com/pingcap/check"
+
+ddl/reorg_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/db_partition_test.go
+26:	. "github.com/pingcap/check"
+
+ddl/options_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/column_test.go
+23:	. "github.com/pingcap/check"
+
+ddl/placement_sql_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/ddl_worker_test.go
+22:	. "github.com/pingcap/check"
+
+ddl/foreign_key_test.go
+22:	. "github.com/pingcap/check"
+
+ddl/callback_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/fail_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/ddl_algorithm_test.go
+18:	. "github.com/pingcap/check"
+
+ddl/failtest/fail_db_test.go
+26:	. "github.com/pingcap/check"
+393:		c.Assert(failpoint.Enable("github.com/pingcap/tidb/ddl/checkBackfillWorkerNum", `return(true)`), IsNil)
+395:			c.Assert(failpoint.Disable("github.com/pingcap/tidb/ddl/checkBackfillWorkerNum"), IsNil)
+
+ddl/db_integration_test.go
+27:	. "github.com/pingcap/check"
+
+ddl/partition_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/db_test.go
+30:	. "github.com/pingcap/check"
+
+ddl/table_split_test.go
+22:	. "github.com/pingcap/check"
+
+ddl/label/attributes_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/serial_test.go
+27:	. "github.com/pingcap/check"
+1708:	c.Assert(failpoint.Enable("github.com/pingcap/tidb/ddl/checkOwnerCheckAllVersionsWaitTime", `return(true)`), IsNil)
+1710:		c.Assert(failpoint.Disable("github.com/pingcap/tidb/ddl/checkOwnerCheckAllVersionsWaitTime"), IsNil)
+
+ddl/label/rule_test.go
+18:	. "github.com/pingcap/check"
+
+ddl/sequence_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/schema_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/util/syncer_test.go
+25:	. "github.com/pingcap/check"
+
+ddl/table_test.go
+22:	. "github.com/pingcap/check"
+tidb $
+```
+
+```bash
+tidb $ rg 'github.com/pingcap/check' ddl
+ddl/attributes_sql_test.go
+18:	. "github.com/pingcap/check"
+
+ddl/column_type_change_test.go
+26:	. "github.com/pingcap/check"
+
+ddl/placement/bundle_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/placement/rule_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/placement/constraint_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/placement/common_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/stat_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/placement/constraints_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/ddl_test.go
+23:	. "github.com/pingcap/check"
+
+ddl/rollingback_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/db_change_test.go
+26:	. "github.com/pingcap/check"
+
+ddl/testutil/testutil.go
+20:	"github.com/pingcap/check"
+
+ddl/column_change_test.go
+24:	. "github.com/pingcap/check"
+
+ddl/index_change_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/options_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/restart_test.go
+23:	. "github.com/pingcap/check"
+
+ddl/db_partition_test.go
+26:	. "github.com/pingcap/check"
+
+ddl/reorg_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/placement_sql_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/column_test.go
+23:	. "github.com/pingcap/check"
+
+ddl/ddl_worker_test.go
+22:	. "github.com/pingcap/check"
+
+ddl/callback_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/foreign_key_test.go
+22:	. "github.com/pingcap/check"
+
+ddl/ddl_algorithm_test.go
+18:	. "github.com/pingcap/check"
+
+ddl/fail_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/serial_test.go
+27:	. "github.com/pingcap/check"
+
+ddl/db_integration_test.go
+27:	. "github.com/pingcap/check"
+
+ddl/failtest/fail_db_test.go
+26:	. "github.com/pingcap/check"
+
+ddl/table_split_test.go
+22:	. "github.com/pingcap/check"
+
+ddl/partition_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/db_test.go
+30:	. "github.com/pingcap/check"
+
+ddl/label/rule_test.go
+18:	. "github.com/pingcap/check"
+
+ddl/label/attributes_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/schema_test.go
+21:	. "github.com/pingcap/check"
+
+ddl/sequence_test.go
+20:	. "github.com/pingcap/check"
+
+ddl/util/syncer_test.go
+25:	. "github.com/pingcap/check"
+
+ddl/table_test.go
+22:	. "github.com/pingcap/check"
+tidb $
+
+tidb $ rg 'github.com/pingcap/check' ddl -l
+ddl/attributes_sql_test.go
+ddl/placement/bundle_test.go
+ddl/placement/rule_test.go
+ddl/placement/constraint_test.go
+ddl/placement/common_test.go
+ddl/placement/constraints_test.go
+ddl/testutil/testutil.go
+ddl/column_type_change_test.go
+ddl/stat_test.go
+ddl/db_change_test.go
+ddl/ddl_test.go
+ddl/index_change_test.go
+ddl/rollingback_test.go
+ddl/column_change_test.go
+ddl/db_partition_test.go
+ddl/restart_test.go
+ddl/options_test.go
+ddl/placement_sql_test.go
+ddl/ddl_worker_test.go
+ddl/reorg_test.go
+ddl/foreign_key_test.go
+ddl/column_test.go
+ddl/callback_test.go
+ddl/fail_test.go
+ddl/ddl_algorithm_test.go
+ddl/db_integration_test.go
+ddl/db_test.go
+ddl/serial_test.go
+ddl/failtest/fail_db_test.go
+ddl/table_split_test.go
+ddl/partition_test.go
+ddl/label/attributes_test.go
+ddl/label/rule_test.go
+ddl/sequence_test.go
+ddl/schema_test.go
+ddl/table_test.go
+ddl/util/syncer_test.go
+tidb $
+```
+
+
+```markdown
+- [ ] `ddl/attributes_sql_test.go`
+- [ ] `ddl/callback_test.go`
+- [ ] `ddl/column_change_test.go`
+- [ ] `ddl/column_test.go`
+- [ ] `ddl/column_type_change_test.go`
+- [ ] `ddl/db_change_test.go`
+- [ ] `ddl/db_integration_test.go`
+- [ ] `ddl/db_partition_test.go`
+- [ ] `ddl/db_test.go`
+- [ ] `ddl/ddl_algorithm_test.go`
+- [ ] `ddl/ddl_test.go`
+- [ ] `ddl/ddl_worker_test.go`
+- [ ] `ddl/fail_test.go`
+- [ ] `ddl/failtest/fail_db_test.go`
+- [ ] `ddl/foreign_key_test.go`
+- [ ] `ddl/index_change_test.go`
+- [ ] `ddl/label/attributes_test.go`
+- [ ] `ddl/label/rule_test.go`
+- [ ] `ddl/options_test.go`
+- [ ] `ddl/partition_test.go`
+- [ ] `ddl/placement_sql_test.go`
+- [ ] `ddl/placement/bundle_test.go`
+- [ ] `ddl/placement/common_test.go`
+- [ ] `ddl/placement/constraint_test.go`
+- [ ] `ddl/placement/constraints_test.go`
+- [ ] `ddl/placement/rule_test.go`
+- [ ] `ddl/reorg_test.go`
+- [ ] `ddl/restart_test.go`
+- [ ] `ddl/rollingback_test.go`
+- [ ] `ddl/schema_test.go`
+- [ ] `ddl/sequence_test.go`
+- [ ] `ddl/serial_test.go`
+- [ ] `ddl/stat_test.go`
+- [ ] `ddl/table_split_test.go`
+- [ ] `ddl/table_test.go`
+- [ ] `ddl/testutil/testutil.go`
+- [ ] `ddl/util/syncer_test.go`
+```
+
+```markdown
+- [ ] `ddl`
+- [ ] `ddl/failtest`
+- [ ] `ddl/label`
+- [ ] `ddl/placement`
+- [ ] `ddl/testutil`
+- [ ] `ddl/util`
+```
 
