@@ -12097,3 +12097,36 @@ fail_db_test.go:487:
 Hmm, I tried again and it passed. Maybe because I messed up while running the tests? Maybe. Specifically the failpoint stuff. I disabled it and enabled it again. Also, I got the latest code from master and updated the branch I have by rebasing with master. Hmm
 
 Gotta learn the failpoint stuff!
+
+---
+
+Okay, so, I was reading the code. The maint test function is `TestT` and it seems to do some `BeforeTest` and `AfterTestT` stuff which seem to do nothing. Oh wait. It does do something. My bad. So, I was looking at `util/testleak/fake.go`. I was wondering why there's a fake and why my VS Code took me to that implementation. Looks like there's a real implementation in `util/testleak/leaktest.go` and it is enabled only when build tag `leak` is set. Probably that's why VS Code didn't take me to the other implementation as there's no build tags in my settings with `leak` in it. Hmm
+
+After the `BeforeTest`, it calls `TestingT(t)` which is supposed to run all test suites registered with the Suite function
+
+```go
+// TestingT runs all test suites registered with the Suite function,
+// printing results to stdout, and reporting any failures back to
+// the "testing" package.
+```
+
+I can see one `SerialSuites` and it seems to register a struct which has lot of "test methods" attached to it. So I'm guessing all those methods are tests and the idea is to run each test in sequence / in serial instead of parallel?
+
+```go
+// SerialSuites registers the given value as a test suite to be run serially. Any methods
+// starting with the Test prefix in the given value will be considered as
+// a test method.
+```
+
+Yup! That's what it is!
+
+There's also a `SetUpSuite` and `TearDownSuite` method attached to the struct, hmm
+
+My current idea is this
+- Run only `ddl/failtest` package tests first till I finish the migration
+- Run only one test first and migrate it. Rinse and repeat
+- Check other PRs about what they do or are doing or have done
+- Understand each test's intention through the code
+- Understand the test framework setup which is done using `check` and how to do the same with `testify` and golang `testing` package - all the `BeforeSuite`, setup, tear down etc
+- Finally after migration run all the `ddl/failtest` package tests to see if they pass
+- And then run all tests across all packages in TiDB once the migration is done to see if they all pass, ideally it should pass, assuming `ddl/failtest` package tests are standalone and their code or changes cannot affect other package tests
