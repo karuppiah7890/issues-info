@@ -1703,3 +1703,118 @@ tidb $
 ```
 
 I gotta get help with that to understand why it takes time etc
+
+Saw an error in CI pipeline, hmm
+
+It checks if a test suite is enabled or not, interesting
+
+```bash
+tidb $ make check
+gofmt (simplify)
+br/pkg/lightning/web/res.go
+br/pkg/lightning/web/res_vfsdata.go
+br/pkg/lightning/sigusr1_other.go
+br/pkg/lightning/sigusr1_unix.go
+br/pkg/lightning/backend/local/local_freebsd.go
+br/pkg/lightning/backend/local/local_unix.go
+br/pkg/lightning/backend/local/local_unix_generic.go
+br/pkg/lightning/backend/local/local_windows.go
+br/pkg/lightning/common/storage_windows.go
+br/pkg/lightning/common/storage_unix.go
+br/pkg/lightning/manual/manual_nocgo.go
+br/pkg/lightning/lightning_test.go
+br/pkg/storage/local_unix.go
+br/pkg/storage/local_windows.go
+br/pkg/utils/dyn_pprof_other.go
+br/pkg/utils/dyn_pprof_unix.go
+ddl/restart_test.go
+expression/generator/control_vec.go
+expression/generator/other_vec.go
+expression/generator/time_vec.go
+expression/generator/string_vec.go
+expression/generator/compare_vec.go
+server/tidb_test.go
+testkit/testdata/testdata.go
+testkit/mockstore.go
+testkit/asynctestkit.go
+testkit/testkit.go
+testkit/handle.go
+testkit/result.go
+util/testbridge/bridge.go
+util/localpool/localpool_test.go
+util/localpool/localpool_norace.go
+util/localpool/localpool_race.go
+util/testleak/fake.go
+util/testleak/leaktest.go
+util/testkit/fake.go
+util/testkit/testkit.go
+util/israce/israce.go
+util/israce/norace.go
+util/sys/storage/sys_windows.go
+util/sys/storage/sys_posix.go
+util/sys/storage/sys_other.go
+util/sys/linux/sys_linux.go
+util/sys/linux/sys_other.go
+util/testutil/testutil.go
+util/signal/signal_windows.go
+util/signal/signal_posix.go
+make: *** [fmt] Error 1
+tidb $ echo $?
+2
+tidb $ echo $?
+0
+tidb $ make check
+gofmt (simplify)
+cd tools/check; \
+	GO111MODULE=on go build -o ../bin/unconvert github.com/mdempsky/unconvert
+go: downloading github.com/mdempsky/unconvert v0.0.0-20200228143138-95ecdbfc0b5f
+go: downloading golang.org/x/tools v0.0.0-20200225230052-807dcd883420
+unconvert check(skip check the genenrated or copied code in lightning)
+/Users/karuppiahn/projects/github.com/pingcap/tidb/types/convert.go:538:10: constant  overflow
+/Users/karuppiahn/projects/github.com/pingcap/tidb/statistics/scalar.go:85:10: constant  overflow
+/Users/karuppiahn/projects/github.com/pingcap/tidb/statistics/scalar.go:85:10: constant  overflow
+/Users/karuppiahn/projects/github.com/pingcap/tidb/types/convert.go:538:10: constant  overflow
+/Users/karuppiahn/projects/github.com/pingcap/tidb/types/convert_test.go:485:30: constant  overflow
+/Users/karuppiahn/projects/github.com/pingcap/tidb/types/convert_test.go:486:30: constant  overflow
+cd tools/check; \
+	GO111MODULE=on go build -o ../bin/revive github.com/mgechev/revive
+go: downloading github.com/mgechev/revive v0.0.0-20181210140514-b4cc152955fb
+go: downloading github.com/BurntSushi/toml v0.3.0
+go: downloading github.com/mgechev/dots v0.0.0-20180605013149-8e09d8ea2757
+go: downloading github.com/olekukonko/tablewriter v0.0.0-20180912035003-be2c049b30cc
+go: downloading github.com/fatih/structtag v1.0.0
+go: downloading github.com/mattn/go-runewidth v0.0.3
+linting
+go mod tidy
+./tools/check/check-tidy.sh
+go: downloading github.com/cakturk/go-netstat v0.0.0-20200220111822-e5b49efee7a5
+go: downloading gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
+go: downloading google.golang.org/appengine v1.6.5
+go: downloading github.com/shurcooL/vfsgen v0.0.0-20181202132449-6a9ea43bcacd
+go: downloading github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d
+go: downloading github.com/eknkc/amber v0.0.0-20171010120322-cdade1c07385
+go: downloading github.com/HdrHistogram/hdrhistogram-go v1.1.0
+go: downloading cloud.google.com/go/bigquery v1.4.0
+go: downloading cloud.google.com/go/pubsub v1.2.0
+go: downloading github.com/cockroachdb/datadriven v1.0.0
+go: downloading github.com/shurcooL/httpfs v0.0.0-20190707220628-8d4bc4ba7749
+go: downloading github.com/onsi/ginkgo v1.13.0
+go: downloading github.com/go-ole/go-ole v1.2.4
+go: downloading github.com/tklauser/numcpus v0.2.1
+go: downloading github.com/go-errors/errors v1.0.1
+testSuite
+./tools/check/check_testSuite.sh
+testFailDBSuite in ./ddl/failtest is not enabled
+make: *** [testSuite] Error 1
+```
+
+```bash
+tidb $ make testSuite
+testSuite
+./tools/check/check_testSuite.sh
+testFailDBSuite in ./ddl/failtest is not enabled
+make: *** [testSuite] Error 1
+tidb $ 
+```
+
+Looking at the script `./tools/check/check_testSuite.sh`, it looks if the `SerialSuites` function from `check` package is called with the test suite or if there's a Test method on the test suite, hmm
