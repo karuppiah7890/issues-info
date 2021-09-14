@@ -233,4 +233,10 @@ Next I'm working on `util/encrypt/crypt_test.go`
 { make failpoint-enable; go test github.com/pingcap/tidb/util/encrypt; make failpoint-disable; }
 ```
 
+---
+
+- PASS: builtin_time_vec_generated_test.go:6727: testVectorizeSuite1.TestVectorizedBuiltinTimeEvalOneVecGenerated	5.729s [reported issue]
+- PASS: builtin_time_vec_test.go:575: testVectorizeSuite2.TestVectorizedBuiltinTimeEvalOneVec	8.250s [reported issue]
+- PASS: builtin_time_vec_test.go:579: testVectorizeSuite2.TestVectorizedBuiltinTimeFunc	8.769s [reported issue]
+- PASS: builtin_cast_vec_test.go:156: testEvaluatorSuite.TestVectorizedBuiltinCastFunc	6.387s [reported issue]
 
