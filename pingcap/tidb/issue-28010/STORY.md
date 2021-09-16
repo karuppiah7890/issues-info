@@ -25,34 +25,34 @@ Low Level TODO - migrate the following tests
 - TestParseFrac [DONE]
 - TestRoundFrac [DONE]
 - TestConvert [DONE]
-- TestCompare
-- TestDurationClock
-- TestParseDateFormat
-- TestTimestampDiff
-- TestDateFSP
-- TestConvertTimeZone
-- TestTimeAdd
-- TestTruncateOverflowMySQLTime
-- TestCheckTimestamp
-- TestExtractDurationValue
-- TestCurrentTime
-- TestInvalidZero
-- TestGetFsp
-- TestExtractDatetimeNum
-- TestExtractDurationNum
-- TestParseDurationValue
-- TestIsClockUnit
-- TestIsDateFormat
-- TestParseTimeFromInt64
-- TestGetFormatType
-- TestgetFracIndex
-- TestTimeOverflow
-- TestTruncateFrac
-- TestTimeSub
-- TestCheckMonthDay
-- TestFormatIntWidthN
-- TestFromGoTime
-- TestGetTimezone
+- TestCompare [DONE]
+- TestDurationClock [DONE]
+- TestParseDateFormat [DONE]
+- TestTimestampDiff [DONE]
+- TestDateFSP [DONE]
+- TestConvertTimeZone [DONE]
+- TestTimeAdd [DONE]
+- TestTruncateOverflowMySQLTime [DONE]
+- TestCheckTimestamp [DONE]
+- TestExtractDurationValue [DONE]
+- TestCurrentTime [DONE]
+- TestInvalidZero [DONE]
+- TestGetFsp [DONE]
+- TestExtractDatetimeNum [DONE]
+- TestExtractDurationNum [DONE]
+- TestParseDurationValue [DONE]
+- TestIsClockUnit [DONE]
+- TestIsDateFormat [DONE]
+- TestParseTimeFromInt64 [DONE]
+- TestGetFormatType [DONE]
+- TestgetFracIndex [DONE]
+- TestTimeOverflow [DONE]
+- TestTruncateFrac [DONE]
+- TestTimeSub [DONE]
+- TestCheckMonthDay [DONE]
+- TestFormatIntWidthN [DONE]
+- TestFromGoTime [DONE]
+- TestGetTimezone [DONE]
 - TestParseWithTimezone
 
 ---
@@ -283,6 +283,8 @@ Migrating TestDateTime now
 
 ```bash
 { make failpoint-enable; go test -run ^TestgetFracIndex$ github.com/pingcap/tidb/types; make failpoint-disable; }
+
+{ make failpoint-enable; go test -run ^TestGetFracIndex$ github.com/pingcap/tidb/types; make failpoint-disable; }
 ```
 
 `types: migrate TestgetFracIndex to testify (#28010)`
