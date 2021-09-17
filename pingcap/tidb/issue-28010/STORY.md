@@ -340,7 +340,7 @@ Migrating TestDateTime now
 ---
 
 ```bash
-{ make failpoint-enable; go test -run github.com/pingcap/tidb/types; make failpoint-disable; }
+{ make failpoint-enable; go test github.com/pingcap/tidb/types; make failpoint-disable; }
 ```
 
 ```bash
