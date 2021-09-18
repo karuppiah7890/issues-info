@@ -1,9 +1,9 @@
 https://github.com/pingcap/tidb/issues/27999
 
 TODO
-- Ensure `"github.com/pingcap/check"` import is not present
-- Migrate all tests to golang tests using Testify
-- Parallelize all the tests using `t.Parallel()`
+- Ensure `"github.com/pingcap/check"` import is not present [DONE]
+- Migrate all tests to golang tests using Testify [DONE]
+- Parallelize all the tests using `t.Parallel()` [DONE]
 
 ---
 
@@ -13,14 +13,14 @@ Low Level TODO - migrate the following tests
 - TestToInt64 [DONE]
 - TestToFloat32 [DONE]
 - TestToFloat64 [DONE]
-- TestToJSON
-- TestIsNull
-- TestToBytes
-- TestComputePlusAndMinus
-- TestCloneDatum
-- TestEstimatedMemUsage
-- TestChangeReverseResultByUpperLowerBound
-- TestStringToMysqlBit
+- TestToJSON [DONE]
+- TestIsNull [DONE]
+- TestToBytes [DONE]
+- TestComputePlusAndMinus [DONE]
+- TestCloneDatum [DONE]
+- TestEstimatedMemUsage [DONE]
+- TestChangeReverseResultByUpperLowerBound [DONE]
+- TestStringToMysqlBit [DONE]
 
 ---
 
@@ -113,8 +113,7 @@ Low Level TODO - migrate the following tests
 ----
 
 ```bash
-{ make failpoint-enable; go test -run ^TestChangeReverseResultByUpperLowerBound$ github.com/pingcap/tidb/types; make 
-failpoint-disable; }
+{ make failpoint-enable; go test -run ^TestChangeReverseResultByUpperLowerBound$ github.com/pingcap/tidb/types; make failpoint-disable; }
 ```
 
 `types: migrate TestChangeReverseResultByUpperLowerBound to testify (#27999)`
