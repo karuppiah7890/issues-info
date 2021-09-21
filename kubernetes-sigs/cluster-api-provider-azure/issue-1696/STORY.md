@@ -1,6 +1,7 @@
 https://github.com/kubernetes-sigs/cluster-api-provider-azure/issues/1696
 
 TODO
+
 - Setup dev environment
 - Check how to run tests
 - Check how to run particular tests related to resource groups alone
@@ -69,7 +70,6 @@ I could start from the `main.go` I guess and find the controller code and find w
 `TestAzureCluster_ValidateCreate`, `TestAzureCluster_ValidateUpdate` in `api/v1alpha4/azurecluster_webhook_test.go`
 
 Looks like - given a resource group in a azure cluster, once it's given or created (not sure which one or if both), then it cannot be mutated later. There's a test for that in `api/v1alpha4/azurecluster_webhook_test.go`
-
 
 ```go
 func TestAzureCluster_ValidateUpdate(t *testing.T) {
@@ -1698,7 +1698,7 @@ I0920 16:06:19.150902   72916 async.go:91]  "msg"="successfully created resource
 === CONT  TestDeleteGroups/resource_group_is_not_managed_by_capz
 I0920 16:06:19.151453   72916 async.go:107]  "msg"="deleting resource"  "resource"="test-group" "resourceGroup"="test-group" "service"="group"
 I0920 16:06:19.151488   72916 async.go:59]  "msg"="long running operation has completed"  "resource"="test-group" "service"="group"
-I0920 16:06:19.151490   72916 groups.go:95]  "msg"="Should not delete resource group in unmanaged mode"  
+I0920 16:06:19.151490   72916 groups.go:95]  "msg"="Should not delete resource group in unmanaged mode"
 I0920 16:06:19.151497   72916 async.go:107]  "msg"="deleting resource"  "resource"="test-group" "resourceGroup"="test-group" "service"="group"
 I0920 16:06:19.151534   72916 async.go:125]  "msg"="successfully deleted resource"  "resource"="test-group" "resourceGroup"="test-group" "service"="group"
 I0920 16:06:19.151570   72916 async.go:54]  "msg"="long running operation is still ongoing"  "resource"="test-group" "service"="group"
@@ -1926,7 +1926,7 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/managedclusters	1.453
 === CONT  TestReconcileNatGateways/fail_to_create_a_nat_gateway
 === CONT  TestReconcileNatGateways/fail_when_getting_existing_nat_gateway
 === CONT  TestReconcileNatGateways/nat_gateway_create_successfully
-I0920 16:06:11.800772   72763 natgateways.go:62]  "msg"="Skipping nat gateways reconcile in custom vnet mode"  
+I0920 16:06:11.800772   72763 natgateways.go:62]  "msg"="Skipping nat gateways reconcile in custom vnet mode"
 I0920 16:06:11.800973   72763 natgateways.go:74]  "msg"="nat gateway already exists"  "nat gateway"="my-node-natgateway"
 I0920 16:06:11.801437   72763 natgateways.go:84]  "msg"="updating NAT gateway IP name to match the spec"  "desired name"="different-pip-name" "old name"="pip-my-node-natgateway-node-subnet-natgw"
 I0920 16:06:11.801474   72763 natgateways.go:106]  "msg"="successfully created nat gateway"  "nat gateway"="my-node-natgateway"
@@ -1953,7 +1953,7 @@ I0920 16:06:11.801666   72763 natgateways.go:106]  "msg"="successfully created n
 === PAUSE TestDeleteNatGateway/nat_gateway_deletion_fails
 === CONT  TestDeleteNatGateway/nat_gateways_in_custom_vnet_mode
 === CONT  TestDeleteNatGateway/nat_gateway_already_deleted
-I0920 16:06:11.801896   72763 natgateways.go:156]  "msg"="Skipping nat gateway deletion in custom vnet mode"  
+I0920 16:06:11.801896   72763 natgateways.go:156]  "msg"="Skipping nat gateway deletion in custom vnet mode"
 === CONT  TestDeleteNatGateway/nat_gateway_deleted_successfully
 I0920 16:06:11.801938   72763 natgateways.go:160]  "msg"="deleting nat gateway"  "nat gateway"="my-node-natgateway"
 === CONT  TestDeleteNatGateway/nat_gateway_deletion_fails
@@ -2269,7 +2269,7 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/roleassignments	3.893
 === CONT  TestReconcileRouteTables/fail_to_create_a_route_table
 === CONT  TestReconcileRouteTables/do_not_create_route_table_if_already_exists
 === CONT  TestReconcileRouteTables/route_table_create_successfully
-I0920 16:06:23.099764   72958 routetables.go:60]  "msg"="Skipping route tables reconcile in custom vnet mode"  
+I0920 16:06:23.099764   72958 routetables.go:60]  "msg"="Skipping route tables reconcile in custom vnet mode"
 I0920 16:06:23.099879   72958 routetables.go:80]  "msg"="creating Route Table"  "route table"="my-cp-routetable"
 I0920 16:06:23.099908   72958 routetables.go:80]  "msg"="creating Route Table"  "route table"="my-cp-routetable"
 I0920 16:06:23.100008   72958 routetables.go:93]  "msg"="successfully created route table"  "route table"="my-cp-routetable"
@@ -2294,7 +2294,7 @@ I0920 16:06:23.100073   72958 routetables.go:93]  "msg"="successfully created ro
 === CONT  TestDeleteRouteTable/route_table_already_deleted
 === CONT  TestDeleteRouteTable/route_table_deletion_fails
 === CONT  TestDeleteRouteTable/route_table_deleted_successfully
-I0920 16:06:23.100336   72958 routetables.go:104]  "msg"="Skipping route table deletion in custom vnet mode"  
+I0920 16:06:23.100336   72958 routetables.go:104]  "msg"="Skipping route table deletion in custom vnet mode"
 I0920 16:06:23.100376   72958 routetables.go:108]  "msg"="deleting route table"  "route table"="my-cp-routetable"
 I0920 16:06:23.100387   72958 routetables.go:108]  "msg"="deleting route table"  "route table"="my-cp-routetable"
 I0920 16:06:23.100400   72958 routetables.go:108]  "msg"="deleting route table"  "route table"="my-node-routetable"
@@ -2462,7 +2462,7 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/scalesetvms	3.421s
 === CONT  TestReconcileSecurityGroups/security_groups_do_not_exist
 === CONT  TestReconcileSecurityGroups/skipping_network_security_group_reconcile_in_custom_VNet_mode
 === CONT  TestReconcileSecurityGroups/security_group_exists
-I0920 16:06:24.403021   72974 securitygroups.go:61]  "msg"="Skipping network security group reconcile in custom VNet mode"  
+I0920 16:06:24.403021   72974 securitygroups.go:61]  "msg"="Skipping network security group reconcile in custom VNet mode"
 I0920 16:06:24.403021   72974 securitygroups.go:93]  "msg"="creating security group"  "security group"="nsg-one"
 I0920 16:06:24.403141   72974 securitygroups.go:110]  "msg"="successfully created or updated security group"  "security group"="nsg-one"
 I0920 16:06:24.403267   72974 securitygroups.go:89]  "msg"="security group exists and no default rules are missing, skipping update"  "security group"="nsg-two"
@@ -2483,7 +2483,7 @@ I0920 16:06:24.403373   72974 securitygroups.go:110]  "msg"="successfully create
 === CONT  TestDeleteSecurityGroups/security_groups_exist
 === CONT  TestDeleteSecurityGroups/skipping_network_security_group_delete_in_custom_VNet_mode
 === CONT  TestDeleteSecurityGroups/security_group_already_deleted
-I0920 16:06:24.403537   72974 securitygroups.go:144]  "msg"="Skipping network security group delete in custom VNet mode"  
+I0920 16:06:24.403537   72974 securitygroups.go:144]  "msg"="Skipping network security group delete in custom VNet mode"
 I0920 16:06:24.403550   72974 securitygroups.go:149]  "msg"="deleting security group"  "security group"="nsg-one"
 I0920 16:06:24.403567   72974 securitygroups.go:159]  "msg"="successfully deleted security group"  "security group"="nsg-one"
 I0920 16:06:24.403568   72974 securitygroups.go:149]  "msg"="deleting security group"  "security group"="nsg-one"
@@ -2560,7 +2560,7 @@ I0920 16:06:24.819930   72978 subnets.go:117]  "msg"="successfully created subne
 I0920 16:06:24.820159   72978 subnets.go:133]  "msg"="deleting subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
 I0920 16:06:24.820174   72978 subnets.go:133]  "msg"="deleting subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
 I0920 16:06:24.820210   72978 subnets.go:143]  "msg"="successfully deleted subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
-I0920 16:06:24.820230   72978 subnets.go:130]  "msg"="Skipping subnets deletion in custom vnet mode"  
+I0920 16:06:24.820230   72978 subnets.go:130]  "msg"="Skipping subnets deletion in custom vnet mode"
 I0920 16:06:24.820232   72978 subnets.go:133]  "msg"="deleting subnet in vnet"  "subnet"="my-subnet-1" "vnet"="my-vnet"
 I0920 16:06:24.820238   72978 subnets.go:133]  "msg"="deleting subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
 I0920 16:06:24.820233   72978 subnets.go:133]  "msg"="deleting subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
@@ -2589,12 +2589,12 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/subnets	3.475s
 === CONT  TestReconcileTags/error_updating_tags
 === CONT  TestReconcileTags/error_getting_existing_tags
 === CONT  TestReconcileTags/tags_unchanged
-I0920 16:06:12.331526   72764 tags.go:66]  "msg"="Updating tags"  
-I0920 16:06:12.331526   72764 tags.go:66]  "msg"="Updating tags"  
-I0920 16:06:12.331526   72764 tags.go:66]  "msg"="Updating tags"  
-I0920 16:06:12.331823   72764 tags.go:91]  "msg"="successfully updated tags"  
-I0920 16:06:12.331845   72764 tags.go:66]  "msg"="Updating tags"  
-I0920 16:06:12.331877   72764 tags.go:91]  "msg"="successfully updated tags"  
+I0920 16:06:12.331526   72764 tags.go:66]  "msg"="Updating tags"
+I0920 16:06:12.331526   72764 tags.go:66]  "msg"="Updating tags"
+I0920 16:06:12.331526   72764 tags.go:66]  "msg"="Updating tags"
+I0920 16:06:12.331823   72764 tags.go:91]  "msg"="successfully updated tags"
+I0920 16:06:12.331845   72764 tags.go:66]  "msg"="Updating tags"
+I0920 16:06:12.331877   72764 tags.go:91]  "msg"="successfully updated tags"
 --- PASS: TestReconcileTags (0.00s)
     --- PASS: TestReconcileTags/tags_unchanged (0.00s)
     --- PASS: TestReconcileTags/error_getting_existing_tags (0.00s)
@@ -2823,7 +2823,7 @@ I0920 16:06:25.653248   72980 virtualnetworks.go:104]  "msg"="successfully creat
 === CONT  TestDeleteVnet/managed_vnet_already_deleted
 I0920 16:06:25.653484   72980 virtualnetworks.go:127]  "msg"="deleting VNet"  "VNet"="vnet-exists"
 I0920 16:06:25.653505   72980 virtualnetworks.go:138]  "msg"="successfully deleted VNet"  "VNet"="vnet-exists"
-I0920 16:06:25.653520   72980 virtualnetworks.go:123]  "msg"="Skipping VNet deletion in custom vnet mode"  
+I0920 16:06:25.653520   72980 virtualnetworks.go:123]  "msg"="Skipping VNet deletion in custom vnet mode"
 I0920 16:06:25.653565   72980 virtualnetworks.go:127]  "msg"="deleting VNet"  "VNet"="vnet-exists"
 --- PASS: TestDeleteVnet (0.00s)
     --- PASS: TestDeleteVnet/managed_vnet_exists (0.00s)
@@ -2923,31 +2923,31 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmssextensions	4.271s
 === RUN   TestAzureJSONMachineReconciler
 === RUN   TestAzureJSONMachineReconciler/should_reconcile_normally
 === RUN   TestAzureJSONMachineReconciler/missing_azure_cluster_should_return_error
-E0920 16:06:26.156302   72981 azurejson_machine_controller.go:160]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachine"="my-machine" "cluster"="my-cluster" "namespace"="" 
+E0920 16:06:26.156302   72981 azurejson_machine_controller.go:160]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachine"="my-machine" "cluster"="my-cluster" "namespace"=""
 --- PASS: TestAzureJSONMachineReconciler (0.01s)
     --- PASS: TestAzureJSONMachineReconciler/should_reconcile_normally (0.00s)
     --- PASS: TestAzureJSONMachineReconciler/missing_azure_cluster_should_return_error (0.00s)
 === RUN   TestAzureJSONPoolReconciler
 === RUN   TestAzureJSONPoolReconciler/should_reconcile_normally
 === RUN   TestAzureJSONPoolReconciler/missing_azure_cluster_should_return_error
-E0920 16:06:26.160944   72981 azurejson_machinepool_controller.go:127]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachinePool"="my-azure-machine-pool" "cluster"="my-cluster" "machinePool"="my-machine-pool" "namespace"="" 
+E0920 16:06:26.160944   72981 azurejson_machinepool_controller.go:127]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachinePool"="my-azure-machine-pool" "cluster"="my-cluster" "machinePool"="my-machine-pool" "namespace"=""
 --- PASS: TestAzureJSONPoolReconciler (0.00s)
     --- PASS: TestAzureJSONPoolReconciler/should_reconcile_normally (0.00s)
     --- PASS: TestAzureJSONPoolReconciler/missing_azure_cluster_should_return_error (0.00s)
 === RUN   TestAzureJSONTemplateReconciler
 === RUN   TestAzureJSONTemplateReconciler/should_reconcile_normally
 === RUN   TestAzureJSONTemplateReconciler/missing_azure_cluster_should_return_error
-E0920 16:06:26.163145   72981 azurejson_machinetemplate_controller.go:123]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachineTemplate"="my-json-template" "cluster"="my-cluster" "namespace"="" 
+E0920 16:06:26.163145   72981 azurejson_machinetemplate_controller.go:123]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachineTemplate"="my-json-template" "cluster"="my-cluster" "namespace"=""
 --- PASS: TestAzureJSONTemplateReconciler (0.00s)
     --- PASS: TestAzureJSONTemplateReconciler/should_reconcile_normally (0.00s)
     --- PASS: TestAzureJSONTemplateReconciler/missing_azure_cluster_should_return_error (0.00s)
 === RUN   TestConditions
 === RUN   TestConditions/cluster_infrastructure_is_not_ready_yet
-I0920 16:06:26.164725   72981 azuremachine_controller.go:242]  "msg"="Reconciling AzureMachine"  
-I0920 16:06:26.165001   72981 azuremachine_controller.go:257]  "msg"="Cluster infrastructure is not ready yet"  
+I0920 16:06:26.164725   72981 azuremachine_controller.go:242]  "msg"="Reconciling AzureMachine"
+I0920 16:06:26.165001   72981 azuremachine_controller.go:257]  "msg"="Cluster infrastructure is not ready yet"
 === RUN   TestConditions/bootstrap_data_secret_reference_is_not_yet_available
-I0920 16:06:26.165109   72981 azuremachine_controller.go:242]  "msg"="Reconciling AzureMachine"  
-I0920 16:06:26.165320   72981 azuremachine_controller.go:264]  "msg"="Bootstrap data secret reference is not yet available"  
+I0920 16:06:26.165109   72981 azuremachine_controller.go:242]  "msg"="Reconciling AzureMachine"
+I0920 16:06:26.165320   72981 azuremachine_controller.go:264]  "msg"="Bootstrap data secret reference is not yet available"
 --- PASS: TestConditions (0.00s)
     --- PASS: TestConditions/cluster_infrastructure_is_not_ready_yet (0.00s)
     --- PASS: TestConditions/bootstrap_data_secret_reference_is_not_yet_available (0.00s)
@@ -3070,7 +3070,7 @@ github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1
 	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86
 STEP: bootstrapping test environment
 Panic [0.022 seconds]
-[BeforeSuite] BeforeSuite 
+[BeforeSuite] BeforeSuite
 /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:49
 
   Test Panicked
@@ -3334,9 +3334,9 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/exp/api/v1alpha4	9.718s
 --- PASS: Test_newAzureMachinePoolService (0.00s)
 === RUN   TestAzureMachinePoolMachineReconciler_Reconcile
 === RUN   TestAzureMachinePoolMachineReconciler_Reconcile/should_successfully_reconcile
-I0920 16:06:26.673039   72982 azuremachinepoolmachine_controller.go:254]  "msg"="Reconciling AzureMachinePoolMachine" "AzureCluster"="azCluster1" "azureMachinePool"="amp1" "azureMachinePoolMachine"="ampm1" "cluster"="cluster1" "machinePool"="mp1" "namespace"="default" 
+I0920 16:06:26.673039   72982 azuremachinepoolmachine_controller.go:254]  "msg"="Reconciling AzureMachinePoolMachine" "AzureCluster"="azCluster1" "azureMachinePool"="amp1" "azureMachinePoolMachine"="ampm1" "cluster"="cluster1" "machinePool"="mp1" "namespace"="default"
 === RUN   TestAzureMachinePoolMachineReconciler_Reconcile/should_successfully_delete
-I0920 16:06:26.674580   72982 azuremachinepoolmachine_controller.go:311]  "msg"="Handling deleted AzureMachinePoolMachine" "AzureCluster"="azCluster1" "azureMachinePool"="amp1" "azureMachinePoolMachine"="ampm1" "cluster"="cluster1" "machinePool"="mp1" "namespace"="default" 
+I0920 16:06:26.674580   72982 azuremachinepoolmachine_controller.go:311]  "msg"="Handling deleted AzureMachinePoolMachine" "AzureCluster"="azCluster1" "azureMachinePool"="amp1" "azureMachinePoolMachine"="ampm1" "cluster"="cluster1" "machinePool"="mp1" "namespace"="default"
 --- PASS: TestAzureMachinePoolMachineReconciler_Reconcile (0.01s)
     --- PASS: TestAzureMachinePoolMachineReconciler_Reconcile/should_successfully_reconcile (0.01s)
     --- PASS: TestAzureMachinePoolMachineReconciler_Reconcile/should_successfully_delete (0.00s)
@@ -3418,7 +3418,7 @@ Will run 2 of 2 specs
 
 STEP: bootstrapping test environment
 Panic [0.019 seconds]
-[BeforeSuite] BeforeSuite 
+[BeforeSuite] BeforeSuite
 /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/exp/controllers/suite_test.go:50
 
   Test Panicked
@@ -3590,7 +3590,7 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/util/system	1.344s
 ?   	sigs.k8s.io/cluster-api-provider-azure/util/webhook	[no test files]
 ?   	sigs.k8s.io/cluster-api-provider-azure/version	[no test files]
 FAIL
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
 There are some failures. I was also wondering how E2E tests run and if they need Azure account credentials to run with actual Azure resources. I gotta check that out in the development guide
@@ -3790,53 +3790,53 @@ go get: added mvdan.cc/lint v0.0.0-20170908181259-adc824a0674b
 go get: added mvdan.cc/unparam v0.0.0-20210104141923-aac4ce9116a7
 ./hack/lint-latest.sh
 /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin/golangci-lint-v1.41.1 run -v
-INFO [config_reader] Config search paths: [./ /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure /Users/karuppiahn/projects/github.com/kubernetes-sigs /Users/karuppiahn/projects/github.com /Users/karuppiahn/projects /Users/karuppiahn /Users /] 
-INFO [config_reader] Used config file .golangci.yml 
-INFO [lintersdb] Active 23 linters: [deadcode errcheck errorlint goconst gocyclo godot gofmt goimports golint gosec gosimple govet ineffassign interfacer misspell nakedret prealloc staticcheck structcheck unconvert unused varcheck whitespace] 
-INFO [loader] Go packages loading at mode 575 (exports_file|deps|files|imports|name|types_sizes|compiled_files) took 3.268213386s 
-WARN [runner] The linter 'interfacer' is deprecated (since v1.38.0) due to: The repository of the linter has been archived by the owner.  
-WARN [runner] The linter 'golint' is deprecated (since v1.41.0) due to: The repository of the linter has been archived by the owner.  Replaced by revive. 
-INFO [runner/filename_unadjuster] Pre-built 0 adjustments in 27.211082ms 
-INFO [linters context/goanalysis] analyzers took 5m38.159511285s with top 10 stages: buildir: 1m40.22871632s, buildssa: 23.468466451s, gosec: 13.483950477s, goimports: 12.852153198s, whitespace: 11.63510353s, directives: 8.136555311s, godot: 8.030978375s, nilness: 7.722521224s, golint: 7.562600135s, gofmt: 6.803966029s 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/virtualnetworks/mock_virtualnetworks by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir util/cache/ttllru/mocks by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir pkg/coalescing/mocks by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/availabilitysets/mock_availabilitysets by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/virtualmachines/mock_virtualmachines by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/networkinterfaces/mock_networkinterfaces by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir exp/controllers/mocks by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir azure/services/resourceskus/mock_resourceskus by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir azure/services/async/mock_async by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/routetables/mock_routetables by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/privatedns/mock_privatedns by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/inboundnatrules/mock_inboundnatrules by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/subnets/mock_subnets by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/tags/mock_tags by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/groups/mock_groups by pattern mock* 
-INFO [runner/skip dirs] Skipped 5 issues from dir internal/test/matchers/gomock by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir internal/test/mock_log by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir azure/scope/mocks by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/publicips/mock_publicips by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/bastionhosts/mocks_bastionhosts by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/vmextensions/mock_vmextensions by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/roleassignments/mock_roleassignments by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/scalesets/mock_scalesets by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/managedclusters/mock_managedclusters by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/disks/mock_disks by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/scalesetvms/mock_scalesetvms by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/vmssextensions/mock_vmssextensions by pattern mock* 
-INFO [runner/skip dirs] Skipped 2 issues from dir azure/services/agentpools/mock_agentpools by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir azure/mock_azure by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/natgateways/mock_natgateways by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/loadbalancers/mock_loadbalancers by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/securitygroups/mock_securitygroups by pattern mock* 
-INFO [runner] Issues before processing: 604, after processing: 0 
-INFO [runner] Processors filtering stat (out/in): cgo: 604/604, path_prettifier: 604/604, skip_dirs: 55/175, exclude-rules: 3/55, skip_files: 175/604, autogenerated_exclude: 55/55, identifier_marker: 55/55, nolint: 0/3, exclude: 55/55, filename_unadjuster: 604/604 
-INFO [runner] processing took 11.901625ms with stages: path_prettifier: 7.074ms, nolint: 1.716897ms, autogenerated_exclude: 1.270153ms, identifier_marker: 587.171µs, skip_dirs: 527.81µs, skip_files: 475.342µs, exclude-rules: 182.748µs, cgo: 38.854µs, filename_unadjuster: 24.761µs, max_same_issues: 1.498µs, uniq_by_line: 688ns, max_from_linter: 248ns, source_code: 242ns, diff: 234ns, exclude: 211ns, max_per_file_from_linter: 201ns, severity-rules: 190ns, path_shortener: 157ns, sort_results: 116ns, path_prefixer: 104ns 
-INFO [runner] linters took 21.495439437s with stages: goanalysis_metalinter: 21.48347364s 
-INFO File cache stats: 362 entries of total size 2.6MiB 
-INFO Memory: 246 samples, avg is 1373.0MB, max is 2675.2MB 
-INFO Execution took 24.804261934s                 
+INFO [config_reader] Config search paths: [./ /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure /Users/karuppiahn/projects/github.com/kubernetes-sigs /Users/karuppiahn/projects/github.com /Users/karuppiahn/projects /Users/karuppiahn /Users /]
+INFO [config_reader] Used config file .golangci.yml
+INFO [lintersdb] Active 23 linters: [deadcode errcheck errorlint goconst gocyclo godot gofmt goimports golint gosec gosimple govet ineffassign interfacer misspell nakedret prealloc staticcheck structcheck unconvert unused varcheck whitespace]
+INFO [loader] Go packages loading at mode 575 (exports_file|deps|files|imports|name|types_sizes|compiled_files) took 3.268213386s
+WARN [runner] The linter 'interfacer' is deprecated (since v1.38.0) due to: The repository of the linter has been archived by the owner.
+WARN [runner] The linter 'golint' is deprecated (since v1.41.0) due to: The repository of the linter has been archived by the owner.  Replaced by revive.
+INFO [runner/filename_unadjuster] Pre-built 0 adjustments in 27.211082ms
+INFO [linters context/goanalysis] analyzers took 5m38.159511285s with top 10 stages: buildir: 1m40.22871632s, buildssa: 23.468466451s, gosec: 13.483950477s, goimports: 12.852153198s, whitespace: 11.63510353s, directives: 8.136555311s, godot: 8.030978375s, nilness: 7.722521224s, golint: 7.562600135s, gofmt: 6.803966029s
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/virtualnetworks/mock_virtualnetworks by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir util/cache/ttllru/mocks by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir pkg/coalescing/mocks by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/availabilitysets/mock_availabilitysets by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/virtualmachines/mock_virtualmachines by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/networkinterfaces/mock_networkinterfaces by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir exp/controllers/mocks by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir azure/services/resourceskus/mock_resourceskus by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir azure/services/async/mock_async by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/routetables/mock_routetables by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/privatedns/mock_privatedns by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/inboundnatrules/mock_inboundnatrules by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/subnets/mock_subnets by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/tags/mock_tags by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/groups/mock_groups by pattern mock*
+INFO [runner/skip dirs] Skipped 5 issues from dir internal/test/matchers/gomock by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir internal/test/mock_log by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir azure/scope/mocks by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/publicips/mock_publicips by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/bastionhosts/mocks_bastionhosts by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/vmextensions/mock_vmextensions by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/roleassignments/mock_roleassignments by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/scalesets/mock_scalesets by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/managedclusters/mock_managedclusters by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/disks/mock_disks by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/scalesetvms/mock_scalesetvms by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/vmssextensions/mock_vmssextensions by pattern mock*
+INFO [runner/skip dirs] Skipped 2 issues from dir azure/services/agentpools/mock_agentpools by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir azure/mock_azure by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/natgateways/mock_natgateways by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/loadbalancers/mock_loadbalancers by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/securitygroups/mock_securitygroups by pattern mock*
+INFO [runner] Issues before processing: 604, after processing: 0
+INFO [runner] Processors filtering stat (out/in): cgo: 604/604, path_prettifier: 604/604, skip_dirs: 55/175, exclude-rules: 3/55, skip_files: 175/604, autogenerated_exclude: 55/55, identifier_marker: 55/55, nolint: 0/3, exclude: 55/55, filename_unadjuster: 604/604
+INFO [runner] processing took 11.901625ms with stages: path_prettifier: 7.074ms, nolint: 1.716897ms, autogenerated_exclude: 1.270153ms, identifier_marker: 587.171µs, skip_dirs: 527.81µs, skip_files: 475.342µs, exclude-rules: 182.748µs, cgo: 38.854µs, filename_unadjuster: 24.761µs, max_same_issues: 1.498µs, uniq_by_line: 688ns, max_from_linter: 248ns, source_code: 242ns, diff: 234ns, exclude: 211ns, max_per_file_from_linter: 201ns, severity-rules: 190ns, path_shortener: 157ns, sort_results: 116ns, path_prefixer: 104ns
+INFO [runner] linters took 21.495439437s with stages: goanalysis_metalinter: 21.48347364s
+INFO File cache stats: 362 entries of total size 2.6MiB
+INFO Memory: 246 samples, avg is 1373.0MB, max is 2675.2MB
+INFO Execution took 24.804261934s
 cluster-api-provider-azure $ echo $?
 0
 cluster-api-provider-azure $ ls hack/
@@ -3909,10 +3909,10 @@ Flags:
       --version                   Print version
 
 Use "golangci-lint [command] --help" for more information about a command.
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
-Interesting message from `rm` - 
+Interesting message from `rm` -
 
 ```bash
 rm: /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin/golangci-lint*: No such file or directory
@@ -3983,7 +3983,7 @@ Changes not staged for commit:
 no changes added to commit (use "git add" and/or "git commit -a")
 cluster-api-provider-azure $ gco .
 Updated 2 paths from the index
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
 ```bash
@@ -3993,16 +3993,15 @@ tilt 0.22.8 is already installed but outdated
 ==> Downloading from https://github-releases.githubusercontent.com/143896900/3a8da8a6-390e-4ad3-a682-e56021acb3b1?X-A
 ######################################################################## 100.0%
 ==> Upgrading tilt-dev/tap/tilt
-  0.22.8 -> 0.22.9 
+  0.22.8 -> 0.22.9
 
 🍺  /usr/local/Cellar/tilt/0.22.9: 5 files, 80.4MB, built in 4 seconds
 Removing: /usr/local/Cellar/tilt/0.22.8... (5 files, 80.3MB)
 Removing: /Users/karuppiahn/Library/Caches/Homebrew/tilt--0.22.8.tar.gz... (23MB)
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
 https://capz.sigs.k8s.io/developers/development.html#using-tilt
-
 
 ```bash
 cat <<EOF > tilt-settings.json
@@ -4088,8 +4087,8 @@ Command Output: Cannot connect to the Docker daemon at unix:///var/run/docker.so
 docker: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?.
 See 'docker run --help'.
 make: *** [kind-create] Error 125
-cluster-api-provider-azure $ 
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
+cluster-api-provider-azure $
 ```
 
 ```bash
@@ -4098,11 +4097,11 @@ cluster-api-provider-azure $ make tilt-up
 No kind clusters found.
 Unable to find image 'registry:2' locally
 2: Pulling from library/registry
-6a428f9f83b0: Pull complete 
-90cad49de35d: Pull complete 
-b215d0b40846: Pull complete 
-429305b6c15c: Pull complete 
-6f7e10a4e907: Pull complete 
+6a428f9f83b0: Pull complete
+90cad49de35d: Pull complete
+b215d0b40846: Pull complete
+429305b6c15c: Pull complete
+6f7e10a4e907: Pull complete
 Digest: sha256:265d4a5ed8bf0df27d1107edb00b70e658ee9aa5acb3f37336c5a17db634481e
 Status: Downloaded newer image for registry:2
 68d7cc6bf4588be08396913a859a79b50432243eb6a6fcb05a6cf5b56b383fb6
@@ -4110,12 +4109,12 @@ Registry Host: 172.17.0.2
 Creating cluster "capz" ...
 WARNING: Overriding docker network due to KIND_EXPERIMENTAL_DOCKER_NETWORK
 WARNING: Here be dragons! This is not supported currently.
- ✓ Ensuring node image (kindest/node:v1.19.1) 🖼 
- ✓ Preparing nodes 📦  
- ✓ Writing configuration 📜 
- ✓ Starting control-plane 🕹️ 
- ✓ Installing CNI 🔌 
- ✓ Installing StorageClass 💾 
+ ✓ Ensuring node image (kindest/node:v1.19.1) 🖼
+ ✓ Preparing nodes 📦
+ ✓ Writing configuration 📜
+ ✓ Starting control-plane 🕹️
+ ✓ Installing CNI 🔌
+ ✓ Installing StorageClass 💾
 Set kubectl context to "kind-capz"
 You can now use your cluster with:
 
@@ -4160,14 +4159,12 @@ kind delete cluster --name=capz || true
 Deleting cluster "capz" ...
 kind delete cluster --name=capz-e2e || true
 Deleting cluster "capz-e2e" ...
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
-
 
 ---
 
 The comment in https://github.com/kubernetes-sigs/cluster-api-provider-azure/pull/1667 talking about this issue - https://github.com/kubernetes-sigs/cluster-api-provider-azure/pull/1667#discussion_r711231453
-
 
 ---
 
@@ -4213,7 +4210,7 @@ Your branch is up to date with 'origin/main'.
 cluster-api-provider-azure $ # Cluster settings.
 cluster-api-provider-azure $ export CLUSTER_NAME="capz-cluster"
 cluster-api-provider-azure $ export AZURE_VNET_NAME=${CLUSTER_NAME}-vnet
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 cluster-api-provider-azure $ # Azure settings.
 cluster-api-provider-azure $ export AZURE_LOCATION="southcentralus"
 cluster-api-provider-azure $ export AZURE_RESOURCE_GROUP=${CLUSTER_NAME}
@@ -4221,14 +4218,14 @@ cluster-api-provider-azure $ export AZURE_SUBSCRIPTION_ID_B64="$(echo -n "$AZURE
 cluster-api-provider-azure $ export AZURE_TENANT_ID_B64="$(echo -n "$AZURE_TENANT_ID" | base64 | tr -d '\n')"
 cluster-api-provider-azure $ export AZURE_CLIENT_ID_B64="$(echo -n "$AZURE_CLIENT_ID" | base64 | tr -d '\n')"
 cluster-api-provider-azure $ export AZURE_CLIENT_SECRET_B64="$(echo -n "$AZURE_CLIENT_SECRET" | base64 | tr -d '\n')"
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 cluster-api-provider-azure $ # Machine settings.
 cluster-api-provider-azure $ export CONTROL_PLANE_MACHINE_COUNT=3
 cluster-api-provider-azure $ export AZURE_CONTROL_PLANE_MACHINE_TYPE="Standard_D2s_v3"
 cluster-api-provider-azure $ export AZURE_NODE_MACHINE_TYPE="Standard_D2s_v3"
 cluster-api-provider-azure $ export WORKER_MACHINE_COUNT=2
 cluster-api-provider-azure $ export KUBERNETES_VERSION="v1.22.1"
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 cluster-api-provider-azure $ # Generate SSH key.
 cluster-api-provider-azure $ # If you want to provide your own key, skip this step and set AZURE_SSH_PUBLIC_KEY_B64 to your existing file.
 cluster-api-provider-azure $ SSH_KEY_FILE=.sshkey
@@ -4246,7 +4243,7 @@ cluster-api-provider-azure $ # For Linux the ssh key needs to be b64 encoded bec
 cluster-api-provider-azure $ # Windows doesn't support setting ssh keys so we use cloudbase-init to set which doesn't require base64
 cluster-api-provider-azure $ export AZURE_SSH_PUBLIC_KEY_B64=$(cat "${SSH_KEY_FILE}.pub" | base64 | tr -d '\r\n')
 cluster-api-provider-azure $ export AZURE_SSH_PUBLIC_KEY=$(cat "${SSH_KEY_FILE}.pub" | tr -d '\r\n')
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 cluster-api-provider-azure $ make create-workload-cluster
 # Create workload Cluster.
 /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin/envsubst-drone < /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/templates/cluster-template.yaml | kubectl apply -f -
@@ -4277,13 +4274,13 @@ Resource: "infrastructure.cluster.x-k8s.io/v1alpha4, Resource=azureclusteridenti
 Name: "", Namespace: "default"
 from server for: "STDIN": resource name may not be empty
 make: *** [create-workload-cluster] Error 1
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 
 cluster-api-provider-azure $ make delete-workload-cluster
 Your Azure resources will now be deleted, this can take up to 20 minutes
 kubectl delete cluster capz-cluster
 cluster.cluster.x-k8s.io "capz-cluster" deleted
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 
 cluster-api-provider-azure $ make create-workload-cluster
 # Create workload Cluster.
@@ -4305,10 +4302,9 @@ Resource: "infrastructure.cluster.x-k8s.io/v1alpha4, Resource=azureclusteridenti
 Name: "", Namespace: "default"
 from server for: "STDIN": resource name may not be empty
 make: *** [create-workload-cluster] Error 1
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 
 ```
-
 
 ```bash
 cluster-api-provider-azure $ make delete-workload-cluster
@@ -4403,7 +4399,7 @@ customresourcedefinition.apiextensions.k8s.io/azuremanagedclusters.infrastructur
 customresourcedefinition.apiextensions.k8s.io/azuremanagedcontrolplanes.infrastructure.cluster.x-k8s.io
 customresourcedefinition.apiextensions.k8s.io/azuremanagedmachinepools.infrastructure.cluster.x-k8s.io
 customresourcedefinition.apiextensions.k8s.io/azurepodidentityexceptions.aadpodidentity.k8s.io
-cluster-api-provider-azure $ k get crds -o name | rg azure | xargs kubectl get 
+cluster-api-provider-azure $ k get crds -o name | rg azure | xargs kubectl get
 NAME                                                        CREATED AT
 azureclusteridentities.infrastructure.cluster.x-k8s.io      2021-09-20T11:44:37Z
 azureclusters.infrastructure.cluster.x-k8s.io               2021-09-20T11:44:37Z
@@ -4466,7 +4462,7 @@ cluster-api-provider-azure $ k get crds -o jsonpath={.items[*].metadata.name} | 
 cluster-api-provider-azure $ k get crds -o jsonpath={.items[*].metadata.name} | less
 cluster-api-provider-azure $ k get crds --no-headers | less
 cluster-api-provider-azure $ k get crds --no-headers | awk '{print $1}' | less
-cluster-api-provider-azure $ k get crds --no-headers | awk '{print $1}' | xargs kubectl get 
+cluster-api-provider-azure $ k get crds --no-headers | awk '{print $1}' | xargs kubectl get
 Error from server (NotFound): alertmanagerconfigs.monitoring.coreos.com "alertmanagers.monitoring.coreos.com" not found
 Error from server (NotFound): alertmanagerconfigs.monitoring.coreos.com "azureclusteridentities.infrastructure.cluster.x-k8s.io" not found
 Error from server (NotFound): alertmanagerconfigs.monitoring.coreos.com "azureclusters.infrastructure.cluster.x-k8s.io" not found
@@ -4565,7 +4561,7 @@ No resources found
 No resources found
 No resources found
 No resources found
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
 ```bash
@@ -4589,7 +4585,7 @@ Your Azure resources will now be deleted, this can take up to 20 minutes
 kubectl delete cluster capz-cluster
 cluster.cluster.x-k8s.io "capz-cluster" deleted
 
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 cluster-api-provider-azure $ k get crds --no-headers | awk '{print $1}' | rg azure | xargs -I{} kubectl get {} -A
 No resources found
 No resources found
@@ -4606,7 +4602,7 @@ No resources found
 No resources found
 cluster-api-provider-azure $ k get azuremachinetemplate -o name | xargs kubectl delete
 azuremachinetemplate.infrastructure.cluster.x-k8s.io "capz-cluster-control-plane" deleted
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
 ```bash
@@ -4666,15 +4662,15 @@ ippools.crd.projectcalico.org                         2021-09-20T13:15:26Z
 kubecontrollersconfigurations.crd.projectcalico.org   2021-09-20T13:15:27Z
 networkpolicies.crd.projectcalico.org                 2021-09-20T13:15:27Z
 networksets.crd.projectcalico.org                     2021-09-20T13:15:27Z
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
 ```bash
 cluster-api-provider-azure $ ktx
 Switched to context "kind-capz".
 cluster-api-provider-azure $ cluster
-cluster     clusterctl  clusterdb   
-cluster-api-provider-azure $ clusterctl 
+cluster     clusterctl  clusterdb
+cluster-api-provider-azure $ clusterctl
 Get started with Cluster API using clusterctl to create a management cluster,
 install providers, and create templates for your workload cluster.
 
@@ -4750,17 +4746,17 @@ Usage:
 Examples:
   # Describe the cluster named test-1.
   clusterctl describe cluster test-1
-  
+
   # Describe the cluster named test-1 showing all the conditions for the KubeadmControlPlane object kind.
   clusterctl describe cluster test-1 --show-conditions KubeadmControlPlane
-  
+
   # Describe the cluster named test-1 showing all the conditions for a specific machine.
   clusterctl describe cluster test-1 --show-conditions Machine/m1
-  
+
   # Describe the cluster named test-1 disabling automatic grouping of objects with the same ready condition
   # e.g. un-group all the machines with Ready=true instead of showing a single group node.
   clusterctl describe cluster test-1 --disable-grouping
-  
+
   # Describe the cluster named test-1 disabling automatic echo suppression
   # e.g. show the infrastructure machine objects, no matter if the current state is already reported by the machine's Ready condition.
   clusterctl describe cluster test-1
@@ -4778,14 +4774,14 @@ Global Flags:
       --config $HOME/.cluster-api/clusterctl.yaml   Path to clusterctl configuration (default is $HOME/.cluster-api/clusterctl.yaml) or to a remote location (i.e. https://example.com/clusterctl.yaml)
   -v, --v int                                       Set the log level verbosity. This overrides the CLUSTERCTL_LOG_LEVEL environment variable.
 cluster-api-provider-azure $ clusterctl describe cluster capz-cluster
-NAME                                                             READY  SEVERITY  REASON  SINCE  MESSAGE                                                                    
-/capz-cluster                                                    True                     71m                                                                               
-├─ClusterInfrastructure - AzureCluster/capz-cluster              True                     80m                                                                               
-├─ControlPlane - KubeadmControlPlane/capz-cluster-control-plane  True                     71m                                                                               
+NAME                                                             READY  SEVERITY  REASON  SINCE  MESSAGE
+/capz-cluster                                                    True                     71m
+├─ClusterInfrastructure - AzureCluster/capz-cluster              True                     80m
+├─ControlPlane - KubeadmControlPlane/capz-cluster-control-plane  True                     71m
 │ └─3 Machines...                                                True                     18m    See capz-cluster-control-plane-2lfxs, capz-cluster-control-plane-7f8vg, ...
-└─Workers                                                                                                                                                                   
-  └─MachineDeployment/capz-cluster-md-0                          True                     76m                                                                               
-    └─2 Machines...                                              True                     76m    See capz-cluster-md-0-598fdf57-xxv7h, capz-cluster-md-0-598fdf57-znvdk     
+└─Workers
+  └─MachineDeployment/capz-cluster-md-0                          True                     76m
+    └─2 Machines...                                              True                     76m    See capz-cluster-md-0-598fdf57-xxv7h, capz-cluster-md-0-598fdf57-znvdk
 cluster-api-provider-azure $ clusterctl move -h
 Move Cluster API objects and all dependencies between management clusters.
 
@@ -4832,7 +4828,7 @@ Flags:
 Global Flags:
       --config $HOME/.cluster-api/clusterctl.yaml   Path to clusterctl configuration (default is $HOME/.cluster-api/clusterctl.yaml) or to a remote location (i.e. https://example.com/clusterctl.yaml)
   -v, --v int                                       Set the log level verbosity. This overrides the CLUSTERCTL_LOG_LEVEL environment variable.
-cluster-api-provider-azure $ clusterctl backup --directory 
+cluster-api-provider-azure $ clusterctl backup --directory
 cluster-api-provider-azure $ mkdir ~/capz-cluster-demo
 cluster-api-provider-azure $ clusterctl backup --directory ~/capz-cluster-demo/
 Performing backup...
@@ -4840,7 +4836,7 @@ Discovering Cluster API objects
 Starting backup of Cluster API objects Clusters=0
 Saving files to /Users/karuppiahn/capz-cluster-demo/
 cluster-api-provider-azure $ ls ~/capz-cluster-demo/
-cluster-api-provider-azure $ clusterctl backup --directory ~/capz-cluster-demo/ --kubeconfig kubeconfig 
+cluster-api-provider-azure $ clusterctl backup --directory ~/capz-cluster-demo/ --kubeconfig kubeconfig
 Error: failed to check Cluster API version: customresourcedefinitions.apiextensions.k8s.io "clusters.cluster.x-k8s.io" not found
 cluster-api-provider-azure $ clusterctl backup --directory ~/capz-cluster-demo/ --kubeconfig-context kind-capz
 Performing backup...
@@ -4853,7 +4849,7 @@ capz-cluster   Provisioned
 cluster-api-provider-azure $ k get clusters -A
 NAMESPACE   NAME           PHASE
 default     capz-cluster   Provisioned
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
 ```bash
@@ -4886,7 +4882,7 @@ kube-system   kube-proxy-jhb27                                           1/1    
 kube-system   kube-scheduler-capz-cluster-control-plane-4mqhn            1/1     Running   1 (96m ago)   98m
 kube-system   kube-scheduler-capz-cluster-control-plane-hznhg            1/1     Running   0             96m
 kube-system   kube-scheduler-capz-cluster-control-plane-xzhpq            1/1     Running   0             93m
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 
 cluster-api-provider-azure $ k get crds
 NAME                                                  CREATED AT
@@ -4905,7 +4901,7 @@ ippools.crd.projectcalico.org                         2021-09-20T13:15:26Z
 kubecontrollersconfigurations.crd.projectcalico.org   2021-09-20T13:15:27Z
 networkpolicies.crd.projectcalico.org                 2021-09-20T13:15:27Z
 networksets.crd.projectcalico.org                     2021-09-20T13:15:27Z
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 
 cluster-api-provider-azure $ k get all -A
 NAMESPACE     NAME                                                           READY   STATUS    RESTARTS      AGE
@@ -4950,20 +4946,20 @@ kube-system   deployment.apps/coredns                   2/2     2            2  
 NAMESPACE     NAME                                                 DESIRED   CURRENT   READY   AGE
 kube-system   replicaset.apps/calico-kube-controllers-846b5f484d   1         1         1       98m
 kube-system   replicaset.apps/coredns-78fcd69978                   2         2         2       98m
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
 ```bash
 cluster-api-provider-azure $ make delete-workload-cluster
 Your Azure resources will now be deleted, this can take up to 20 minutes
-kubectl delete cluster 
+kubectl delete cluster
 error: resource(s) were provided, but no name was specified
 make: *** [delete-workload-cluster] Error 1
-cluster-api-provider-azure $ CLUSTER_NAME=capz-cluster make delete-workload-cluster 
+cluster-api-provider-azure $ CLUSTER_NAME=capz-cluster make delete-workload-cluster
 Your Azure resources will now be deleted, this can take up to 20 minutes
 kubectl delete cluster capz-cluster
 cluster.cluster.x-k8s.io "capz-cluster" deleted
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
 ```bash
@@ -5067,12 +5063,12 @@ go get: added k8s.io/klog/v2 v2.8.0
 
 
 go generate ./...
-cluster-api-provider-azure $ 
-cluster-api-provider-azure $ 
-cluster-api-provider-azure $ 
-cluster-api-provider-azure $ 
-cluster-api-provider-azure $ 
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
+cluster-api-provider-azure $
+cluster-api-provider-azure $
+cluster-api-provider-azure $
+cluster-api-provider-azure $
+cluster-api-provider-azure $
 cluster-api-provider-azure $ gst
 On branch main
 Your branch is up to date with 'origin/main'.
@@ -5096,7 +5092,7 @@ index 904a328d..28901c0f 100644
 @@ -1,3 +1,4 @@
 +//go:build !ignore_autogenerated_core_v1alpha3
  // +build !ignore_autogenerated_core_v1alpha3
- 
+
  /*
 diff --git a/api/v1alpha3/zz_generated.deepcopy.go b/api/v1alpha3/zz_generated.deepcopy.go
 index 9e335e49..25868ace 100644
@@ -5105,7 +5101,7 @@ index 9e335e49..25868ace 100644
 @@ -1,3 +1,4 @@
 +//go:build !ignore_autogenerated
  // +build !ignore_autogenerated
- 
+
  /*
 diff --git a/api/v1alpha4/zz_generated.deepcopy.go b/api/v1alpha4/zz_generated.deepcopy.go
 index 030a972a..0f77e6e9 100644
@@ -5114,7 +5110,7 @@ index 030a972a..0f77e6e9 100644
 @@ -1,3 +1,4 @@
 +//go:build !ignore_autogenerated
  // +build !ignore_autogenerated
- 
+
  /*
 diff --git a/exp/api/v1alpha3/zz_generated.conversion.go b/exp/api/v1alpha3/zz_generated.conversion.go
 index 0407aeb3..6a5bf647 100644
@@ -5123,7 +5119,7 @@ index 0407aeb3..6a5bf647 100644
 @@ -1,3 +1,4 @@
 +//go:build !ignore_autogenerated
  // +build !ignore_autogenerated
- 
+
  /*
 diff --git a/exp/api/v1alpha3/zz_generated.deepcopy.go b/exp/api/v1alpha3/zz_generated.deepcopy.go
 index 2df50d7a..c97f3306 100644
@@ -5132,7 +5128,7 @@ index 2df50d7a..c97f3306 100644
 @@ -1,3 +1,4 @@
 +//go:build !ignore_autogenerated
  // +build !ignore_autogenerated
- 
+
  /*
 diff --git a/exp/api/v1alpha4/zz_generated.deepcopy.go b/exp/api/v1alpha4/zz_generated.deepcopy.go
 index af9417c4..d3b47b31 100644
@@ -5141,7 +5137,7 @@ index af9417c4..d3b47b31 100644
 @@ -1,3 +1,4 @@
 +//go:build !ignore_autogenerated
  // +build !ignore_autogenerated
- 
+
  /*
 cluster-api-provider-azure $ ./scripts/ci-e2e.sh
 Detected kind version: kind.
@@ -5176,13 +5172,13 @@ cluster-api-provider-azure $ kind version
 kind v0.9.0 go1.17 darwin/amd64
 cluster-api-provider-azure $ which kind
 /Users/karuppiahn/go/bin/kind
-cluster-api-provider-azure $ rm -rfv ~/go/bin/kind 
+cluster-api-provider-azure $ rm -rfv ~/go/bin/kind
 /Users/karuppiahn/go/bin/kind
 cluster-api-provider-azure $ which kind
 /usr/local/bin/kind
 cluster-api-provider-azure $ kind version
 -bash: /Users/karuppiahn/go/bin/kind: No such file or directory
-cluster-api-provider-azure $ source ~/.bash_profile 
+cluster-api-provider-azure $ source ~/.bash_profile
 cluster-api-provider-azure $ kind version
 kind v0.11.1 go1.16.4 darwin/amd64
 cluster-api-provider-azure $ ./scripts/ci-e2e.sh
@@ -5199,30 +5195,30 @@ PULL_POLICY=IfNotPresent MANAGER_IMAGE=localhost:5000/ci-e2e/cluster-api-azure-c
 	test-e2e-run
 docker pull docker/dockerfile:1.1-experimental
 1.1-experimental: Pulling from docker/dockerfile
-612615616619: Pull complete 
+612615616619: Pull complete
 Digest: sha256:de85b2f3a3e8a2f7fe48e8e84a65f6fdd5cd5183afa6412fff9caa6871649c44
 Status: Downloaded newer image for docker/dockerfile:1.1-experimental
 docker.io/docker/dockerfile:1.1-experimental
 docker pull docker.io/library/golang:1.16
 1.16: Pulling from library/golang
-955615a668ce: Already exists 
-2756ef5f69a5: Already exists 
-911ea9f2bd51: Already exists 
-27b0a22ee906: Already exists 
-4e94c8ba5874: Already exists 
-261c19c9b43e: Already exists 
-ba66844146b3: Already exists 
+955615a668ce: Already exists
+2756ef5f69a5: Already exists
+911ea9f2bd51: Already exists
+27b0a22ee906: Already exists
+4e94c8ba5874: Already exists
+261c19c9b43e: Already exists
+ba66844146b3: Already exists
 Digest: sha256:0056b049979bfcf13ac2ede60b810349396fab1d510cb60701503dccd01f9153
 Status: Downloaded newer image for golang:1.16
 docker.io/library/golang:1.16
 docker pull gcr.io/distroless/static:latest
 latest: Pulling from distroless/static
-b49b96595fd4: Already exists 
+b49b96595fd4: Already exists
 Digest: sha256:912bd2c2b9704ead25ba91b631e3849d940f9d533f0c15cf4fc625099ad145b1
 Status: Downloaded newer image for gcr.io/distroless/static:latest
 gcr.io/distroless/static:latest
 DOCKER_BUILDKIT=1 docker build --build-arg goproxy=https://proxy.golang.org,direct --build-arg ARCH=amd64 --build-arg ldflags="-X 'sigs.k8s.io/cluster-api-provider-azure/version.buildDate=2021-09-20T14:51:57Z' -X 'sigs.k8s.io/cluster-api-provider-azure/version.gitCommit=2c7203980539027b74e41e92c2a439865ec1b721' -X 'sigs.k8s.io/cluster-api-provider-azure/version.gitTreeState=dirty' -X 'sigs.k8s.io/cluster-api-provider-azure/version.gitMajor=0' -X 'sigs.k8s.io/cluster-api-provider-azure/version.gitMinor=5' -X 'sigs.k8s.io/cluster-api-provider-azure/version.gitVersion=v0.5.2-45-2c720398053902-dirty'" . -t localhost:5000/ci-e2e/cluster-api-azure-controller-amd64:20210920145157
-[+] Building 158.2s (19/19) FINISHED                                                                                 
+[+] Building 158.2s (19/19) FINISHED
  => [internal] load build definition from Dockerfile                                                            0.0s
  => => transferring dockerfile: 2.09kB                                                                          0.0s
  => [internal] load .dockerignore                                                                               0.0s
@@ -5293,7 +5289,7 @@ go get: added gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7
     /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin/ginkgo-v1.16.4 -v -trace -tags=e2e -focus="Workload cluster creation" -skip="Creating a GPU-enabled cluster" -nodes=3 --noColor=false -stream --progress  ./test/e2e -- \
     	-e2e.artifacts-folder="/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/_artifacts" \
     	-e2e.config="/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/config/azure-dev-envsubst.yaml" \
-    	-e2e.skip-resource-cleanup=false -e2e.use-existing-cluster=false 
+    	-e2e.skip-resource-cleanup=false -e2e.use-existing-cluster=false
 You're using deprecated Ginkgo functionality:
 =============================================
 Ginkgo 2.0 is under active development and will introduce (a small number of) breaking changes.
@@ -5318,14 +5314,14 @@ go: downloading github.com/containerd/containerd v1.5.2
 [1] =======================
 [1] Random Seed: 1632149706
 [1] Parallel test node 1/3.
-[1] 
+[1]
 [2] Parallel test node 2/3.
-[2] 
+[2]
 [3] INFO: skipping test requires pushing container images to external repositoryRunning Suite: capz-e2e
 [3] =======================
 [3] Random Seed: 1632149706
 [3] Parallel test node 3/3.
-[3] 
+[3]
 [1] STEP: Initializing a runtime.Scheme with all the GVK relevant for this test
 [1] STEP: Loading the e2e test configuration from "/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/config/azure-dev-envsubst.yaml"
 [1] STEP: Creating a clusterctl local repository into "/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/_artifacts"
@@ -5346,7 +5342,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [1] STEP: Waiting for deployment capz-system/capz-controller-manager to be available
 [1] INFO: Creating log watcher for controller capz-system/capz-controller-manager, pod capz-controller-manager-588894f468-tmqxr, container manager
 [1] INFO: Creating log watcher for controller capz-system/capz-controller-manager, pod capz-controller-manager-588894f468-tmqxr, container kube-rbac-proxy
-[1] Workload cluster creation 
+[1] Workload cluster creation
 [1]   With 3 control-plane nodes and 2 worker nodes
 [1]   /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:184
 [1] [BeforeEach] Workload cluster creation
@@ -5355,7 +5351,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [1] STEP: Creating namespace "capz-e2e-68bcbj" for hosting the cluster
 [1] Sep 20 20:28:39.590: INFO: starting to create namespace for hosting the "capz-e2e-68bcbj" test spec
 [1] 2021/09/20 20:28:39 failed trying to get namespace (capz-e2e-68bcbj):namespaces "capz-e2e-68bcbj" not found
-[3] Workload cluster creation Creating a ipv6 control-plane cluster 
+[3] Workload cluster creation Creating a ipv6 control-plane cluster
 [3]   With ipv6 worker node
 [3]   /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:250
 [3] [BeforeEach] Workload cluster creation
@@ -5364,7 +5360,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [3] STEP: Creating namespace "capz-e2e-6l0t4r" for hosting the cluster
 [3] Sep 20 20:28:39.618: INFO: starting to create namespace for hosting the "capz-e2e-6l0t4r" test spec
 [1] INFO: Creating namespace capz-e2e-68bcbj
-[2] Workload cluster creation Creating a VMSS cluster 
+[2] Workload cluster creation Creating a VMSS cluster
 [2]   with a single control plane node and an AzureMachinePool with 2 nodes
 [2]   /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:296
 [2] [BeforeEach] Workload cluster creation
@@ -5410,7 +5406,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [3] kubeadmconfigtemplate.bootstrap.cluster.x-k8s.io/capz-e2e-6l0t4r-ipv6-md-0 created
 [3] clusterresourceset.addons.cluster.x-k8s.io/capz-e2e-6l0t4r-ipv6-calico created
 [3] configmap/cni-capz-e2e-6l0t4r-ipv6-calico created
-[3] 
+[3]
 [3] INFO: Waiting for the cluster infrastructure to be provisioned
 [1] cluster.cluster.x-k8s.io/capz-e2e-68bcbj-ha created
 [1] azurecluster.infrastructure.cluster.x-k8s.io/capz-e2e-68bcbj-ha created
@@ -5423,7 +5419,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [1] clusterresourceset.addons.cluster.x-k8s.io/capz-e2e-68bcbj-ha-calico created
 [1] azureclusteridentity.infrastructure.cluster.x-k8s.io/cluster-identity created
 [1] configmap/cni-capz-e2e-68bcbj-ha-calico created
-[1] 
+[1]
 [1] INFO: Waiting for the cluster infrastructure to be provisioned
 [3] STEP: Waiting for cluster to enter the provisioned phase
 [1] STEP: Waiting for cluster to enter the provisioned phase
@@ -5437,7 +5433,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [2] azureclusteridentity.infrastructure.cluster.x-k8s.io/cluster-identity created
 [2] clusterresourceset.addons.cluster.x-k8s.io/capz-e2e-ilonue-vmss-calico created
 [2] configmap/cni-capz-e2e-ilonue-vmss-calico created
-[2] 
+[2]
 [2] INFO: Waiting for the cluster infrastructure to be provisioned
 [2] STEP: Waiting for cluster to enter the provisioned phase
 [1] INFO: Waiting for control plane to be initialized
@@ -5466,9 +5462,9 @@ go: downloading github.com/containerd/containerd v1.5.2
 [2] STEP: Dumping logs from the "capz-e2e-ilonue-vmss" workload cluster
 [2] STEP: Dumping workload cluster capz-e2e-ilonue/capz-e2e-ilonue-vmss logs
 [2] Sep 20 20:49:48.530: INFO: INFO: Collecting logs for node capz-e2e-ilonue-vmss-control-plane-b59rt in cluster capz-e2e-ilonue-vmss in namespace capz-e2e-ilonue
-[2] 
+[2]
 [2] Sep 20 20:50:10.810: INFO: INFO: Collecting boot logs for AzureMachine capz-e2e-ilonue-vmss-control-plane-b59rt
-[2] 
+[2]
 [2] STEP: Dumping workload cluster capz-e2e-ilonue/capz-e2e-ilonue-vmss kube-system pod logs
 [2] STEP: Fetching kube-system pod logs took 1.86536575s
 [2] STEP: Dumping workload cluster capz-e2e-ilonue/capz-e2e-ilonue-vmss Azure activity log
@@ -5501,25 +5497,25 @@ go: downloading github.com/containerd/containerd v1.5.2
 [1] STEP: Dumping logs from the "capz-e2e-68bcbj-ha" workload cluster
 [1] STEP: Dumping workload cluster capz-e2e-68bcbj/capz-e2e-68bcbj-ha logs
 [1] Sep 20 20:52:48.352: INFO: INFO: Collecting logs for node capz-e2e-68bcbj-ha-control-plane-rx6ns in cluster capz-e2e-68bcbj-ha in namespace capz-e2e-68bcbj
-[1] 
+[1]
 [1] Sep 20 20:52:56.904: INFO: INFO: Collecting boot logs for AzureMachine capz-e2e-68bcbj-ha-control-plane-rx6ns
-[1] 
+[1]
 [1] STEP: Redacting sensitive information from logs
-[1] 
+[1]
 [1] • Failure [1457.710 seconds]
 [1] Workload cluster creation
 [1] /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:41
 [1]   With 3 control-plane nodes and 2 worker nodes [It]
 [1]   /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:184
-[1] 
+[1]
 [1]   Timed out after 1200.010s.
 [1]   Expected
 [1]       <int>: 1
 [1]   to equal
 [1]       <int>: 3
-[1] 
+[1]
 [1]   /Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/controlplane_helpers.go:108
-[1] 
+[1]
 [1]   Full Stack Trace
 [1]   sigs.k8s.io/cluster-api/test/framework.WaitForKubeadmControlPlaneMachinesToExist({0x2d83600, 0xc000128010}, {{0xc787cc8, 0xc000014000}, 0xc002174000, 0xc001c30900}, {0xc00218c340, 0x2, 0x2})
 [1]   	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/controlplane_helpers.go:108 +0x312
@@ -5562,7 +5558,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [1] ------------------------------
 [1] S
 [1] ------------------------------
-[1] Workload cluster creation Creating a cluster that uses the external cloud provider 
+[1] Workload cluster creation Creating a cluster that uses the external cloud provider
 [1]   with a 1 control plane nodes and 2 worker nodes
 [1]   /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:400
 [1] [BeforeEach] Workload cluster creation
@@ -5594,7 +5590,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [1] configmap/cloud-node-manager-addon created
 [1] clusterresourceset.addons.cluster.x-k8s.io/capz-e2e-sqbu6h-oot-calico created
 [1] configmap/cni-capz-e2e-sqbu6h-oot-calico created
-[1] 
+[1]
 [1] INFO: Waiting for the cluster infrastructure to be provisioned
 [1] STEP: Waiting for cluster to enter the provisioned phase
 [3] [AfterEach] Workload cluster creation
@@ -5602,11 +5598,11 @@ go: downloading github.com/containerd/containerd v1.5.2
 [3] STEP: Dumping logs from the "capz-e2e-6l0t4r-ipv6" workload cluster
 [3] STEP: Dumping workload cluster capz-e2e-6l0t4r/capz-e2e-6l0t4r-ipv6 logs
 [3] Sep 20 20:53:08.310: INFO: INFO: Collecting logs for node capz-e2e-6l0t4r-ipv6-control-plane-89427 in cluster capz-e2e-6l0t4r-ipv6 in namespace capz-e2e-6l0t4r
-[3] 
+[3]
 [3] Sep 20 20:53:15.911: INFO: INFO: Collecting boot logs for AzureMachine capz-e2e-6l0t4r-ipv6-control-plane-89427
-[3] 
+[3]
 [3] STEP: Redacting sensitive information from logs
-[3] 
+[3]
 [3] • Failure [1476.330 seconds]
 [3] Workload cluster creation
 [3] /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:41
@@ -5614,15 +5610,15 @@ go: downloading github.com/containerd/containerd v1.5.2
 [3]   /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:249
 [3]     With ipv6 worker node [It]
 [3]     /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:250
-[3] 
+[3]
 [3]     Timed out after 1200.004s.
 [3]     Expected
 [3]         <int>: 1
 [3]     to equal
 [3]         <int>: 3
-[3] 
+[3]
 [3]     /Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/controlplane_helpers.go:108
-[3] 
+[3]
 [3]     Full Stack Trace
 [3]     sigs.k8s.io/cluster-api/test/framework.WaitForKubeadmControlPlaneMachinesToExist({0x2d83600, 0xc00019e010}, {{0x2cb4c2f8, 0xc00038a230}, 0xc000148a80, 0xc000afac00}, {0xc000290080, 0x2, 0x2})
 [3]     	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/controlplane_helpers.go:108 +0x312
@@ -5663,7 +5659,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [3]     created by testing.(*T).Run
 [3]     	/usr/local/Cellar/go/1.17/libexec/src/testing/testing.go:1306 +0x35a
 [3] ------------------------------
-[3] Workload cluster creation Creating an AKS cluster 
+[3] Workload cluster creation Creating an AKS cluster
 [3]   with a single control plane node and 1 node
 [3]   /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:435
 [3] [BeforeEach] Workload cluster creation
@@ -5689,7 +5685,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [3] machinepool.cluster.x-k8s.io/agentpool1 created
 [3] azuremanagedmachinepool.infrastructure.cluster.x-k8s.io/agentpool1 created
 [3] azureclusteridentity.infrastructure.cluster.x-k8s.io/cluster-identity created
-[3] 
+[3]
 [3] INFO: Waiting for the cluster infrastructure to be provisioned
 [3] STEP: Waiting for cluster to enter the provisioned phase
 [1] INFO: Waiting for control plane to be initialized
@@ -5705,7 +5701,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [2] STEP: Checking if any resources are left over in Azure for spec "create-workload-cluster"
 [2] STEP: Redacting sensitive information from logs
 [2] INFO: "with a single control plane node and an AzureMachinePool with 2 nodes" ran for 31m20s on Ginkgo node 2 of 3
-[2] 
+[2]
 [2] • Failure [1880.328 seconds]
 [2] Workload cluster creation
 [2] /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:41
@@ -5713,15 +5709,15 @@ go: downloading github.com/containerd/containerd v1.5.2
 [2]   /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:295
 [2]     with a single control plane node and an AzureMachinePool with 2 nodes [It]
 [2]     /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:296
-[2] 
+[2]
 [2]     Timed out after 900.009s.
 [2]     Expected
 [2]         <int>: 0
 [2]     to equal
 [2]         <int>: 2
-[2] 
+[2]
 [2]     /Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/machinepool_helpers.go:85
-[2] 
+[2]
 [2]     Full Stack Trace
 [2]     sigs.k8s.io/cluster-api/test/framework.WaitForMachinePoolNodesToExist({0x2d83600, 0xc0000520e0}, {{0x5ba4768, 0xc0002c2620}, 0xc0005bc000}, {0x0, 0x0, 0x0})
 [2]     	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/machinepool_helpers.go:85 +0x3e6
@@ -5760,7 +5756,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [2]     created by testing.(*T).Run
 [2]     	/usr/local/Cellar/go/1.17/libexec/src/testing/testing.go:1306 +0x35a
 [2] ------------------------------
-[2] Workload cluster creation Creating a Windows Enabled cluster 
+[2] Workload cluster creation Creating a Windows Enabled cluster
 [2]   With 3 control-plane nodes and 1 Linux worker node and 1 Windows worker node
 [2]   /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:477
 [2] [BeforeEach] Workload cluster creation
@@ -5791,7 +5787,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [2] azureclusteridentity.infrastructure.cluster.x-k8s.io/cluster-identity created
 [2] clusterresourceset.addons.cluster.x-k8s.io/capz-e2e-lz2nnu-win-ha-flannel created
 [2] configmap/cni-capz-e2e-lz2nnu-win-ha-flannel created
-[2] 
+[2]
 [2] INFO: Waiting for the cluster infrastructure to be provisioned
 [2] STEP: Waiting for cluster to enter the provisioned phase
 [2] INFO: Waiting for control plane to be initialized
@@ -5802,15 +5798,15 @@ go: downloading github.com/containerd/containerd v1.5.2
 [1] STEP: Dumping logs from the "capz-e2e-sqbu6h-oot" workload cluster
 [1] STEP: Dumping workload cluster capz-e2e-sqbu6h/capz-e2e-sqbu6h-oot logs
 [1] Sep 20 21:12:20.905: INFO: INFO: Collecting logs for node capz-e2e-sqbu6h-oot-control-plane-xd2gv in cluster capz-e2e-sqbu6h-oot in namespace capz-e2e-sqbu6h
-[1] 
+[1]
 [1] Sep 20 21:12:43.747: INFO: INFO: Collecting boot logs for AzureMachine capz-e2e-sqbu6h-oot-control-plane-xd2gv
-[1] 
+[1]
 [1] Sep 20 21:12:46.047: INFO: INFO: Collecting logs for node capz-e2e-sqbu6h-oot-md-0-zfrrp in cluster capz-e2e-sqbu6h-oot in namespace capz-e2e-sqbu6h
-[1] 
+[1]
 [1] Sep 20 21:12:52.196: INFO: INFO: Collecting boot logs for AzureMachine capz-e2e-sqbu6h-oot-md-0-zfrrp
-[1] 
+[1]
 [1] STEP: Redacting sensitive information from logs
-[1] 
+[1]
 [1] • Failure [1194.899 seconds]
 [1] Workload cluster creation
 [1] /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:41
@@ -5818,15 +5814,15 @@ go: downloading github.com/containerd/containerd v1.5.2
 [1]   /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:399
 [1]     with a 1 control plane nodes and 2 worker nodes [It]
 [1]     /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:400
-[1] 
+[1]
 [1]     Timed out after 900.007s.
 [1]     Expected
 [1]         <int>: 0
 [1]     to equal
 [1]         <int>: 2
-[1] 
+[1]
 [1]     /Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/machinedeployment_helpers.go:121
-[1] 
+[1]
 [1]     Full Stack Trace
 [1]     sigs.k8s.io/cluster-api/test/framework.WaitForMachineDeploymentNodesToExist({0x2d83600, 0xc000128010}, {{0xc787cc8, 0xc0002b6af0}, 0xc00147e000, 0xc00087e580}, {0x0, 0x0, 0x0})
 [1]     	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/machinedeployment_helpers.go:121 +0x426
@@ -5865,7 +5861,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [1]     created by testing.(*T).Run
 [1]     	/usr/local/Cellar/go/1.17/libexec/src/testing/testing.go:1306 +0x35a
 [1] ------------------------------
-[1] Workload cluster creation Creating a Windows enabled VMSS cluster 
+[1] Workload cluster creation Creating a Windows enabled VMSS cluster
 [1]   with a single control plane node and an Linux AzureMachinePool with 1 nodes and Windows AzureMachinePool with 1 node
 [1]   /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:524
 [1] [BeforeEach] Workload cluster creation
@@ -5896,7 +5892,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [1] kubeadmconfig.bootstrap.cluster.x-k8s.io/capz-e2e-4pqcgt-win-vmss-mp-win created
 [1] clusterresourceset.addons.cluster.x-k8s.io/capz-e2e-4pqcgt-win-vmss-flannel created
 [1] configmap/cni-capz-e2e-4pqcgt-win-vmss-flannel created
-[1] 
+[1]
 [1] INFO: Waiting for the cluster infrastructure to be provisioned
 [1] STEP: Waiting for cluster to enter the provisioned phase
 [3] [AfterEach] Workload cluster creation
@@ -5915,7 +5911,7 @@ go: downloading github.com/containerd/containerd v1.5.2
 [3] STEP: Checking if any resources are left over in Azure for spec "create-workload-cluster"
 [3] STEP: Redacting sensitive information from logs
 [3] INFO: "with a single control plane node and 1 node" ran for 23m53s on Ginkgo node 3 of 3
-[3] 
+[3]
 [3] • Failure [1433.447 seconds]
 [3] Workload cluster creation
 [3] /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:41
@@ -5923,15 +5919,15 @@ go: downloading github.com/containerd/containerd v1.5.2
 [3]   /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:434
 [3]     with a single control plane node and 1 node [It]
 [3]     /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/azure_test.go:435
-[3] 
+[3]
 [3]     Timed out after 1200.001s.
 [3]     Expected
 [3]         <string>: Provisioning
 [3]     to equal
 [3]         <string>: Provisioned
-[3] 
+[3]
 [3]     /Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/cluster_helpers.go:134
-[3] 
+[3]
 [3]     Full Stack Trace
 [3]     sigs.k8s.io/cluster-api/test/framework.WaitForClusterToProvision({0x2d83600, 0xc00019e010}, {{0x2ccc4310, 0xc0002504d0}, 0xc00067e700}, {0xc000a4d280, 0x2, 0x2})
 [3]     	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/cluster_helpers.go:134 +0x17b
@@ -5972,16 +5968,16 @@ go: downloading github.com/containerd/containerd v1.5.2
 [3] ------------------------------
 [3] SSSSSSSSSSSS
 [3] JUnit report was created: /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/_artifacts/junit.e2e_suite.3.xml
-[3] 
-[3] 
+[3]
+[3]
 [3] Summarizing 2 Failures:
-[3] 
-[3] [Fail] Workload cluster creation Creating a ipv6 control-plane cluster [It] With ipv6 worker node 
+[3]
+[3] [Fail] Workload cluster creation Creating a ipv6 control-plane cluster [It] With ipv6 worker node
 [3] /Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/controlplane_helpers.go:108
-[3] 
-[3] [Fail] Workload cluster creation Creating an AKS cluster [It] with a single control plane node and 1 node 
+[3]
+[3] [Fail] Workload cluster creation Creating an AKS cluster [It] with a single control plane node and 1 node
 [3] /Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/cluster_helpers.go:134
-[3] 
+[3]
 [3] Ran 2 of 14 Specs in 3102.421 seconds
 [3] FAIL! -- 0 Passed | 2 Failed | 0 Pending | 12 Skipped
 [3] You're using deprecated Ginkgo functionality:
@@ -5989,56 +5985,56 @@ go: downloading github.com/containerd/containerd v1.5.2
 [3] Ginkgo 2.0 is under active development and will introduce (a small number of) breaking changes.
 [3] To learn more, view the migration guide at https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md
 [3] To comment, chime in at https://github.com/onsi/ginkgo/issues/711
-[3] 
+[3]
 [3]   You are using a custom reporter.  Support for custom reporters will likely be removed in V2.  Most users were using them to generate junit or teamcity reports and this functionality will be merged into the core reporter.  In addition, Ginkgo 2.0 will support emitting a JSON-formatted report that users can then manipulate to generate custom reports.
-[3] 
+[3]
 [3]   If this change will be impactful to you please leave a comment on https://github.com/onsi/ginkgo/issues/711
 [3]   Learn more at: https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md#removed-custom-reporters
 [3]   Measure is deprecated and will be removed in Ginkgo V2.  Please migrate to gomega/gmeasure.
 [3]   Learn more at: https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md#removed-measure
 [3]     /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/test/e2e/conformance_test.go:100
-[3] 
+[3]
 [3] To silence deprecations that can be silenced set the following environment variable:
 [3]   ACK_GINKGO_DEPRECATIONS=1.16.4
-[3] 
+[3]
 [3] --- FAIL: TestE2E (3102.44s)
 [3] FAIL
 
 
 
-^C[1] 
+^C[1]
 [1] ---------------------------------------------------------
 [1] Received interrupt.  Running AfterSuite...
 [1] ^C again to terminate immediately
-[2] 
+[2]
 [2] ---------------------------------------------------------
 [2] Received interrupt.  Running AfterSuite...
 [2] ^C again to terminate immediately
-[2] 
+[2]
 [2] JUnit report was created: /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/_artifacts/junit.e2e_suite.2.xml
-[2] 
-[2] 
+[2]
+[2]
 [2] Summarizing 1 Failure:
-[2] 
-[2] [Fail] Workload cluster creation Creating a VMSS cluster [It] with a single control plane node and an AzureMachinePool with 2 nodes 
+[2]
+[2] [Fail] Workload cluster creation Creating a VMSS cluster [It] with a single control plane node and an AzureMachinePool with 2 nodes
 [2] /Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/machinepool_helpers.go:85
-[2] 
+[2]
 [2] Ran 2 of 2 Specs in 3234.237 seconds
 [2] FAIL! -- 1 Passed | 1 Failed | 0 Pending | 0 Skipped
 [1] STEP: Tearing down the management cluster
 [1] W0920 21:19:22.022987   32630 reflector.go:436] pkg/mod/k8s.io/client-go@v0.21.3/tools/cache/reflector.go:167: watch of *v1.Event ended with: very short watch: pkg/mod/k8s.io/client-go@v0.21.3/tools/cache/reflector.go:167: Unexpected watch close - watch lasted less than a second and no items received
-[1] 
+[1]
 [1] JUnit report was created: /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/_artifacts/junit.e2e_suite.1.xml
-[1] 
-[1] 
+[1]
+[1]
 [1] Summarizing 2 Failures:
-[1] 
-[1] [Fail] Workload cluster creation [It] With 3 control-plane nodes and 2 worker nodes 
+[1]
+[1] [Fail] Workload cluster creation [It] With 3 control-plane nodes and 2 worker nodes
 [1] /Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/controlplane_helpers.go:108
-[1] 
-[1] [Fail] Workload cluster creation Creating a cluster that uses the external cloud provider [It] with a 1 control plane nodes and 2 worker nodes 
+[1]
+[1] [Fail] Workload cluster creation Creating a cluster that uses the external cloud provider [It] with a 1 control plane nodes and 2 worker nodes
 [1] /Users/karuppiahn/go/pkg/mod/sigs.k8s.io/cluster-api/test@v0.4.2/framework/machinedeployment_helpers.go:121
-[1] 
+[1]
 [1] Ran 3 of 4 Specs in 3235.876 seconds
 [1] FAIL! -- 1 Passed | 2 Failed | 0 Pending | 1 Skipped
 
@@ -6051,4 +6047,174 @@ All sensitive variables are redacted
 
 ```
 
+---
 
+Okay, so the code is in here
+
+https://github.com/kubernetes-sigs/cluster-api-provider-azure/blob/47caf96183f7d3bd1e4dda5944a06dae10318bc7/azure/services/groups/spec.go#L50-L66
+
+Currently, if the resource group already exists, then it's not updated
+
+```go
+if existing != nil {
+    // rg already exists, nothing to update.
+    return nil, nil
+}
+```
+
+But if additonal tags are updated, then it has to be updated. For example, there's an additional tags field in the Azure Cluster
+
+```bash
+$ k explain azurecluster.spec.additionalTags
+KIND:     AzureCluster
+VERSION:  infrastructure.cluster.x-k8s.io/v1alpha4
+
+FIELD:    additionalTags <map[string]string>
+
+DESCRIPTION:
+     AdditionalTags is an optional set of tags to add to Azure resources managed
+     by the Azure provider, in addition to the ones added by default.
+```
+
+Group is Resource Group I think. More like `resources.Group` https://pkg.go.dev/github.com/Azure/azure-sdk-for-go@v55.8.0+incompatible/services/resources/mgmt/2019-05-01/resources?utm_source=gopls#Group
+
+The Group spec has `AdditionalTags` field
+
+```go
+// GroupSpec defines the specification for a Resource Group.
+type GroupSpec struct {
+	Name           string
+	Location       string
+	ClusterName    string
+	AdditionalTags infrav1.Tags
+}
+```
+
+Which is filled in from the AzureCluster
+
+```go
+// GroupSpec returns the resource group spec.
+func (s *ClusterScope) GroupSpec() azure.ResourceSpecGetter {
+	return &groups.GroupSpec{
+		Name:           s.ResourceGroup(),
+		Location:       s.Location(),
+		ClusterName:    s.ClusterName(),
+		AdditionalTags: s.AdditionalTags(),
+	}
+}
+```
+
+```go
+// AdditionalTags returns AdditionalTags from the scope's AzureCluster.
+func (s *ClusterScope) AdditionalTags() infrav1.Tags {
+	tags := make(infrav1.Tags)
+	if s.AzureCluster.Spec.AdditionalTags != nil {
+		tags = s.AzureCluster.Spec.AdditionalTags.DeepCopy()
+	}
+	return tags
+}
+```
+
+There are also some more references to the `AdditionalTags` field, some in tests, one in a thing called managed control plane. But I think I can put that off for now
+
+Now, we need to add a test for the situation where - An Azure cluster is created with some or no additonal tags, this way resource group is created with some or no additional tags. Later we can update the Azure cluster with some extra additonal tags and that should be updated in the resource group too! I'm wondering where to add this test. Also, I'm guessing this will be an E2E test, but this is too heavy, hmm. With E2E, it will take a lot of time, with unit tests / integration tests with mocks, maybe a little faster. Gotta check if that kind of test exists here, for similar tag update feature, hmm. I could check for Azure machine, it also seems to have some tags, and can also inherit tags from Azure cluster I think
+
+Also, there's some `azure/services/tags/tags.go` which I was wondering what it is for
+
+I think azure machine tags - don't get updated, at least I'm not able to see any update tags code using additonal tags
+
+`azure/services/virtualmachines/virtualmachines.go` > `Reconcile` method does have mention of tags but only for create. For update, there's no mention of tags
+
+```go
+case err == nil:
+// VM already exists, update the spec and skip creation.
+s.Scope.SetProviderID(azure.ProviderIDPrefix + existingVM.ID)
+s.Scope.SetAnnotation("cluster-api-provider-azure", "true")
+s.Scope.SetAddresses(existingVM.Addresses)
+s.Scope.SetVMState(existingVM.State)
+s.Scope.UpdateStatus()
+```
+
+I guess I just gotta look for another resource, which has tags and updates tags and has test code - to see what test it has
+
+I think `azure/services/groups/spec.go` > `Parameters` method is used by - `azure/services/groups/client.go` > `resourceGroupParams` method which in turn is used by `azure/services/groups/client.go` > `CreateOrUpdateAsync` which in turn is used by `azure/services/async/async.go` > `CreateResource` which seems like a very generic function, for now it's used by `azure/services/groups/groups.go` > `Reconcile` method which in turn seems to be used by two files -
+
+`exp/controllers/azuremanagedcontrolplane_reconciler.go` > `Reconcile` method at
+
+```go
+if err := r.groupsSvc.Reconcile(ctx); err != nil {
+    return errors.Wrap(err, "failed to reconcile managed cluster resource group")
+}
+```
+
+and
+
+`controllers/azurecluster_reconciler.go` > `Reconcile` method at
+
+```go
+if err := s.groupsSvc.Reconcile(ctx); err != nil {
+    return errors.Wrap(err, "failed to reconcile resource group")
+}
+```
+
+but the `groupsSvc` fields are all of type `azure.Reconciler` which make it hard to find from where the implementation comes, but with the name and error messages it's clear that the resource group implementation is injected, maybe for tests etc mock might be injected
+
+`controllers/azurecluster_reconciler.go` > `newAzureClusterService` shows how it's created -
+
+```go
+groupsSvc:        groups.New(scope),
+```
+
+In tests, it's below in `controllers/azurecluster_reconciler_test.go` > `TestAzureClusterReconcilerDelete`
+
+```go
+groupsSvc:        groupsMock,
+```
+
+---
+
+Regarding the managed control plane, looks like there's azure managed clusters and related CRDs
+
+```bash
+$ k get crd | rg azure | rg managed
+azuremanagedclusters.infrastructure.cluster.x-k8s.io         2021-09-21T05:22:20Z
+azuremanagedcontrolplanes.infrastructure.cluster.x-k8s.io    2021-09-21T05:22:20Z
+azuremanagedmachinepools.infrastructure.cluster.x-k8s.io     2021-09-21T05:22:20Z
+```
+
+I think it's the managed service from azure, which can be managed using CAPZ and CAPI
+
+---
+
+I think I can write some tests in `azure/services/groups/groups_test.go`. I gotta check it out though!
+
+There are only two tests in it for now
+
+- TestReconcileGroups
+- TestDeleteGroups
+
+I'll have to write mine in `TestReconcileGroups`
+
+and it has mock clients for Azure API I think, I can see usages of some structs from `azure/services/groups/mock_groups/client_mock.go`
+
+Actually, `TestReconcileGroups` mocks away `CreateOrUpdateAsync` by using the mock `CreateOrUpdateAsync` in `azure/services/groups/mock_groups/client_mock.go`
+
+Ideally we have to test `CreateOrUpdateAsync` in `azure/services/groups/client.go` to ensure it does updates properly
+
+---
+
+TODO - handle if existingTagValue is `nil`
+
+`existingTagValue == nil || (existingTagValue != nil && *existingTagValue != tagValue)`
+
+`existingTagValue != nil` seems unnecessary. also, alternative - use two ifs - easier to read too
+
+```go
+if existingTagValue == nil {
+    ...
+}
+
+if *existingTagValue != tagValue {
+    ...
+}
+```
