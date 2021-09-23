@@ -6203,7 +6203,7 @@ Ideally we have to test `CreateOrUpdateAsync` in `azure/services/groups/client.g
 
 ---
 
-TODO - handle if existingTagValue is `nil`
+TODO - handle if existingTagValue is `nil` [DONE]
 
 `existingTagValue == nil || (existingTagValue != nil && *existingTagValue != tagValue)`
 
@@ -6218,3 +6218,4282 @@ if *existingTagValue != tagValue {
     ...
 }
 ```
+
+---
+
+Thinking about using https://docs.microsoft.com/en-us/rest/api/resources/tags/update-at-scope API for updating resource group tags. But I gotta beware, this is different from https://docs.microsoft.com/en-us/rest/api/resources/tags/create-or-update-at-scope API. The code in `azure/services/tags/tags.go` uses https://docs.microsoft.com/en-us/rest/api/resources/tags/create-or-update-at-scope API as of now using `s.client.CreateOrUpdateAtScope` and `ac.tags.CreateOrUpdateAtScope` method calls. We want to use `func (client TagsClient) UpdateAtScope(ctx context.Context, scope string, parameters TagsPatchResource) (result TagsResource, err error) {` method call from the Azure Tags Client. We want to use `Merge` operation, that is `TagsPatchOperationMerge TagsPatchOperation = "Merge"` of the API - https://docs.microsoft.com/en-us/rest/api/resources/tags/update-at-scope#tagspatchoperation , so `Merge` will be the value of `Operation` field, `Properties` field value will be the tags
+
+Actually, for deletion to work, PATCH is not enough. So Create or Update At Scope is needed
+
+I finished the code but now I'm wondering what will happen in the first iteration - how tags will be added to the annotation JSON. Looks like it won't be added the first time
+
+---
+
+```bash
+
+export AZURE_TENANT_ID=""
+export AZURE_SUBSCRIPTION_ID=""
+export AZURE_CLIENT_ID=""
+export AZURE_CLIENT_SECRET=""
+
+# Cluster settings.
+export CLUSTER_NAME="capz-cluster"
+export AZURE_VNET_NAME=${CLUSTER_NAME}-vnet
+
+# Azure settings.
+export AZURE_LOCATION="southcentralus"
+export AZURE_RESOURCE_GROUP=${CLUSTER_NAME}
+export AZURE_SUBSCRIPTION_ID_B64="$(echo -n "$AZURE_SUBSCRIPTION_ID" | base64 | tr -d '\n')"
+export AZURE_TENANT_ID_B64="$(echo -n "$AZURE_TENANT_ID" | base64 | tr -d '\n')"
+export AZURE_CLIENT_ID_B64="$(echo -n "$AZURE_CLIENT_ID" | base64 | tr -d '\n')"
+export AZURE_CLIENT_SECRET_B64="$(echo -n "$AZURE_CLIENT_SECRET" | base64 | tr -d '\n')"
+
+# Machine settings.
+export CONTROL_PLANE_MACHINE_COUNT=1
+export AZURE_CONTROL_PLANE_MACHINE_TYPE="Standard_D2s_v3"
+export AZURE_NODE_MACHINE_TYPE="Standard_D2s_v3"
+export WORKER_MACHINE_COUNT=1
+export KUBERNETES_VERSION="v1.22.1"
+
+# Generate SSH key.
+# If you want to provide your own key, skip this step and set AZURE_SSH_PUBLIC_KEY_B64 to your existing file.
+SSH_KEY_FILE=.sshkey
+rm -f "${SSH_KEY_FILE}" 2>/dev/null
+ssh-keygen -t rsa -b 2048 -f "${SSH_KEY_FILE}" -N '' 1>/dev/null
+echo "Machine SSH key generated in ${SSH_KEY_FILE}"
+# For Linux the ssh key needs to be b64 encoded because we use the azure api to set it
+# Windows doesn't support setting ssh keys so we use cloudbase-init to set which doesn't require base64
+export AZURE_SSH_PUBLIC_KEY_B64=$(cat "${SSH_KEY_FILE}.pub" | base64 | tr -d '\r\n')
+export AZURE_SSH_PUBLIC_KEY=$(cat "${SSH_KEY_FILE}.pub" | tr -d '\r\n')
+
+export AZURE_CLUSTER_IDENTITY_SECRET_NAME="cluster-identity-secret"
+export CLUSTER_IDENTITY_NAME=${CLUSTER_IDENTITY_NAME:="cluster-identity"}
+export AZURE_CLUSTER_IDENTITY_SECRET_NAMESPACE="default"
+```
+
+```bash
+cluster-api-provider-azure $ stern -n capz-system capz-controller-manager -t 5 | rg -i "error|fail"
++ capz-controller-manager-76c696b6cc-nh9wv › manager
++ capz-controller-manager-76c696b6cc-nh9wv › kube-rbac-proxy
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:15.879299900+05:30 E0923 14:12:15.879037       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:22.875988800+05:30 E0923 14:12:22.875670       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:30.511118500+05:30 E0923 14:12:30.510614       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:37.673116200+05:30 E0923 14:12:37.672558       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:44.692072300+05:30 E0923 14:12:44.691776       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:51.633400300+05:30 E0923 14:12:51.632155       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:59.081522100+05:30 E0923 14:12:59.081169       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:05.986649000+05:30 E0923 14:13:05.986304       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:13.002784500+05:30 E0923 14:13:13.002484       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:19.449834800+05:30 E0923 14:13:19.449587       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:25.840993300+05:30 E0923 14:13:25.840549       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:33.024922300+05:30 E0923 14:13:33.024651       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:39.324008500+05:30 E0923 14:13:39.323707       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:49.901566400+05:30 E0923 14:13:49.901164       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+^C
+cluster-api-provider-azure $ 
+```
+
+---
+
+```bash
+cluster-api-provider-azure $ make create-workload-cluster
+# Create workload Cluster.
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin/envsubst-drone < /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/templates/cluster-template.yaml | kubectl apply -f -
+cluster.cluster.x-k8s.io/capz-cluster created
+azurecluster.infrastructure.cluster.x-k8s.io/capz-cluster created
+kubeadmcontrolplane.controlplane.cluster.x-k8s.io/capz-cluster-control-plane created
+azuremachinetemplate.infrastructure.cluster.x-k8s.io/capz-cluster-control-plane created
+machinedeployment.cluster.x-k8s.io/capz-cluster-md-0 created
+azuremachinetemplate.infrastructure.cluster.x-k8s.io/capz-cluster-md-0 created
+kubeadmconfigtemplate.bootstrap.cluster.x-k8s.io/capz-cluster-md-0 created
+azureclusteridentity.infrastructure.cluster.x-k8s.io/cluster-identity unchanged
+# Wait for the kubeconfig to become available.
+timeout --foreground 300 bash -c "while ! kubectl get secrets | grep capz-cluster-kubeconfig; do sleep 1; done"
+capz-cluster-kubeconfig                 cluster.x-k8s.io/secret               1      1s
+# Get kubeconfig and store it locally.
+kubectl get secrets capz-cluster-kubeconfig -o json | jq -r .data.value | base64 --decode > ./kubeconfig
+timeout --foreground 600 bash -c "while ! kubectl --kubeconfig=./kubeconfig get nodes | grep master; do sleep 1; done"
+error: the server doesn't have a resource type "nodes"
+capz-cluster-control-plane-g8pzr   NotReady   control-plane,master   8s    v1.22.1
+run "kubectl --kubeconfig=./kubeconfig ..." to work with the new target cluster
+cluster-api-provider-azure $ ktx
+Switched to context "kind-capz".
+cluster-api-provider-azure $ kubectl --kubeconfig kubeconfig get nodes -A
+NAME                               STATUS     ROLES                  AGE     VERSION
+capz-cluster-control-plane-g8pzr   Ready      control-plane,master   2m10s   v1.22.1
+capz-cluster-md-0-j7q7z            NotReady   <none>                 12s     v1.22.1
+cluster-api-provider-azure $ kubectl --kubeconfig kubeconfig get nodes -A -w
+NAMESPACE   NAME                               STATUS     ROLES                  AGE     VERSION
+            capz-cluster-control-plane-g8pzr   Ready      control-plane,master   2m24s   v1.22.1
+            capz-cluster-md-0-j7q7z            NotReady   <none>                 26s     v1.22.1
+
+            capz-cluster-md-0-j7q7z            Ready      <none>                 30s     v1.22.1
+            capz-cluster-md-0-j7q7z            Ready      <none>                 30s     v1.22.1
+            capz-cluster-md-0-j7q7z            Ready      <none>                 32s     v1.22.1
+            capz-cluster-md-0-j7q7z            Ready      <none>                 35s     v1.22.1
+            capz-cluster-md-0-j7q7z            Ready      <none>                 35s     v1.22.1
+            capz-cluster-md-0-j7q7z            Ready      <none>                 35s     v1.22.1
+            capz-cluster-md-0-j7q7z            Ready      <none>                 45s     v1.22.1
+            capz-cluster-md-0-j7q7z            Ready      <none>                 60s     v1.22.1
+^Ccluster-api-provider-azure $ 
+
+cluster-api-provider-azure $ k get azuremachines
+NAME                               READY   STATE
+capz-cluster-control-plane-g8pzr           
+capz-cluster-md-0-j7q7z                    
+cluster-api-provider-azure $ k get azuremachines -w
+NAME                               READY   STATE
+capz-cluster-control-plane-g8pzr           
+capz-cluster-md-0-j7q7z                    
+
+
+capz-cluster-control-plane-g8pzr           
+capz-cluster-control-plane-g8pzr   true    
+capz-cluster-control-plane-g8pzr   true    
+capz-cluster-control-plane-g8pzr   true    
+capz-cluster-control-plane-g8pzr   false   Updating
+capz-cluster-control-plane-g8pzr   false   Updating
+capz-cluster-control-plane-g8pzr   true    Succeeded
+^Ccluster-api-provider-azure k get azurecluster
+NAME           CLUSTER        READY   REASON
+capz-cluster   capz-cluster   True    
+cluster-api-provider-azure $ k get cluster
+NAME           PHASE
+capz-cluster   Provisioned
+cluster-api-provider-azure $ k get cluster
+NAME           PHASE
+capz-cluster   Provisioned
+cluster-api-provider-azure $ k get azuremachines -w
+NAME                               READY   STATE
+capz-cluster-control-plane-g8pzr   true    Succeeded
+capz-cluster-md-0-j7q7z                    
+
+
+capz-cluster-md-0-j7q7z                    
+capz-cluster-md-0-j7q7z            true    
+capz-cluster-md-0-j7q7z            true    
+capz-cluster-md-0-j7q7z            true    
+capz-cluster-md-0-j7q7z            false   Updating
+capz-cluster-md-0-j7q7z            false   Updating
+capz-cluster-md-0-j7q7z            true    Succeeded
+^Ccluster-api-provider-azure $ 
+
+Last login: Thu Sep 23 19:40:12 on ttys002
+cluster-api-provider-azure $ k get machines -w
+NAME                               PROVIDERID   PHASE          VERSION
+capz-cluster-control-plane-zpw9g                Provisioning   v1.22.1
+capz-cluster-md-0-598fdf57-rwbkr                Pending        v1.22.1
+
+capz-cluster-control-plane-zpw9g                Provisioning   v1.22.1
+capz-cluster-control-plane-zpw9g                Provisioning   v1.22.1
+capz-cluster-control-plane-zpw9g                Provisioning   v1.22.1
+capz-cluster-control-plane-zpw9g   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-control-plane-g8pzr   Provisioning   v1.22.1
+capz-cluster-control-plane-zpw9g   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-control-plane-g8pzr   Provisioned    v1.22.1
+capz-cluster-control-plane-zpw9g   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-control-plane-g8pzr   Provisioned    v1.22.1
+capz-cluster-control-plane-zpw9g   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-control-plane-g8pzr   Provisioned    v1.22.1
+capz-cluster-control-plane-zpw9g   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-control-plane-g8pzr   Provisioned    v1.22.1
+capz-cluster-control-plane-zpw9g   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-control-plane-g8pzr   Provisioned    v1.22.1
+capz-cluster-control-plane-zpw9g   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-control-plane-g8pzr   Running        v1.22.1
+capz-cluster-control-plane-zpw9g   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-control-plane-g8pzr   Running        v1.22.1
+capz-cluster-control-plane-zpw9g   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-control-plane-g8pzr   Running        v1.22.1
+capz-cluster-control-plane-zpw9g   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-control-plane-g8pzr   Running        v1.22.1
+capz-cluster-md-0-598fdf57-rwbkr                                                                                                                                                                          Pending        v1.22.1
+capz-cluster-md-0-598fdf57-rwbkr                                                                                                                                                                          Pending        v1.22.1
+capz-cluster-md-0-598fdf57-rwbkr                                                                                                                                                                          Provisioning   v1.22.1
+capz-cluster-md-0-598fdf57-rwbkr                                                                                                                                                                          Provisioning   v1.22.1
+
+capz-cluster-md-0-598fdf57-rwbkr                                                                                                                                                                          Provisioning   v1.22.1
+capz-cluster-md-0-598fdf57-rwbkr                                                                                                                                                                          Provisioning   v1.22.1
+capz-cluster-md-0-598fdf57-rwbkr                                                                                                                                                                          Provisioning   v1.22.1
+capz-cluster-md-0-598fdf57-rwbkr                                                                                                                                                                          Provisioning   v1.22.1
+capz-cluster-md-0-598fdf57-rwbkr   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-md-0-j7q7z            Provisioning   v1.22.1
+capz-cluster-md-0-598fdf57-rwbkr   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-md-0-j7q7z            Running        v1.22.1
+capz-cluster-md-0-598fdf57-rwbkr   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-md-0-j7q7z            Running        v1.22.1
+^Ccluster-api-provider-azure $ 
+```
+
+---
+
+```bash
+cluster-api-provider-azure $ go test -v ./...
+# sigs.k8s.io/cluster-api-provider-azure/azure/services/groups [sigs.k8s.io/cluster-api-provider-azure/azure/services/groups.test]
+azure/services/groups/groups_test.go:115:5: cannot use scopeMock (type *mock_groups.MockGroupScope) as type GroupScope in field value:
+	*mock_groups.MockGroupScope does not implement GroupScope (missing AdditionalTags method)
+azure/services/groups/groups_test.go:249:5: cannot use scopeMock (type *mock_groups.MockGroupScope) as type GroupScope in field value:
+	*mock_groups.MockGroupScope does not implement GroupScope (missing AdditionalTags method)
+?   	sigs.k8s.io/cluster-api-provider-azure	[no test files]
+=== RUN   TestFuzzyConversion
+=== RUN   TestFuzzyConversion/for_AzureCluster
+=== RUN   TestFuzzyConversion/for_AzureCluster/spoke-hub-spoke
+=== RUN   TestFuzzyConversion/for_AzureCluster/hub-spoke-hub
+=== RUN   TestFuzzyConversion/for_AzureMachine
+=== RUN   TestFuzzyConversion/for_AzureMachine/spoke-hub-spoke
+=== RUN   TestFuzzyConversion/for_AzureMachine/hub-spoke-hub
+=== RUN   TestFuzzyConversion/for_AzureMachineTemplate
+=== RUN   TestFuzzyConversion/for_AzureMachineTemplate/spoke-hub-spoke
+=== RUN   TestFuzzyConversion/for_AzureMachineTemplate/hub-spoke-hub
+=== RUN   TestFuzzyConversion/for_AzureClusterIdentity
+=== RUN   TestFuzzyConversion/for_AzureClusterIdentity/spoke-hub-spoke
+=== RUN   TestFuzzyConversion/for_AzureClusterIdentity/hub-spoke-hub
+--- PASS: TestFuzzyConversion (21.35s)
+    --- PASS: TestFuzzyConversion/for_AzureCluster (7.75s)
+        --- PASS: TestFuzzyConversion/for_AzureCluster/spoke-hub-spoke (3.07s)
+        --- PASS: TestFuzzyConversion/for_AzureCluster/hub-spoke-hub (4.68s)
+    --- PASS: TestFuzzyConversion/for_AzureMachine (6.50s)
+        --- PASS: TestFuzzyConversion/for_AzureMachine/spoke-hub-spoke (3.22s)
+        --- PASS: TestFuzzyConversion/for_AzureMachine/hub-spoke-hub (3.28s)
+    --- PASS: TestFuzzyConversion/for_AzureMachineTemplate (4.42s)
+        --- PASS: TestFuzzyConversion/for_AzureMachineTemplate/spoke-hub-spoke (1.73s)
+        --- PASS: TestFuzzyConversion/for_AzureMachineTemplate/hub-spoke-hub (2.68s)
+    --- PASS: TestFuzzyConversion/for_AzureClusterIdentity (2.68s)
+        --- PASS: TestFuzzyConversion/for_AzureClusterIdentity/spoke-hub-spoke (1.01s)
+        --- PASS: TestFuzzyConversion/for_AzureClusterIdentity/hub-spoke-hub (1.67s)
+=== RUN   TestTags_Merge
+=== RUN   TestTags_Merge/nil_other
+=== PAUSE TestTags_Merge/nil_other
+=== RUN   TestTags_Merge/empty_other
+=== PAUSE TestTags_Merge/empty_other
+=== RUN   TestTags_Merge/disjoint
+=== PAUSE TestTags_Merge/disjoint
+=== RUN   TestTags_Merge/overlapping,_other_wins
+=== PAUSE TestTags_Merge/overlapping,_other_wins
+=== CONT  TestTags_Merge/nil_other
+=== CONT  TestTags_Merge/disjoint
+=== CONT  TestTags_Merge/empty_other
+=== CONT  TestTags_Merge/overlapping,_other_wins
+--- PASS: TestTags_Merge (0.00s)
+    --- PASS: TestTags_Merge/nil_other (0.00s)
+    --- PASS: TestTags_Merge/disjoint (0.00s)
+    --- PASS: TestTags_Merge/empty_other (0.00s)
+    --- PASS: TestTags_Merge/overlapping,_other_wins (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/api/v1alpha3	22.515s
+=== RUN   TestResourceGroupDefault
+=== RUN   TestResourceGroupDefault/default_empty_rg
+=== PAUSE TestResourceGroupDefault/default_empty_rg
+=== RUN   TestResourceGroupDefault/don't_change_if_mismatched
+=== PAUSE TestResourceGroupDefault/don't_change_if_mismatched
+=== CONT  TestResourceGroupDefault/default_empty_rg
+=== CONT  TestResourceGroupDefault/don't_change_if_mismatched
+--- PASS: TestResourceGroupDefault (0.00s)
+    --- PASS: TestResourceGroupDefault/default_empty_rg (0.00s)
+    --- PASS: TestResourceGroupDefault/don't_change_if_mismatched (0.00s)
+=== RUN   TestVnetDefaults
+=== RUN   TestVnetDefaults/resource_group_vnet_specified
+=== PAUSE TestVnetDefaults/resource_group_vnet_specified
+=== RUN   TestVnetDefaults/vnet_not_specified
+=== PAUSE TestVnetDefaults/vnet_not_specified
+=== RUN   TestVnetDefaults/custom_CIDR
+=== PAUSE TestVnetDefaults/custom_CIDR
+=== RUN   TestVnetDefaults/IPv6_enabled
+=== PAUSE TestVnetDefaults/IPv6_enabled
+=== CONT  TestVnetDefaults/resource_group_vnet_specified
+=== CONT  TestVnetDefaults/custom_CIDR
+=== CONT  TestVnetDefaults/IPv6_enabled
+=== CONT  TestVnetDefaults/vnet_not_specified
+--- PASS: TestVnetDefaults (0.00s)
+    --- PASS: TestVnetDefaults/resource_group_vnet_specified (0.00s)
+    --- PASS: TestVnetDefaults/custom_CIDR (0.00s)
+    --- PASS: TestVnetDefaults/IPv6_enabled (0.00s)
+    --- PASS: TestVnetDefaults/vnet_not_specified (0.00s)
+=== RUN   TestSubnetDefaults
+=== RUN   TestSubnetDefaults/no_subnets
+=== PAUSE TestSubnetDefaults/no_subnets
+=== RUN   TestSubnetDefaults/subnets_with_custom_attributes
+=== PAUSE TestSubnetDefaults/subnets_with_custom_attributes
+=== RUN   TestSubnetDefaults/subnets_specified
+=== PAUSE TestSubnetDefaults/subnets_specified
+=== RUN   TestSubnetDefaults/subnets_route_tables_specified
+=== PAUSE TestSubnetDefaults/subnets_route_tables_specified
+=== RUN   TestSubnetDefaults/only_node_subnet_specified
+=== PAUSE TestSubnetDefaults/only_node_subnet_specified
+=== RUN   TestSubnetDefaults/subnets_specified_with_IPv6_enabled
+=== PAUSE TestSubnetDefaults/subnets_specified_with_IPv6_enabled
+=== RUN   TestSubnetDefaults/subnets_with_custom_security_group
+=== PAUSE TestSubnetDefaults/subnets_with_custom_security_group
+=== CONT  TestSubnetDefaults/no_subnets
+=== CONT  TestSubnetDefaults/only_node_subnet_specified
+=== CONT  TestSubnetDefaults/subnets_with_custom_security_group
+=== CONT  TestSubnetDefaults/subnets_route_tables_specified
+=== CONT  TestSubnetDefaults/subnets_with_custom_attributes
+=== CONT  TestSubnetDefaults/subnets_specified_with_IPv6_enabled
+=== CONT  TestSubnetDefaults/subnets_specified
+--- PASS: TestSubnetDefaults (0.00s)
+    --- PASS: TestSubnetDefaults/no_subnets (0.00s)
+    --- PASS: TestSubnetDefaults/only_node_subnet_specified (0.00s)
+    --- PASS: TestSubnetDefaults/subnets_with_custom_attributes (0.00s)
+    --- PASS: TestSubnetDefaults/subnets_route_tables_specified (0.00s)
+    --- PASS: TestSubnetDefaults/subnets_with_custom_security_group (0.00s)
+    --- PASS: TestSubnetDefaults/subnets_specified (0.00s)
+    --- PASS: TestSubnetDefaults/subnets_specified_with_IPv6_enabled (0.00s)
+=== RUN   TestAPIServerLBDefaults
+=== RUN   TestAPIServerLBDefaults/no_lb
+=== PAUSE TestAPIServerLBDefaults/no_lb
+=== RUN   TestAPIServerLBDefaults/internal_lb
+=== PAUSE TestAPIServerLBDefaults/internal_lb
+=== CONT  TestAPIServerLBDefaults/no_lb
+=== CONT  TestAPIServerLBDefaults/internal_lb
+--- PASS: TestAPIServerLBDefaults (0.00s)
+    --- PASS: TestAPIServerLBDefaults/no_lb (0.00s)
+    --- PASS: TestAPIServerLBDefaults/internal_lb (0.00s)
+=== RUN   TestAzureEnviromentDefault
+=== RUN   TestAzureEnviromentDefault/default_empty_azure_env
+=== PAUSE TestAzureEnviromentDefault/default_empty_azure_env
+=== RUN   TestAzureEnviromentDefault/azure_env_set_to_AzurePublicCloud
+=== PAUSE TestAzureEnviromentDefault/azure_env_set_to_AzurePublicCloud
+=== RUN   TestAzureEnviromentDefault/azure_env_set_to_AzureGermanCloud
+=== PAUSE TestAzureEnviromentDefault/azure_env_set_to_AzureGermanCloud
+=== CONT  TestAzureEnviromentDefault/default_empty_azure_env
+=== CONT  TestAzureEnviromentDefault/azure_env_set_to_AzureGermanCloud
+=== CONT  TestAzureEnviromentDefault/azure_env_set_to_AzurePublicCloud
+--- PASS: TestAzureEnviromentDefault (0.00s)
+    --- PASS: TestAzureEnviromentDefault/default_empty_azure_env (0.00s)
+    --- PASS: TestAzureEnviromentDefault/azure_env_set_to_AzurePublicCloud (0.00s)
+    --- PASS: TestAzureEnviromentDefault/azure_env_set_to_AzureGermanCloud (0.00s)
+=== RUN   TestNodeOutboundLBDefaults
+=== RUN   TestNodeOutboundLBDefaults/default_lb_for_public_clusters
+=== PAUSE TestNodeOutboundLBDefaults/default_lb_for_public_clusters
+=== RUN   TestNodeOutboundLBDefaults/NAT_Gateway_enabled_-_no_LB
+=== PAUSE TestNodeOutboundLBDefaults/NAT_Gateway_enabled_-_no_LB
+=== RUN   TestNodeOutboundLBDefaults/NAT_Gateway_enabled_on_1_of_2_node_subnets
+=== PAUSE TestNodeOutboundLBDefaults/NAT_Gateway_enabled_on_1_of_2_node_subnets
+=== RUN   TestNodeOutboundLBDefaults/multiple_node_subnets,_NAT_Gateway_not_enabled_in_any_of_them
+=== PAUSE TestNodeOutboundLBDefaults/multiple_node_subnets,_NAT_Gateway_not_enabled_in_any_of_them
+=== RUN   TestNodeOutboundLBDefaults/multiple_node_subnets,_NAT_Gateway_enabled_on_all_of_them
+=== PAUSE TestNodeOutboundLBDefaults/multiple_node_subnets,_NAT_Gateway_enabled_on_all_of_them
+=== RUN   TestNodeOutboundLBDefaults/no_lb_for_private_clusters
+=== PAUSE TestNodeOutboundLBDefaults/no_lb_for_private_clusters
+=== RUN   TestNodeOutboundLBDefaults/NodeOutboundLB_declared_as_input_with_non-default_IdleTimeoutInMinutes_and_FrontendIPsCount_values
+=== PAUSE TestNodeOutboundLBDefaults/NodeOutboundLB_declared_as_input_with_non-default_IdleTimeoutInMinutes_and_FrontendIPsCount_values
+=== CONT  TestNodeOutboundLBDefaults/default_lb_for_public_clusters
+=== CONT  TestNodeOutboundLBDefaults/multiple_node_subnets,_NAT_Gateway_enabled_on_all_of_them
+=== CONT  TestNodeOutboundLBDefaults/NodeOutboundLB_declared_as_input_with_non-default_IdleTimeoutInMinutes_and_FrontendIPsCount_values
+=== CONT  TestNodeOutboundLBDefaults/no_lb_for_private_clusters
+=== CONT  TestNodeOutboundLBDefaults/NAT_Gateway_enabled_-_no_LB
+=== CONT  TestNodeOutboundLBDefaults/NAT_Gateway_enabled_on_1_of_2_node_subnets
+=== CONT  TestNodeOutboundLBDefaults/multiple_node_subnets,_NAT_Gateway_not_enabled_in_any_of_them
+--- PASS: TestNodeOutboundLBDefaults (0.00s)
+    --- PASS: TestNodeOutboundLBDefaults/default_lb_for_public_clusters (0.00s)
+    --- PASS: TestNodeOutboundLBDefaults/multiple_node_subnets,_NAT_Gateway_enabled_on_all_of_them (0.00s)
+    --- PASS: TestNodeOutboundLBDefaults/NodeOutboundLB_declared_as_input_with_non-default_IdleTimeoutInMinutes_and_FrontendIPsCount_values (0.00s)
+    --- PASS: TestNodeOutboundLBDefaults/NAT_Gateway_enabled_-_no_LB (0.00s)
+    --- PASS: TestNodeOutboundLBDefaults/no_lb_for_private_clusters (0.00s)
+    --- PASS: TestNodeOutboundLBDefaults/NAT_Gateway_enabled_on_1_of_2_node_subnets (0.00s)
+    --- PASS: TestNodeOutboundLBDefaults/multiple_node_subnets,_NAT_Gateway_not_enabled_in_any_of_them (0.00s)
+=== RUN   TestControlPlaneOutboundLBDefaults
+=== RUN   TestControlPlaneOutboundLBDefaults/no_cp_lb_for_public_clusters
+=== PAUSE TestControlPlaneOutboundLBDefaults/no_cp_lb_for_public_clusters
+=== RUN   TestControlPlaneOutboundLBDefaults/no_cp_lb_for_private_clusters
+=== PAUSE TestControlPlaneOutboundLBDefaults/no_cp_lb_for_private_clusters
+=== RUN   TestControlPlaneOutboundLBDefaults/frontendIPsCount_>_1
+=== PAUSE TestControlPlaneOutboundLBDefaults/frontendIPsCount_>_1
+=== CONT  TestControlPlaneOutboundLBDefaults/no_cp_lb_for_public_clusters
+=== CONT  TestControlPlaneOutboundLBDefaults/frontendIPsCount_>_1
+=== CONT  TestControlPlaneOutboundLBDefaults/no_cp_lb_for_private_clusters
+--- PASS: TestControlPlaneOutboundLBDefaults (0.00s)
+    --- PASS: TestControlPlaneOutboundLBDefaults/no_cp_lb_for_public_clusters (0.00s)
+    --- PASS: TestControlPlaneOutboundLBDefaults/no_cp_lb_for_private_clusters (0.00s)
+    --- PASS: TestControlPlaneOutboundLBDefaults/frontendIPsCount_>_1 (0.00s)
+=== RUN   TestBastionDefault
+=== RUN   TestBastionDefault/azure_bastion_enabled_with_subnet_fully_set
+=== PAUSE TestBastionDefault/azure_bastion_enabled_with_subnet_fully_set
+=== RUN   TestBastionDefault/azure_bastion_enabled_with_public_IP_name_set
+=== PAUSE TestBastionDefault/azure_bastion_enabled_with_public_IP_name_set
+=== RUN   TestBastionDefault/no_bastion_set
+=== PAUSE TestBastionDefault/no_bastion_set
+=== RUN   TestBastionDefault/azure_bastion_enabled_with_no_settings
+=== PAUSE TestBastionDefault/azure_bastion_enabled_with_no_settings
+=== RUN   TestBastionDefault/azure_bastion_enabled_with_name_set
+=== PAUSE TestBastionDefault/azure_bastion_enabled_with_name_set
+=== RUN   TestBastionDefault/azure_bastion_enabled_with_subnet_partially_set
+=== PAUSE TestBastionDefault/azure_bastion_enabled_with_subnet_partially_set
+=== CONT  TestBastionDefault/azure_bastion_enabled_with_subnet_fully_set
+=== CONT  TestBastionDefault/azure_bastion_enabled_with_no_settings
+=== CONT  TestBastionDefault/no_bastion_set
+=== CONT  TestBastionDefault/azure_bastion_enabled_with_subnet_partially_set
+=== CONT  TestBastionDefault/azure_bastion_enabled_with_name_set
+=== CONT  TestBastionDefault/azure_bastion_enabled_with_public_IP_name_set
+--- PASS: TestBastionDefault (0.00s)
+    --- PASS: TestBastionDefault/azure_bastion_enabled_with_subnet_fully_set (0.00s)
+    --- PASS: TestBastionDefault/azure_bastion_enabled_with_no_settings (0.00s)
+    --- PASS: TestBastionDefault/no_bastion_set (0.00s)
+    --- PASS: TestBastionDefault/azure_bastion_enabled_with_subnet_partially_set (0.00s)
+    --- PASS: TestBastionDefault/azure_bastion_enabled_with_name_set (0.00s)
+    --- PASS: TestBastionDefault/azure_bastion_enabled_with_public_IP_name_set (0.00s)
+=== RUN   TestClusterNameValidation
+=== RUN   TestClusterNameValidation/cluster_name_more_than_44_characters
+=== RUN   TestClusterNameValidation/cluster_name_with_letters
+=== RUN   TestClusterNameValidation/cluster_name_with_upper_case_letters
+=== RUN   TestClusterNameValidation/cluster_name_with_hyphen
+=== RUN   TestClusterNameValidation/cluster_name_with_letters_and_numbers
+=== RUN   TestClusterNameValidation/cluster_name_with_special_characters
+=== RUN   TestClusterNameValidation/cluster_name_starting_with_underscore
+=== RUN   TestClusterNameValidation/cluster_name_starting_with_number
+=== RUN   TestClusterNameValidation/cluster_name_with_underscore
+=== RUN   TestClusterNameValidation/cluster_name_with_period
+--- PASS: TestClusterNameValidation (0.00s)
+    --- PASS: TestClusterNameValidation/cluster_name_more_than_44_characters (0.00s)
+    --- PASS: TestClusterNameValidation/cluster_name_with_letters (0.00s)
+    --- PASS: TestClusterNameValidation/cluster_name_with_upper_case_letters (0.00s)
+    --- PASS: TestClusterNameValidation/cluster_name_with_hyphen (0.00s)
+    --- PASS: TestClusterNameValidation/cluster_name_with_letters_and_numbers (0.00s)
+    --- PASS: TestClusterNameValidation/cluster_name_with_special_characters (0.00s)
+    --- PASS: TestClusterNameValidation/cluster_name_starting_with_underscore (0.00s)
+    --- PASS: TestClusterNameValidation/cluster_name_starting_with_number (0.00s)
+    --- PASS: TestClusterNameValidation/cluster_name_with_underscore (0.00s)
+    --- PASS: TestClusterNameValidation/cluster_name_with_period (0.00s)
+=== RUN   TestClusterWithPreexistingVnetValid
+=== RUN   TestClusterWithPreexistingVnetValid/azurecluster_with_pre-existing_vnet_-_valid
+--- PASS: TestClusterWithPreexistingVnetValid (0.00s)
+    --- PASS: TestClusterWithPreexistingVnetValid/azurecluster_with_pre-existing_vnet_-_valid (0.00s)
+=== RUN   TestClusterWithPreexistingVnetInvalid
+=== RUN   TestClusterWithPreexistingVnetInvalid/azurecluster_with_pre-existing_vnet_-_invalid
+--- PASS: TestClusterWithPreexistingVnetInvalid (0.00s)
+    --- PASS: TestClusterWithPreexistingVnetInvalid/azurecluster_with_pre-existing_vnet_-_invalid (0.00s)
+=== RUN   TestClusterWithoutPreexistingVnetValid
+=== RUN   TestClusterWithoutPreexistingVnetValid/azurecluster_without_pre-existing_vnet_-_valid
+--- PASS: TestClusterWithoutPreexistingVnetValid (0.00s)
+    --- PASS: TestClusterWithoutPreexistingVnetValid/azurecluster_without_pre-existing_vnet_-_valid (0.00s)
+=== RUN   TestClusterSpecWithPreexistingVnetValid
+=== RUN   TestClusterSpecWithPreexistingVnetValid/azurecluster_spec_with_pre-existing_vnet_-_valid
+--- PASS: TestClusterSpecWithPreexistingVnetValid (0.00s)
+    --- PASS: TestClusterSpecWithPreexistingVnetValid/azurecluster_spec_with_pre-existing_vnet_-_valid (0.00s)
+=== RUN   TestClusterSpecWithPreexistingVnetInvalid
+=== RUN   TestClusterSpecWithPreexistingVnetInvalid/azurecluster_spec_with_pre-existing_vnet_-_invalid
+--- PASS: TestClusterSpecWithPreexistingVnetInvalid (0.00s)
+    --- PASS: TestClusterSpecWithPreexistingVnetInvalid/azurecluster_spec_with_pre-existing_vnet_-_invalid (0.00s)
+=== RUN   TestClusterSpecWithoutPreexistingVnetValid
+=== RUN   TestClusterSpecWithoutPreexistingVnetValid/azurecluster_spec_without_pre-existing_vnet_-_valid
+--- PASS: TestClusterSpecWithoutPreexistingVnetValid (0.00s)
+    --- PASS: TestClusterSpecWithoutPreexistingVnetValid/azurecluster_spec_without_pre-existing_vnet_-_valid (0.00s)
+=== RUN   TestNetworkSpecWithPreexistingVnetValid
+=== RUN   TestNetworkSpecWithPreexistingVnetValid/azurecluster_networkspec_with_pre-existing_vnet_-_valid
+--- PASS: TestNetworkSpecWithPreexistingVnetValid (0.00s)
+    --- PASS: TestNetworkSpecWithPreexistingVnetValid/azurecluster_networkspec_with_pre-existing_vnet_-_valid (0.00s)
+=== RUN   TestNetworkSpecWithPreexistingVnetLackRequiredSubnets
+=== RUN   TestNetworkSpecWithPreexistingVnetLackRequiredSubnets/azurecluster_networkspec_with_pre-existing_vnet_-_lack_required_subnets
+--- PASS: TestNetworkSpecWithPreexistingVnetLackRequiredSubnets (0.00s)
+    --- PASS: TestNetworkSpecWithPreexistingVnetLackRequiredSubnets/azurecluster_networkspec_with_pre-existing_vnet_-_lack_required_subnets (0.00s)
+=== RUN   TestNetworkSpecWithPreexistingVnetInvalidResourceGroup
+=== RUN   TestNetworkSpecWithPreexistingVnetInvalidResourceGroup/azurecluster_networkspec_with_pre-existing_vnet_-_invalid_resource_group
+--- PASS: TestNetworkSpecWithPreexistingVnetInvalidResourceGroup (0.00s)
+    --- PASS: TestNetworkSpecWithPreexistingVnetInvalidResourceGroup/azurecluster_networkspec_with_pre-existing_vnet_-_invalid_resource_group (0.00s)
+=== RUN   TestNetworkSpecWithoutPreexistingVnetValid
+=== RUN   TestNetworkSpecWithoutPreexistingVnetValid/azurecluster_networkspec_without_pre-existing_vnet_-_valid
+--- PASS: TestNetworkSpecWithoutPreexistingVnetValid (0.00s)
+    --- PASS: TestNetworkSpecWithoutPreexistingVnetValid/azurecluster_networkspec_without_pre-existing_vnet_-_valid (0.00s)
+=== RUN   TestResourceGroupValid
+=== RUN   TestResourceGroupValid/resourcegroup_name_-_valid
+--- PASS: TestResourceGroupValid (0.00s)
+    --- PASS: TestResourceGroupValid/resourcegroup_name_-_valid (0.00s)
+=== RUN   TestResourceGroupInvalid
+=== RUN   TestResourceGroupInvalid/resourcegroup_name_-_invalid
+--- PASS: TestResourceGroupInvalid (0.00s)
+    --- PASS: TestResourceGroupInvalid/resourcegroup_name_-_invalid (0.00s)
+=== RUN   TestValidateVnetCIDR
+=== RUN   TestValidateVnetCIDR/valid_subnet_cidr
+=== RUN   TestValidateVnetCIDR/invalid_subnet_cidr_not_in_the_right_format
+--- PASS: TestValidateVnetCIDR (0.00s)
+    --- PASS: TestValidateVnetCIDR/valid_subnet_cidr (0.00s)
+    --- PASS: TestValidateVnetCIDR/invalid_subnet_cidr_not_in_the_right_format (0.00s)
+=== RUN   TestSubnetsValid
+=== RUN   TestSubnetsValid/subnets_-_valid
+--- PASS: TestSubnetsValid (0.00s)
+    --- PASS: TestSubnetsValid/subnets_-_valid (0.00s)
+=== RUN   TestSubnetsInvalidSubnetName
+=== RUN   TestSubnetsInvalidSubnetName/subnets_-_invalid_subnet_name
+--- PASS: TestSubnetsInvalidSubnetName (0.00s)
+    --- PASS: TestSubnetsInvalidSubnetName/subnets_-_invalid_subnet_name (0.00s)
+=== RUN   TestSubnetsInvalidLackRequiredSubnet
+=== RUN   TestSubnetsInvalidLackRequiredSubnet/subnets_-_lack_required_subnet
+--- PASS: TestSubnetsInvalidLackRequiredSubnet (0.00s)
+    --- PASS: TestSubnetsInvalidLackRequiredSubnet/subnets_-_lack_required_subnet (0.00s)
+=== RUN   TestSubnetNamesNotUnique
+=== RUN   TestSubnetNamesNotUnique/subnets_-_names_not_unique
+--- PASS: TestSubnetNamesNotUnique (0.00s)
+    --- PASS: TestSubnetNamesNotUnique/subnets_-_names_not_unique (0.00s)
+=== RUN   TestSubnetNameValid
+=== RUN   TestSubnetNameValid/subnet_name_-_valid
+--- PASS: TestSubnetNameValid (0.00s)
+    --- PASS: TestSubnetNameValid/subnet_name_-_valid (0.00s)
+=== RUN   TestSubnetNameInvalid
+=== RUN   TestSubnetNameInvalid/subnet_name_-_invalid
+--- PASS: TestSubnetNameInvalid (0.00s)
+    --- PASS: TestSubnetNameInvalid/subnet_name_-_invalid (0.00s)
+=== RUN   TestValidateSubnetCIDR
+=== RUN   TestValidateSubnetCIDR/valid_subnet_cidr
+=== RUN   TestValidateSubnetCIDR/invalid_subnet_cidr_not_in_the_right_format
+=== RUN   TestValidateSubnetCIDR/subnet_cidr_not_in_vnet_range
+=== RUN   TestValidateSubnetCIDR/subnet_cidr_in_atleast_one_vnet's_range_in_case_of_multiple_vnet_cidr_blocks
+--- PASS: TestValidateSubnetCIDR (0.00s)
+    --- PASS: TestValidateSubnetCIDR/valid_subnet_cidr (0.00s)
+    --- PASS: TestValidateSubnetCIDR/invalid_subnet_cidr_not_in_the_right_format (0.00s)
+    --- PASS: TestValidateSubnetCIDR/subnet_cidr_not_in_vnet_range (0.00s)
+    --- PASS: TestValidateSubnetCIDR/subnet_cidr_in_atleast_one_vnet's_range_in_case_of_multiple_vnet_cidr_blocks (0.00s)
+=== RUN   TestValidateSecurityRule
+=== RUN   TestValidateSecurityRule/security_rule_-_valid_priority
+=== PAUSE TestValidateSecurityRule/security_rule_-_valid_priority
+=== RUN   TestValidateSecurityRule/security_rule_-_invalid_low_priority
+=== PAUSE TestValidateSecurityRule/security_rule_-_invalid_low_priority
+=== RUN   TestValidateSecurityRule/security_rule_-_invalid_high_priority
+=== PAUSE TestValidateSecurityRule/security_rule_-_invalid_high_priority
+=== CONT  TestValidateSecurityRule/security_rule_-_valid_priority
+=== CONT  TestValidateSecurityRule/security_rule_-_invalid_high_priority
+=== CONT  TestValidateSecurityRule/security_rule_-_invalid_low_priority
+--- PASS: TestValidateSecurityRule (0.00s)
+    --- PASS: TestValidateSecurityRule/security_rule_-_valid_priority (0.00s)
+    --- PASS: TestValidateSecurityRule/security_rule_-_invalid_high_priority (0.00s)
+    --- PASS: TestValidateSecurityRule/security_rule_-_invalid_low_priority (0.00s)
+=== RUN   TestValidateAPIServerLB
+=== RUN   TestValidateAPIServerLB/invalid_SKU
+=== PAUSE TestValidateAPIServerLB/invalid_SKU
+=== RUN   TestValidateAPIServerLB/invalid_Type
+=== PAUSE TestValidateAPIServerLB/invalid_Type
+=== RUN   TestValidateAPIServerLB/invalid_Name
+=== PAUSE TestValidateAPIServerLB/invalid_Name
+=== RUN   TestValidateAPIServerLB/too_many_IP_configs
+=== PAUSE TestValidateAPIServerLB/too_many_IP_configs
+=== RUN   TestValidateAPIServerLB/public_LB_with_private_IP
+=== PAUSE TestValidateAPIServerLB/public_LB_with_private_IP
+=== RUN   TestValidateAPIServerLB/internal_LB_with_public_IP
+=== PAUSE TestValidateAPIServerLB/internal_LB_with_public_IP
+=== RUN   TestValidateAPIServerLB/internal_LB_with_invalid_private_IP
+=== PAUSE TestValidateAPIServerLB/internal_LB_with_invalid_private_IP
+=== RUN   TestValidateAPIServerLB/internal_LB_with_out_of_range_private_IP
+=== PAUSE TestValidateAPIServerLB/internal_LB_with_out_of_range_private_IP
+=== RUN   TestValidateAPIServerLB/internal_LB_with_in_range_private_IP
+=== PAUSE TestValidateAPIServerLB/internal_LB_with_in_range_private_IP
+=== CONT  TestValidateAPIServerLB/invalid_SKU
+=== CONT  TestValidateAPIServerLB/internal_LB_with_public_IP
+=== CONT  TestValidateAPIServerLB/too_many_IP_configs
+=== CONT  TestValidateAPIServerLB/public_LB_with_private_IP
+=== CONT  TestValidateAPIServerLB/invalid_Name
+=== CONT  TestValidateAPIServerLB/invalid_Type
+=== CONT  TestValidateAPIServerLB/internal_LB_with_out_of_range_private_IP
+=== CONT  TestValidateAPIServerLB/internal_LB_with_in_range_private_IP
+=== CONT  TestValidateAPIServerLB/internal_LB_with_invalid_private_IP
+--- PASS: TestValidateAPIServerLB (0.00s)
+    --- PASS: TestValidateAPIServerLB/invalid_SKU (0.00s)
+    --- PASS: TestValidateAPIServerLB/internal_LB_with_public_IP (0.00s)
+    --- PASS: TestValidateAPIServerLB/public_LB_with_private_IP (0.00s)
+    --- PASS: TestValidateAPIServerLB/too_many_IP_configs (0.00s)
+    --- PASS: TestValidateAPIServerLB/internal_LB_with_out_of_range_private_IP (0.00s)
+    --- PASS: TestValidateAPIServerLB/invalid_Name (0.00s)
+    --- PASS: TestValidateAPIServerLB/internal_LB_with_invalid_private_IP (0.00s)
+    --- PASS: TestValidateAPIServerLB/invalid_Type (0.00s)
+    --- PASS: TestValidateAPIServerLB/internal_LB_with_in_range_private_IP (0.00s)
+=== RUN   TestPrivateDNSZoneName
+=== RUN   TestPrivateDNSZoneName/testInvalidPrivateDNSZoneName
+=== PAUSE TestPrivateDNSZoneName/testInvalidPrivateDNSZoneName
+=== RUN   TestPrivateDNSZoneName/testValidPrivateDNSZoneName
+=== PAUSE TestPrivateDNSZoneName/testValidPrivateDNSZoneName
+=== RUN   TestPrivateDNSZoneName/testValidPrivateDNSZoneNameWithUnderscore
+=== PAUSE TestPrivateDNSZoneName/testValidPrivateDNSZoneNameWithUnderscore
+=== RUN   TestPrivateDNSZoneName/testBadAPIServerLBType
+=== PAUSE TestPrivateDNSZoneName/testBadAPIServerLBType
+=== CONT  TestPrivateDNSZoneName/testInvalidPrivateDNSZoneName
+=== CONT  TestPrivateDNSZoneName/testValidPrivateDNSZoneNameWithUnderscore
+=== CONT  TestPrivateDNSZoneName/testValidPrivateDNSZoneName
+=== CONT  TestPrivateDNSZoneName/testBadAPIServerLBType
+--- PASS: TestPrivateDNSZoneName (0.00s)
+    --- PASS: TestPrivateDNSZoneName/testValidPrivateDNSZoneNameWithUnderscore (0.00s)
+    --- PASS: TestPrivateDNSZoneName/testInvalidPrivateDNSZoneName (0.00s)
+    --- PASS: TestPrivateDNSZoneName/testValidPrivateDNSZoneName (0.00s)
+    --- PASS: TestPrivateDNSZoneName/testBadAPIServerLBType (0.00s)
+=== RUN   TestValidateNodeOutboundLB
+=== RUN   TestValidateNodeOutboundLB/no_lb_for_public_clusters
+=== PAUSE TestValidateNodeOutboundLB/no_lb_for_public_clusters
+=== RUN   TestValidateNodeOutboundLB/no_lb_allowed_for_internal_clusters
+=== PAUSE TestValidateNodeOutboundLB/no_lb_allowed_for_internal_clusters
+=== RUN   TestValidateNodeOutboundLB/invalid_ID_update
+=== PAUSE TestValidateNodeOutboundLB/invalid_ID_update
+=== RUN   TestValidateNodeOutboundLB/invalid_Name_update
+=== PAUSE TestValidateNodeOutboundLB/invalid_Name_update
+=== RUN   TestValidateNodeOutboundLB/invalid_SKU_update
+=== PAUSE TestValidateNodeOutboundLB/invalid_SKU_update
+=== RUN   TestValidateNodeOutboundLB/invalid_FrontendIps_update
+=== PAUSE TestValidateNodeOutboundLB/invalid_FrontendIps_update
+=== RUN   TestValidateNodeOutboundLB/FrontendIps_can_update_when_frontendIpsCount_changes
+=== PAUSE TestValidateNodeOutboundLB/FrontendIps_can_update_when_frontendIpsCount_changes
+=== RUN   TestValidateNodeOutboundLB/frontend_ips_count_exceeds_max_value
+=== PAUSE TestValidateNodeOutboundLB/frontend_ips_count_exceeds_max_value
+=== CONT  TestValidateNodeOutboundLB/no_lb_for_public_clusters
+=== CONT  TestValidateNodeOutboundLB/invalid_SKU_update
+=== CONT  TestValidateNodeOutboundLB/invalid_Name_update
+=== CONT  TestValidateNodeOutboundLB/FrontendIps_can_update_when_frontendIpsCount_changes
+=== CONT  TestValidateNodeOutboundLB/invalid_FrontendIps_update
+=== CONT  TestValidateNodeOutboundLB/no_lb_allowed_for_internal_clusters
+=== CONT  TestValidateNodeOutboundLB/invalid_ID_update
+=== CONT  TestValidateNodeOutboundLB/frontend_ips_count_exceeds_max_value
+--- PASS: TestValidateNodeOutboundLB (0.00s)
+    --- PASS: TestValidateNodeOutboundLB/no_lb_for_public_clusters (0.00s)
+    --- PASS: TestValidateNodeOutboundLB/invalid_SKU_update (0.00s)
+    --- PASS: TestValidateNodeOutboundLB/invalid_Name_update (0.00s)
+    --- PASS: TestValidateNodeOutboundLB/FrontendIps_can_update_when_frontendIpsCount_changes (0.00s)
+    --- PASS: TestValidateNodeOutboundLB/invalid_FrontendIps_update (0.00s)
+    --- PASS: TestValidateNodeOutboundLB/no_lb_allowed_for_internal_clusters (0.00s)
+    --- PASS: TestValidateNodeOutboundLB/invalid_ID_update (0.00s)
+    --- PASS: TestValidateNodeOutboundLB/frontend_ips_count_exceeds_max_value (0.00s)
+=== RUN   TestValidateControlPlaneNodeOutboundLB
+=== RUN   TestValidateControlPlaneNodeOutboundLB/cp_outbound_lb_cannot_be_set_for_public_clusters
+=== PAUSE TestValidateControlPlaneNodeOutboundLB/cp_outbound_lb_cannot_be_set_for_public_clusters
+=== RUN   TestValidateControlPlaneNodeOutboundLB/cp_outbound_lb_can_be_set_for_private_clusters
+=== PAUSE TestValidateControlPlaneNodeOutboundLB/cp_outbound_lb_can_be_set_for_private_clusters
+=== RUN   TestValidateControlPlaneNodeOutboundLB/cp_outbound_lb_can_be_nil_for_private_clusters
+=== PAUSE TestValidateControlPlaneNodeOutboundLB/cp_outbound_lb_can_be_nil_for_private_clusters
+=== RUN   TestValidateControlPlaneNodeOutboundLB/frontend_ips_count_exceeds_max_value
+=== PAUSE TestValidateControlPlaneNodeOutboundLB/frontend_ips_count_exceeds_max_value
+=== CONT  TestValidateControlPlaneNodeOutboundLB/frontend_ips_count_exceeds_max_value
+=== CONT  TestValidateControlPlaneNodeOutboundLB/cp_outbound_lb_can_be_set_for_private_clusters
+=== CONT  TestValidateControlPlaneNodeOutboundLB/cp_outbound_lb_cannot_be_set_for_public_clusters
+=== CONT  TestValidateControlPlaneNodeOutboundLB/cp_outbound_lb_can_be_nil_for_private_clusters
+--- PASS: TestValidateControlPlaneNodeOutboundLB (0.00s)
+    --- PASS: TestValidateControlPlaneNodeOutboundLB/cp_outbound_lb_can_be_set_for_private_clusters (0.00s)
+    --- PASS: TestValidateControlPlaneNodeOutboundLB/frontend_ips_count_exceeds_max_value (0.00s)
+    --- PASS: TestValidateControlPlaneNodeOutboundLB/cp_outbound_lb_cannot_be_set_for_public_clusters (0.00s)
+    --- PASS: TestValidateControlPlaneNodeOutboundLB/cp_outbound_lb_can_be_nil_for_private_clusters (0.00s)
+=== RUN   TestValidateCloudProviderConfigOverrides
+=== RUN   TestValidateCloudProviderConfigOverrides/both_old_and_new_config_nil
+=== RUN   TestValidateCloudProviderConfigOverrides/both_old_and_new_config_are_same
+=== RUN   TestValidateCloudProviderConfigOverrides/old_and_new_config_are_not_same
+=== RUN   TestValidateCloudProviderConfigOverrides/new_config_is_nil
+=== RUN   TestValidateCloudProviderConfigOverrides/old_config_is_nil
+--- PASS: TestValidateCloudProviderConfigOverrides (0.00s)
+    --- PASS: TestValidateCloudProviderConfigOverrides/both_old_and_new_config_nil (0.00s)
+    --- PASS: TestValidateCloudProviderConfigOverrides/both_old_and_new_config_are_same (0.00s)
+    --- PASS: TestValidateCloudProviderConfigOverrides/old_and_new_config_are_not_same (0.00s)
+    --- PASS: TestValidateCloudProviderConfigOverrides/new_config_is_nil (0.00s)
+    --- PASS: TestValidateCloudProviderConfigOverrides/old_config_is_nil (0.00s)
+=== RUN   TestAzureCluster_ValidateCreate
+=== RUN   TestAzureCluster_ValidateCreate/azurecluster_with_pre-existing_vnet_-_valid_spec
+=== RUN   TestAzureCluster_ValidateCreate/azurecluster_without_pre-existing_vnet_-_valid_spec
+=== RUN   TestAzureCluster_ValidateCreate/azurecluster_with_pre-existing_vnet_-_lack_control_plane_subnet
+=== RUN   TestAzureCluster_ValidateCreate/azurecluster_with_pre-existing_vnet_-_lack_node_subnet
+=== RUN   TestAzureCluster_ValidateCreate/azurecluster_with_pre-existing_vnet_-_invalid_resourcegroup_name
+=== RUN   TestAzureCluster_ValidateCreate/azurecluster_with_pre-existing_vnet_-_invalid_subnet_name
+--- PASS: TestAzureCluster_ValidateCreate (0.00s)
+    --- PASS: TestAzureCluster_ValidateCreate/azurecluster_with_pre-existing_vnet_-_valid_spec (0.00s)
+    --- PASS: TestAzureCluster_ValidateCreate/azurecluster_without_pre-existing_vnet_-_valid_spec (0.00s)
+    --- PASS: TestAzureCluster_ValidateCreate/azurecluster_with_pre-existing_vnet_-_lack_control_plane_subnet (0.00s)
+    --- PASS: TestAzureCluster_ValidateCreate/azurecluster_with_pre-existing_vnet_-_lack_node_subnet (0.00s)
+    --- PASS: TestAzureCluster_ValidateCreate/azurecluster_with_pre-existing_vnet_-_invalid_resourcegroup_name (0.00s)
+    --- PASS: TestAzureCluster_ValidateCreate/azurecluster_with_pre-existing_vnet_-_invalid_subnet_name (0.00s)
+=== RUN   TestAzureCluster_ValidateUpdate
+=== RUN   TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_valid_spec
+=== PAUSE TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_valid_spec
+=== RUN   TestAzureCluster_ValidateUpdate/azurecluster_without_pre-existing_vnet_-_valid_spec
+=== PAUSE TestAzureCluster_ValidateUpdate/azurecluster_without_pre-existing_vnet_-_valid_spec
+=== RUN   TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_lack_control_plane_subnet
+=== PAUSE TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_lack_control_plane_subnet
+=== RUN   TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_lack_node_subnet
+=== PAUSE TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_lack_node_subnet
+=== RUN   TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_invalid_resourcegroup_name
+=== PAUSE TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_invalid_resourcegroup_name
+=== RUN   TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_invalid_subnet_name
+=== PAUSE TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_invalid_subnet_name
+=== RUN   TestAzureCluster_ValidateUpdate/azurecluster_resource_group_is_immutable
+=== PAUSE TestAzureCluster_ValidateUpdate/azurecluster_resource_group_is_immutable
+=== RUN   TestAzureCluster_ValidateUpdate/azurecluster_subscription_ID_is_immutable
+=== PAUSE TestAzureCluster_ValidateUpdate/azurecluster_subscription_ID_is_immutable
+=== RUN   TestAzureCluster_ValidateUpdate/azurecluster_location_is_immutable
+=== PAUSE TestAzureCluster_ValidateUpdate/azurecluster_location_is_immutable
+=== RUN   TestAzureCluster_ValidateUpdate/azurecluster_azureEnvironment_is_immutable
+=== PAUSE TestAzureCluster_ValidateUpdate/azurecluster_azureEnvironment_is_immutable
+=== RUN   TestAzureCluster_ValidateUpdate/azurecluster_azureEnvironment_is_immutable#01
+=== PAUSE TestAzureCluster_ValidateUpdate/azurecluster_azureEnvironment_is_immutable#01
+=== RUN   TestAzureCluster_ValidateUpdate/control_plane_outbound_lb_is_immutable
+=== PAUSE TestAzureCluster_ValidateUpdate/control_plane_outbound_lb_is_immutable
+=== CONT  TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_valid_spec
+=== CONT  TestAzureCluster_ValidateUpdate/azurecluster_resource_group_is_immutable
+=== CONT  TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_lack_node_subnet
+=== CONT  TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_lack_control_plane_subnet
+=== CONT  TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_invalid_subnet_name
+=== CONT  TestAzureCluster_ValidateUpdate/azurecluster_without_pre-existing_vnet_-_valid_spec
+=== CONT  TestAzureCluster_ValidateUpdate/azurecluster_azureEnvironment_is_immutable#01
+=== CONT  TestAzureCluster_ValidateUpdate/azurecluster_location_is_immutable
+=== CONT  TestAzureCluster_ValidateUpdate/control_plane_outbound_lb_is_immutable
+=== CONT  TestAzureCluster_ValidateUpdate/azurecluster_subscription_ID_is_immutable
+=== CONT  TestAzureCluster_ValidateUpdate/azurecluster_azureEnvironment_is_immutable
+=== CONT  TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_invalid_resourcegroup_name
+--- PASS: TestAzureCluster_ValidateUpdate (0.00s)
+    --- PASS: TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_lack_node_subnet (0.00s)
+    --- PASS: TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_valid_spec (0.00s)
+    --- PASS: TestAzureCluster_ValidateUpdate/azurecluster_resource_group_is_immutable (0.00s)
+    --- PASS: TestAzureCluster_ValidateUpdate/azurecluster_location_is_immutable (0.00s)
+    --- PASS: TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_invalid_subnet_name (0.00s)
+    --- PASS: TestAzureCluster_ValidateUpdate/azurecluster_azureEnvironment_is_immutable#01 (0.00s)
+    --- PASS: TestAzureCluster_ValidateUpdate/control_plane_outbound_lb_is_immutable (0.00s)
+    --- PASS: TestAzureCluster_ValidateUpdate/azurecluster_azureEnvironment_is_immutable (0.00s)
+    --- PASS: TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_invalid_resourcegroup_name (0.00s)
+    --- PASS: TestAzureCluster_ValidateUpdate/azurecluster_with_pre-existing_vnet_-_lack_control_plane_subnet (0.00s)
+    --- PASS: TestAzureCluster_ValidateUpdate/azurecluster_without_pre-existing_vnet_-_valid_spec (0.00s)
+    --- PASS: TestAzureCluster_ValidateUpdate/azurecluster_subscription_ID_is_immutable (0.00s)
+=== RUN   TestImageOptional
+--- PASS: TestImageOptional (0.00s)
+=== RUN   TestImageTooManyDetails
+--- PASS: TestImageTooManyDetails (0.00s)
+=== RUN   TestSharedImageGalleryValid
+--- PASS: TestSharedImageGalleryValid (0.00s)
+=== RUN   TestMarketPlaceImageValid
+--- PASS: TestMarketPlaceImageValid (0.00s)
+=== RUN   TestImageByIDValid
+--- PASS: TestImageByIDValid (0.00s)
+=== RUN   TestAzureMachineSpec_SetDefaultSSHPublicKey
+--- PASS: TestAzureMachineSpec_SetDefaultSSHPublicKey (0.09s)
+=== RUN   TestAzureMachineSpec_SetIdentityDefaults
+--- PASS: TestAzureMachineSpec_SetIdentityDefaults (0.00s)
+=== RUN   TestAzureMachineSpec_SetDataDisksDefaults
+=== RUN   TestAzureMachineSpec_SetDataDisksDefaults/no_disks
+=== PAUSE TestAzureMachineSpec_SetDataDisksDefaults/no_disks
+=== RUN   TestAzureMachineSpec_SetDataDisksDefaults/no_LUNs_specified
+=== PAUSE TestAzureMachineSpec_SetDataDisksDefaults/no_LUNs_specified
+=== RUN   TestAzureMachineSpec_SetDataDisksDefaults/All_LUNs_specified
+=== PAUSE TestAzureMachineSpec_SetDataDisksDefaults/All_LUNs_specified
+=== RUN   TestAzureMachineSpec_SetDataDisksDefaults/Some_LUNs_missing
+=== PAUSE TestAzureMachineSpec_SetDataDisksDefaults/Some_LUNs_missing
+=== RUN   TestAzureMachineSpec_SetDataDisksDefaults/CachingType_unspecified
+=== PAUSE TestAzureMachineSpec_SetDataDisksDefaults/CachingType_unspecified
+=== CONT  TestAzureMachineSpec_SetDataDisksDefaults/no_disks
+=== CONT  TestAzureMachineSpec_SetDataDisksDefaults/Some_LUNs_missing
+=== CONT  TestAzureMachineSpec_SetDataDisksDefaults/CachingType_unspecified
+=== CONT  TestAzureMachineSpec_SetDataDisksDefaults/All_LUNs_specified
+=== CONT  TestAzureMachineSpec_SetDataDisksDefaults/no_LUNs_specified
+--- PASS: TestAzureMachineSpec_SetDataDisksDefaults (0.00s)
+    --- PASS: TestAzureMachineSpec_SetDataDisksDefaults/Some_LUNs_missing (0.12s)
+    --- PASS: TestAzureMachineSpec_SetDataDisksDefaults/CachingType_unspecified (0.13s)
+    --- PASS: TestAzureMachineSpec_SetDataDisksDefaults/no_LUNs_specified (0.23s)
+    --- PASS: TestAzureMachineSpec_SetDataDisksDefaults/All_LUNs_specified (0.23s)
+    --- PASS: TestAzureMachineSpec_SetDataDisksDefaults/no_disks (0.24s)
+=== RUN   TestAzureMachine_ValidateSSHKey
+=== RUN   TestAzureMachine_ValidateSSHKey/valid_ssh_key
+=== RUN   TestAzureMachine_ValidateSSHKey/invalid_ssh_key
+=== RUN   TestAzureMachine_ValidateSSHKey/ssh_key_not_base64_encoded
+--- PASS: TestAzureMachine_ValidateSSHKey (0.25s)
+    --- PASS: TestAzureMachine_ValidateSSHKey/valid_ssh_key (0.00s)
+    --- PASS: TestAzureMachine_ValidateSSHKey/invalid_ssh_key (0.00s)
+    --- PASS: TestAzureMachine_ValidateSSHKey/ssh_key_not_base64_encoded (0.00s)
+=== RUN   TestAzureMachine_ValidateOSDisk
+=== RUN   TestAzureMachine_ValidateOSDisk/valid_os_disk_spec
+=== RUN   TestAzureMachine_ValidateOSDisk/invalid_os_disk_cache_type
+=== RUN   TestAzureMachine_ValidateOSDisk/valid_ephemeral_os_disk_spec
+=== RUN   TestAzureMachine_ValidateOSDisk/byoc_encryption_with_ephemeral_os_disk_spec
+=== RUN   TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-0
+=== RUN   TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-1
+=== RUN   TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-2
+=== RUN   TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-3
+=== RUN   TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-4
+=== RUN   TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-5
+=== RUN   TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-6
+=== RUN   TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-7
+=== RUN   TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-8
+--- PASS: TestAzureMachine_ValidateOSDisk (0.00s)
+    --- PASS: TestAzureMachine_ValidateOSDisk/valid_os_disk_spec (0.00s)
+    --- PASS: TestAzureMachine_ValidateOSDisk/invalid_os_disk_cache_type (0.00s)
+    --- PASS: TestAzureMachine_ValidateOSDisk/valid_ephemeral_os_disk_spec (0.00s)
+    --- PASS: TestAzureMachine_ValidateOSDisk/byoc_encryption_with_ephemeral_os_disk_spec (0.00s)
+    --- PASS: TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-0 (0.00s)
+    --- PASS: TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-1 (0.00s)
+    --- PASS: TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-2 (0.00s)
+    --- PASS: TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-3 (0.00s)
+    --- PASS: TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-4 (0.00s)
+    --- PASS: TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-5 (0.00s)
+    --- PASS: TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-6 (0.00s)
+    --- PASS: TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-7 (0.00s)
+    --- PASS: TestAzureMachine_ValidateOSDisk/invalid_os_disk_spec-8 (0.00s)
+=== RUN   TestAzureMachine_ValidateDataDisks
+=== RUN   TestAzureMachine_ValidateDataDisks/valid_nil_data_disks
+=== RUN   TestAzureMachine_ValidateDataDisks/valid_empty_data_disks
+=== RUN   TestAzureMachine_ValidateDataDisks/valid_disks
+=== RUN   TestAzureMachine_ValidateDataDisks/duplicate_names
+=== RUN   TestAzureMachine_ValidateDataDisks/duplicate_LUNs
+=== RUN   TestAzureMachine_ValidateDataDisks/invalid_disk_size
+=== RUN   TestAzureMachine_ValidateDataDisks/empty_name
+=== RUN   TestAzureMachine_ValidateDataDisks/invalid_disk_cachingType
+=== RUN   TestAzureMachine_ValidateDataDisks/valid_disk_cachingType
+=== RUN   TestAzureMachine_ValidateDataDisks/valid_managed_disk_storage_account_type
+=== RUN   TestAzureMachine_ValidateDataDisks/invalid_managed_disk_storage_account_type
+--- PASS: TestAzureMachine_ValidateDataDisks (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisks/valid_nil_data_disks (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisks/valid_empty_data_disks (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisks/valid_disks (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisks/duplicate_names (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisks/duplicate_LUNs (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisks/invalid_disk_size (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisks/empty_name (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisks/invalid_disk_cachingType (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisks/valid_disk_cachingType (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisks/valid_managed_disk_storage_account_type (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisks/invalid_managed_disk_storage_account_type (0.00s)
+=== RUN   TestAzureMachine_ValidateSystemAssignedIdentity
+=== RUN   TestAzureMachine_ValidateSystemAssignedIdentity/valid_UUID
+=== RUN   TestAzureMachine_ValidateSystemAssignedIdentity/wrong_Identity_type
+=== RUN   TestAzureMachine_ValidateSystemAssignedIdentity/not_a_valid_UUID
+=== RUN   TestAzureMachine_ValidateSystemAssignedIdentity/empty
+=== RUN   TestAzureMachine_ValidateSystemAssignedIdentity/changed
+--- PASS: TestAzureMachine_ValidateSystemAssignedIdentity (0.00s)
+    --- PASS: TestAzureMachine_ValidateSystemAssignedIdentity/valid_UUID (0.00s)
+    --- PASS: TestAzureMachine_ValidateSystemAssignedIdentity/wrong_Identity_type (0.00s)
+    --- PASS: TestAzureMachine_ValidateSystemAssignedIdentity/not_a_valid_UUID (0.00s)
+    --- PASS: TestAzureMachine_ValidateSystemAssignedIdentity/empty (0.00s)
+    --- PASS: TestAzureMachine_ValidateSystemAssignedIdentity/changed (0.00s)
+=== RUN   TestAzureMachine_ValidateDataDisksUpdate
+=== RUN   TestAzureMachine_ValidateDataDisksUpdate/valid_nil_data_disks
+=== RUN   TestAzureMachine_ValidateDataDisksUpdate/valid_empty_data_disks
+=== RUN   TestAzureMachine_ValidateDataDisksUpdate/valid_data_disk_updates
+=== RUN   TestAzureMachine_ValidateDataDisksUpdate/cannot_update_data_disk_fields_after_machine_creation
+=== RUN   TestAzureMachine_ValidateDataDisksUpdate/validate_updates_to_optional_fields
+=== RUN   TestAzureMachine_ValidateDataDisksUpdate/data_disks_cannot_be_added_after_machine_creation
+=== RUN   TestAzureMachine_ValidateDataDisksUpdate/data_disks_cannot_be_removed_after_machine_creation
+--- PASS: TestAzureMachine_ValidateDataDisksUpdate (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisksUpdate/valid_nil_data_disks (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisksUpdate/valid_empty_data_disks (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisksUpdate/valid_data_disk_updates (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisksUpdate/cannot_update_data_disk_fields_after_machine_creation (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisksUpdate/validate_updates_to_optional_fields (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisksUpdate/data_disks_cannot_be_added_after_machine_creation (0.00s)
+    --- PASS: TestAzureMachine_ValidateDataDisksUpdate/data_disks_cannot_be_removed_after_machine_creation (0.00s)
+=== RUN   TestAzureMachine_ValidateCreate
+=== RUN   TestAzureMachine_ValidateCreate/azuremachine_with_marketplace_image_-_full
+=== RUN   TestAzureMachine_ValidateCreate/azuremachine_with_marketplace_image_-_missing_publisher
+=== RUN   TestAzureMachine_ValidateCreate/azuremachine_with_shared_gallery_image_-_full
+=== RUN   TestAzureMachine_ValidateCreate/azuremachine_with_marketplace_image_-_missing_subscription
+=== RUN   TestAzureMachine_ValidateCreate/azuremachine_with_image_by_-_with_id
+=== RUN   TestAzureMachine_ValidateCreate/azuremachine_with_image_by_-_without_id
+=== RUN   TestAzureMachine_ValidateCreate/azuremachine_with_valid_SSHPublicKey
+=== RUN   TestAzureMachine_ValidateCreate/azuremachine_without_SSHPublicKey
+=== RUN   TestAzureMachine_ValidateCreate/azuremachine_with_invalid_SSHPublicKey
+=== RUN   TestAzureMachine_ValidateCreate/azuremachine_with_list_of_user-assigned_identities
+=== RUN   TestAzureMachine_ValidateCreate/azuremachine_with_empty_list_of_user-assigned_identities
+=== RUN   TestAzureMachine_ValidateCreate/azuremachine_with_valid_osDisk_cache_type
+=== RUN   TestAzureMachine_ValidateCreate/azuremachine_with_invalid_osDisk_cache_type
+--- PASS: TestAzureMachine_ValidateCreate (0.19s)
+    --- PASS: TestAzureMachine_ValidateCreate/azuremachine_with_marketplace_image_-_full (0.00s)
+    --- PASS: TestAzureMachine_ValidateCreate/azuremachine_with_marketplace_image_-_missing_publisher (0.00s)
+    --- PASS: TestAzureMachine_ValidateCreate/azuremachine_with_shared_gallery_image_-_full (0.00s)
+    --- PASS: TestAzureMachine_ValidateCreate/azuremachine_with_marketplace_image_-_missing_subscription (0.00s)
+    --- PASS: TestAzureMachine_ValidateCreate/azuremachine_with_image_by_-_with_id (0.00s)
+    --- PASS: TestAzureMachine_ValidateCreate/azuremachine_with_image_by_-_without_id (0.00s)
+    --- PASS: TestAzureMachine_ValidateCreate/azuremachine_with_valid_SSHPublicKey (0.00s)
+    --- PASS: TestAzureMachine_ValidateCreate/azuremachine_without_SSHPublicKey (0.00s)
+    --- PASS: TestAzureMachine_ValidateCreate/azuremachine_with_invalid_SSHPublicKey (0.00s)
+    --- PASS: TestAzureMachine_ValidateCreate/azuremachine_with_list_of_user-assigned_identities (0.00s)
+    --- PASS: TestAzureMachine_ValidateCreate/azuremachine_with_empty_list_of_user-assigned_identities (0.00s)
+    --- PASS: TestAzureMachine_ValidateCreate/azuremachine_with_valid_osDisk_cache_type (0.00s)
+    --- PASS: TestAzureMachine_ValidateCreate/azuremachine_with_invalid_osDisk_cache_type (0.00s)
+=== RUN   TestAzureMachine_ValidateUpdate
+=== RUN   TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.image_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.image_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.Identity_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.Identity_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.UserAssignedIdentities_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.UserAssignedIdentities_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.RoleAssignmentName_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.RoleAssignmentName_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.OSDisk_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.OSDisk_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.DataDisks_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.DataDisks_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.SSHPublicKey_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.SSHPublicKey_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.AllocatePublicIP_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.AllocatePublicIP_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.EnableIPForwarding_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.EnableIPForwarding_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.AcceleratedNetworking_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.AcceleratedNetworking_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.SpotVMOptions_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.SpotVMOptions_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.SecurityProfile_is_immutable
+=== RUN   TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.SecurityProfile_is_immutable
+--- PASS: TestAzureMachine_ValidateUpdate (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.image_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.image_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.Identity_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.Identity_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.UserAssignedIdentities_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.UserAssignedIdentities_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.RoleAssignmentName_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.RoleAssignmentName_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.OSDisk_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.OSDisk_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.DataDisks_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.DataDisks_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.SSHPublicKey_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.SSHPublicKey_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.AllocatePublicIP_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.AllocatePublicIP_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.EnableIPForwarding_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.EnableIPForwarding_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.AcceleratedNetworking_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.AcceleratedNetworking_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.SpotVMOptions_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.SpotVMOptions_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/invalidTest:_azuremachine.spec.SecurityProfile_is_immutable (0.00s)
+    --- PASS: TestAzureMachine_ValidateUpdate/validTest:_azuremachine.spec.SecurityProfile_is_immutable (0.00s)
+=== RUN   TestAzureMachine_Default
+--- PASS: TestAzureMachine_Default (0.52s)
+=== RUN   TestAzureMachineTemplate_ValidateCreate
+=== RUN   TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_marketplane_image_-_full
+=== RUN   TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_marketplace_image_-_missing_publisher
+=== RUN   TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_shared_gallery_image_-_full
+=== RUN   TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_marketplace_image_-_missing_subscription
+=== RUN   TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_image_by_-_with_id
+=== RUN   TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_image_by_-_without_id
+=== RUN   TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_valid_SSHPublicKey
+=== RUN   TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_without_SSHPublicKey
+=== RUN   TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_invalid_SSHPublicKey
+=== RUN   TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_list_of_user-assigned_identities
+=== RUN   TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_empty_list_of_user-assigned_identities
+=== RUN   TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_valid_osDisk_cache_type
+=== RUN   TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_invalid_osDisk_cache_type
+--- PASS: TestAzureMachineTemplate_ValidateCreate (0.27s)
+    --- PASS: TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_marketplane_image_-_full (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_marketplace_image_-_missing_publisher (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_shared_gallery_image_-_full (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_marketplace_image_-_missing_subscription (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_image_by_-_with_id (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_image_by_-_without_id (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_valid_SSHPublicKey (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_without_SSHPublicKey (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_invalid_SSHPublicKey (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_list_of_user-assigned_identities (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_empty_list_of_user-assigned_identities (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_valid_osDisk_cache_type (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateCreate/azuremachinetemplate_with_invalid_osDisk_cache_type (0.00s)
+=== RUN   TestAzureMachineTemplate_ValidateUpdate
+=== RUN   TestAzureMachineTemplate_ValidateUpdate/AzureMachineTemplate_with_immutable_spec
+=== PAUSE TestAzureMachineTemplate_ValidateUpdate/AzureMachineTemplate_with_immutable_spec
+=== RUN   TestAzureMachineTemplate_ValidateUpdate/AzureMachineTemplate_with_mutable_metadata
+=== PAUSE TestAzureMachineTemplate_ValidateUpdate/AzureMachineTemplate_with_mutable_metadata
+=== CONT  TestAzureMachineTemplate_ValidateUpdate/AzureMachineTemplate_with_immutable_spec
+=== CONT  TestAzureMachineTemplate_ValidateUpdate/AzureMachineTemplate_with_mutable_metadata
+--- PASS: TestAzureMachineTemplate_ValidateUpdate (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateUpdate/AzureMachineTemplate_with_immutable_spec (0.00s)
+    --- PASS: TestAzureMachineTemplate_ValidateUpdate/AzureMachineTemplate_with_mutable_metadata (0.00s)
+=== RUN   TestTags_Merge
+=== RUN   TestTags_Merge/nil_other
+=== PAUSE TestTags_Merge/nil_other
+=== RUN   TestTags_Merge/empty_other
+=== PAUSE TestTags_Merge/empty_other
+=== RUN   TestTags_Merge/disjoint
+=== PAUSE TestTags_Merge/disjoint
+=== RUN   TestTags_Merge/overlapping,_other_wins
+=== PAUSE TestTags_Merge/overlapping,_other_wins
+=== CONT  TestTags_Merge/nil_other
+=== CONT  TestTags_Merge/disjoint
+=== CONT  TestTags_Merge/empty_other
+=== CONT  TestTags_Merge/overlapping,_other_wins
+--- PASS: TestTags_Merge (0.00s)
+    --- PASS: TestTags_Merge/nil_other (0.00s)
+    --- PASS: TestTags_Merge/empty_other (0.00s)
+    --- PASS: TestTags_Merge/disjoint (0.00s)
+    --- PASS: TestTags_Merge/overlapping,_other_wins (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/api/v1alpha4	4.075s
+=== RUN   TestGetDefaultImageSKUID
+=== RUN   TestGetDefaultImageSKUID/v1.14.9
+=== RUN   TestGetDefaultImageSKUID/v1.14.10
+=== RUN   TestGetDefaultImageSKUID/v1.15.6
+=== RUN   TestGetDefaultImageSKUID/v1.15.7
+=== RUN   TestGetDefaultImageSKUID/v1.16.3
+=== RUN   TestGetDefaultImageSKUID/v1.16.4
+=== RUN   TestGetDefaultImageSKUID/1.12.0
+=== RUN   TestGetDefaultImageSKUID/1.1.notvalid.semver
+=== RUN   TestGetDefaultImageSKUID/v1.19.3
+=== RUN   TestGetDefaultImageSKUID/v1.20.8
+=== RUN   TestGetDefaultImageSKUID/v1.21.2
+=== RUN   TestGetDefaultImageSKUID/v1.20.8#01
+=== RUN   TestGetDefaultImageSKUID/v1.21.2#01
+--- PASS: TestGetDefaultImageSKUID (0.00s)
+    --- PASS: TestGetDefaultImageSKUID/v1.14.9 (0.00s)
+    --- PASS: TestGetDefaultImageSKUID/v1.14.10 (0.00s)
+    --- PASS: TestGetDefaultImageSKUID/v1.15.6 (0.00s)
+    --- PASS: TestGetDefaultImageSKUID/v1.15.7 (0.00s)
+    --- PASS: TestGetDefaultImageSKUID/v1.16.3 (0.00s)
+    --- PASS: TestGetDefaultImageSKUID/v1.16.4 (0.00s)
+    --- PASS: TestGetDefaultImageSKUID/1.12.0 (0.00s)
+    --- PASS: TestGetDefaultImageSKUID/1.1.notvalid.semver (0.00s)
+    --- PASS: TestGetDefaultImageSKUID/v1.19.3 (0.00s)
+    --- PASS: TestGetDefaultImageSKUID/v1.20.8 (0.00s)
+    --- PASS: TestGetDefaultImageSKUID/v1.21.2 (0.00s)
+    --- PASS: TestGetDefaultImageSKUID/v1.20.8#01 (0.00s)
+    --- PASS: TestGetDefaultImageSKUID/v1.21.2#01 (0.00s)
+=== RUN   TestAutoRestClientAppendUserAgent
+=== RUN   TestAutoRestClientAppendUserAgent/should_append_extension_to_user_agent_if_extension_is_not_empty
+=== RUN   TestAutoRestClientAppendUserAgent/should_no_changed_if_extension_is_empty
+--- PASS: TestAutoRestClientAppendUserAgent (0.00s)
+    --- PASS: TestAutoRestClientAppendUserAgent/should_append_extension_to_user_agent_if_extension_is_not_empty (0.00s)
+    --- PASS: TestAutoRestClientAppendUserAgent/should_no_changed_if_extension_is_empty (0.00s)
+=== RUN   TestGetDefaultUbuntuImage
+=== RUN   TestGetDefaultUbuntuImage/v1.15.6
+=== RUN   TestGetDefaultUbuntuImage/v1.17.11
+=== RUN   TestGetDefaultUbuntuImage/v1.18.19
+=== RUN   TestGetDefaultUbuntuImage/v1.18.20
+=== RUN   TestGetDefaultUbuntuImage/v1.19.11
+=== RUN   TestGetDefaultUbuntuImage/v1.19.12
+=== RUN   TestGetDefaultUbuntuImage/v1.21.1
+=== RUN   TestGetDefaultUbuntuImage/v1.21.2
+=== RUN   TestGetDefaultUbuntuImage/v1.22.0
+=== RUN   TestGetDefaultUbuntuImage/v1.23.6
+--- PASS: TestGetDefaultUbuntuImage (0.00s)
+    --- PASS: TestGetDefaultUbuntuImage/v1.15.6 (0.00s)
+    --- PASS: TestGetDefaultUbuntuImage/v1.17.11 (0.00s)
+    --- PASS: TestGetDefaultUbuntuImage/v1.18.19 (0.00s)
+    --- PASS: TestGetDefaultUbuntuImage/v1.18.20 (0.00s)
+    --- PASS: TestGetDefaultUbuntuImage/v1.19.11 (0.00s)
+    --- PASS: TestGetDefaultUbuntuImage/v1.19.12 (0.00s)
+    --- PASS: TestGetDefaultUbuntuImage/v1.21.1 (0.00s)
+    --- PASS: TestGetDefaultUbuntuImage/v1.21.2 (0.00s)
+    --- PASS: TestGetDefaultUbuntuImage/v1.22.0 (0.00s)
+    --- PASS: TestGetDefaultUbuntuImage/v1.23.6 (0.00s)
+=== RUN   TestMSCorrelationIDSendDecorator
+--- PASS: TestMSCorrelationIDSendDecorator (0.00s)
+=== RUN   TestVMSS_HasModelChanges
+=== RUN   TestVMSS_HasModelChanges/two_empty_VMSS
+=== RUN   TestVMSS_HasModelChanges/one_empty_and_other_with_image_changes
+=== RUN   TestVMSS_HasModelChanges/one_empty_and_other_with_image_changes#01
+=== RUN   TestVMSS_HasModelChanges/same_default_VMSS
+=== RUN   TestVMSS_HasModelChanges/with_different_identity
+=== RUN   TestVMSS_HasModelChanges/with_different_Zones
+=== RUN   TestVMSS_HasModelChanges/with_empty_image
+=== RUN   TestVMSS_HasModelChanges/with_different_image_reference_ID
+=== RUN   TestVMSS_HasModelChanges/with_different_SKU
+=== RUN   TestVMSS_HasModelChanges/with_different_Tags
+--- PASS: TestVMSS_HasModelChanges (0.00s)
+    --- PASS: TestVMSS_HasModelChanges/two_empty_VMSS (0.00s)
+    --- PASS: TestVMSS_HasModelChanges/one_empty_and_other_with_image_changes (0.00s)
+    --- PASS: TestVMSS_HasModelChanges/one_empty_and_other_with_image_changes#01 (0.00s)
+    --- PASS: TestVMSS_HasModelChanges/same_default_VMSS (0.00s)
+    --- PASS: TestVMSS_HasModelChanges/with_different_identity (0.00s)
+    --- PASS: TestVMSS_HasModelChanges/with_different_Zones (0.00s)
+    --- PASS: TestVMSS_HasModelChanges/with_empty_image (0.00s)
+    --- PASS: TestVMSS_HasModelChanges/with_different_image_reference_ID (0.00s)
+    --- PASS: TestVMSS_HasModelChanges/with_different_SKU (0.00s)
+    --- PASS: TestVMSS_HasModelChanges/with_different_Tags (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure	0.789s
+=== RUN   Test_GetRecordType
+=== RUN   Test_GetRecordType/ipv4
+=== PAUSE Test_GetRecordType/ipv4
+=== RUN   Test_GetRecordType/ipv6
+=== PAUSE Test_GetRecordType/ipv6
+=== RUN   Test_GetRecordType/default
+=== PAUSE Test_GetRecordType/default
+=== CONT  Test_GetRecordType/ipv4
+=== CONT  Test_GetRecordType/default
+=== CONT  Test_GetRecordType/ipv6
+--- PASS: Test_GetRecordType (0.00s)
+    --- PASS: Test_GetRecordType/ipv4 (0.00s)
+    --- PASS: Test_GetRecordType/default (0.00s)
+    --- PASS: Test_GetRecordType/ipv6 (0.00s)
+=== RUN   Test_SDKToFuture
+=== RUN   Test_SDKToFuture/valid_future
+=== PAUSE Test_SDKToFuture/valid_future
+=== CONT  Test_SDKToFuture/valid_future
+--- PASS: Test_SDKToFuture (0.00s)
+    --- PASS: Test_SDKToFuture/valid_future (0.00s)
+=== RUN   Test_FutureToSDK
+=== RUN   Test_FutureToSDK/data_is_empty
+=== PAUSE Test_FutureToSDK/data_is_empty
+=== RUN   Test_FutureToSDK/data_is_not_base64_encoded
+=== PAUSE Test_FutureToSDK/data_is_not_base64_encoded
+=== RUN   Test_FutureToSDK/base64_data_is_not_a_valid_future
+=== PAUSE Test_FutureToSDK/base64_data_is_not_a_valid_future
+=== RUN   Test_FutureToSDK/valid_future_data
+=== PAUSE Test_FutureToSDK/valid_future_data
+=== CONT  Test_FutureToSDK/data_is_empty
+=== CONT  Test_FutureToSDK/base64_data_is_not_a_valid_future
+=== CONT  Test_FutureToSDK/valid_future_data
+=== CONT  Test_FutureToSDK/data_is_not_base64_encoded
+--- PASS: Test_FutureToSDK (0.00s)
+    --- PASS: Test_FutureToSDK/data_is_empty (0.00s)
+    --- PASS: Test_FutureToSDK/base64_data_is_not_a_valid_future (0.00s)
+    --- PASS: Test_FutureToSDK/data_is_not_base64_encoded (0.00s)
+    --- PASS: Test_FutureToSDK/valid_future_data (0.00s)
+=== RUN   Test_UserAssignedIdentitiesToVMSDK
+=== RUN   Test_UserAssignedIdentitiesToVMSDK/ShouldPopulateWithData
+=== PAUSE Test_UserAssignedIdentitiesToVMSDK/ShouldPopulateWithData
+=== RUN   Test_UserAssignedIdentitiesToVMSDK/ShouldFailWithError
+=== PAUSE Test_UserAssignedIdentitiesToVMSDK/ShouldFailWithError
+=== CONT  Test_UserAssignedIdentitiesToVMSDK/ShouldPopulateWithData
+=== CONT  Test_UserAssignedIdentitiesToVMSDK/ShouldFailWithError
+--- PASS: Test_UserAssignedIdentitiesToVMSDK (0.00s)
+    --- PASS: Test_UserAssignedIdentitiesToVMSDK/ShouldPopulateWithData (0.00s)
+    --- PASS: Test_UserAssignedIdentitiesToVMSDK/ShouldFailWithError (0.00s)
+=== RUN   Test_UserAssignedIdentitiesToVMSSSDK
+=== RUN   Test_UserAssignedIdentitiesToVMSSSDK/ShouldPopulateWithData
+=== PAUSE Test_UserAssignedIdentitiesToVMSSSDK/ShouldPopulateWithData
+=== RUN   Test_UserAssignedIdentitiesToVMSSSDK/ShouldFailWithError
+=== PAUSE Test_UserAssignedIdentitiesToVMSSSDK/ShouldFailWithError
+=== CONT  Test_UserAssignedIdentitiesToVMSSSDK/ShouldPopulateWithData
+=== CONT  Test_UserAssignedIdentitiesToVMSSSDK/ShouldFailWithError
+--- PASS: Test_UserAssignedIdentitiesToVMSSSDK (0.00s)
+    --- PASS: Test_UserAssignedIdentitiesToVMSSSDK/ShouldPopulateWithData (0.00s)
+    --- PASS: Test_UserAssignedIdentitiesToVMSSSDK/ShouldFailWithError (0.00s)
+=== RUN   Test_SDKToVMSS
+=== RUN   Test_SDKToVMSS/ShouldPopulateWithData
+=== PAUSE Test_SDKToVMSS/ShouldPopulateWithData
+=== CONT  Test_SDKToVMSS/ShouldPopulateWithData
+--- PASS: Test_SDKToVMSS (0.00s)
+    --- PASS: Test_SDKToVMSS/ShouldPopulateWithData (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/converters	1.834s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/mock_azure	[no test files]
+=== RUN   TestGettingEnvironment
+=== RUN   TestGettingEnvironment/AZURE_ENVIRONMENT_is_empty
+=== RUN   TestGettingEnvironment/AZURE_ENVIRONMENT_is_AzurePublicCloud
+=== RUN   TestGettingEnvironment/AZURE_ENVIRONMENT_is_AzureUSGovernmentCloud
+=== RUN   TestGettingEnvironment/AZURE_ENVIRONMENT_is_AzureChina
+=== RUN   TestGettingEnvironment/AZURE_ENVIRONMENT_is_AzureGermany
+=== RUN   TestGettingEnvironment/AZURE_ENVIRONMENT_has_an_invalid_value
+--- PASS: TestGettingEnvironment (0.00s)
+    --- PASS: TestGettingEnvironment/AZURE_ENVIRONMENT_is_empty (0.00s)
+    --- PASS: TestGettingEnvironment/AZURE_ENVIRONMENT_is_AzurePublicCloud (0.00s)
+    --- PASS: TestGettingEnvironment/AZURE_ENVIRONMENT_is_AzureUSGovernmentCloud (0.00s)
+    --- PASS: TestGettingEnvironment/AZURE_ENVIRONMENT_is_AzureChina (0.00s)
+    --- PASS: TestGettingEnvironment/AZURE_ENVIRONMENT_is_AzureGermany (0.00s)
+    --- PASS: TestGettingEnvironment/AZURE_ENVIRONMENT_has_an_invalid_value (0.00s)
+=== RUN   TestGettingSecurityRules
+--- PASS: TestGettingSecurityRules (0.00s)
+=== RUN   TestOutboundLBName
+=== RUN   TestOutboundLBName/public_cluster_node_outbound_lb
+=== RUN   TestOutboundLBName/public_cluster_control_plane_outbound_lb
+=== RUN   TestOutboundLBName/private_cluster_with_node_outbound_lb
+=== RUN   TestOutboundLBName/private_cluster_without_node_outbound_lb
+=== RUN   TestOutboundLBName/private_cluster_with_control_plane_outbound_lb
+=== RUN   TestOutboundLBName/private_cluster_without_control_plane_outbound_lb
+--- PASS: TestOutboundLBName (0.00s)
+    --- PASS: TestOutboundLBName/public_cluster_node_outbound_lb (0.00s)
+    --- PASS: TestOutboundLBName/public_cluster_control_plane_outbound_lb (0.00s)
+    --- PASS: TestOutboundLBName/private_cluster_with_node_outbound_lb (0.00s)
+    --- PASS: TestOutboundLBName/private_cluster_without_node_outbound_lb (0.00s)
+    --- PASS: TestOutboundLBName/private_cluster_with_control_plane_outbound_lb (0.00s)
+    --- PASS: TestOutboundLBName/private_cluster_without_control_plane_outbound_lb (0.00s)
+=== RUN   TestAllowedNamespaces
+=== RUN   TestAllowedNamespaces/allow_any_cluster_namespace_when_empty
+=== RUN   TestAllowedNamespaces/no_namespaces_allowed_when_list_is_empty
+=== RUN   TestAllowedNamespaces/allow_cluster_with_namespace_in_list
+=== RUN   TestAllowedNamespaces/don't_allow_cluster_with_namespace_not_in_list
+=== RUN   TestAllowedNamespaces/allow_cluster_when_namespace_has_selector_with_matching_label
+=== RUN   TestAllowedNamespaces/don't_allow_cluster_when_namespace_has_selector_with_different_label
+--- PASS: TestAllowedNamespaces (0.00s)
+    --- PASS: TestAllowedNamespaces/allow_any_cluster_namespace_when_empty (0.00s)
+    --- PASS: TestAllowedNamespaces/no_namespaces_allowed_when_list_is_empty (0.00s)
+    --- PASS: TestAllowedNamespaces/allow_cluster_with_namespace_in_list (0.00s)
+    --- PASS: TestAllowedNamespaces/don't_allow_cluster_with_namespace_not_in_list (0.00s)
+    --- PASS: TestAllowedNamespaces/allow_cluster_when_namespace_has_selector_with_matching_label (0.00s)
+    --- PASS: TestAllowedNamespaces/don't_allow_cluster_when_namespace_has_selector_with_different_label (0.00s)
+=== RUN   TestMachineScope_Name
+=== RUN   TestMachineScope_Name/if_provider_ID_exists,_use_it
+=== RUN   TestMachineScope_Name/linux_can_be_any_length
+=== RUN   TestMachineScope_Name/Windows_name_with_long_MachineName_and_short_cluster_name
+=== RUN   TestMachineScope_Name/Windows_name_with_long_MachineName_and_long_cluster_name
+--- PASS: TestMachineScope_Name (0.00s)
+    --- PASS: TestMachineScope_Name/if_provider_ID_exists,_use_it (0.00s)
+    --- PASS: TestMachineScope_Name/linux_can_be_any_length (0.00s)
+    --- PASS: TestMachineScope_Name/Windows_name_with_long_MachineName_and_short_cluster_name (0.00s)
+    --- PASS: TestMachineScope_Name/Windows_name_with_long_MachineName_and_long_cluster_name (0.00s)
+=== RUN   TestMachineScope_GetVMID
+=== RUN   TestMachineScope_GetVMID/returns_the_vm_name_from_provider_ID
+=== RUN   TestMachineScope_GetVMID/returns_empty_if_provider_ID_is_invalid
+--- PASS: TestMachineScope_GetVMID (0.00s)
+    --- PASS: TestMachineScope_GetVMID/returns_the_vm_name_from_provider_ID (0.00s)
+    --- PASS: TestMachineScope_GetVMID/returns_empty_if_provider_ID_is_invalid (0.00s)
+=== RUN   TestMachineScope_ProviderID
+=== RUN   TestMachineScope_ProviderID/returns_the_entire_provider_ID
+=== RUN   TestMachineScope_ProviderID/returns_empty_if_provider_ID_is_invalid
+--- PASS: TestMachineScope_ProviderID (0.00s)
+    --- PASS: TestMachineScope_ProviderID/returns_the_entire_provider_ID (0.00s)
+    --- PASS: TestMachineScope_ProviderID/returns_empty_if_provider_ID_is_invalid (0.00s)
+=== RUN   TestMachineScope_PublicIPSpecs
+=== RUN   TestMachineScope_PublicIPSpecs/returns_nil_if_AllocatePublicIP_is_false
+=== RUN   TestMachineScope_PublicIPSpecs/appends_to_PublicIPSpec_for_node_if_AllocatePublicIP_is_true
+--- PASS: TestMachineScope_PublicIPSpecs (0.00s)
+    --- PASS: TestMachineScope_PublicIPSpecs/returns_nil_if_AllocatePublicIP_is_false (0.00s)
+    --- PASS: TestMachineScope_PublicIPSpecs/appends_to_PublicIPSpec_for_node_if_AllocatePublicIP_is_true (0.00s)
+=== RUN   TestMachineScope_InboundNatSpecs
+=== RUN   TestMachineScope_InboundNatSpecs/returns_empty_when_infra_is_not_control_plane
+=== RUN   TestMachineScope_InboundNatSpecs/returns_InboundNatSpec_when_infra_is_control_plane
+--- PASS: TestMachineScope_InboundNatSpecs (0.00s)
+    --- PASS: TestMachineScope_InboundNatSpecs/returns_empty_when_infra_is_not_control_plane (0.00s)
+    --- PASS: TestMachineScope_InboundNatSpecs/returns_InboundNatSpec_when_infra_is_control_plane (0.00s)
+=== RUN   TestMachineScope_RoleAssignmentSpecs
+=== RUN   TestMachineScope_RoleAssignmentSpecs/returns_empty_if_VM_identity_is_system_assigned
+=== RUN   TestMachineScope_RoleAssignmentSpecs/returns_RoleAssignmentSpec_if_VM_identity_is_not_system_assigned
+--- PASS: TestMachineScope_RoleAssignmentSpecs (0.00s)
+    --- PASS: TestMachineScope_RoleAssignmentSpecs/returns_empty_if_VM_identity_is_system_assigned (0.00s)
+    --- PASS: TestMachineScope_RoleAssignmentSpecs/returns_RoleAssignmentSpec_if_VM_identity_is_not_system_assigned (0.00s)
+=== RUN   TestMachineScope_VMExtensionSpecs
+=== RUN   TestMachineScope_VMExtensionSpecs/If_OS_type_is_Linux_and_cloud_is_AzurePublicCloud,_it_returns_VMExtensionSpec
+=== RUN   TestMachineScope_VMExtensionSpecs/If_OS_type_is_not_Linux_and_cloud_is_AzurePublicCloud,_it_returns_empty
+=== RUN   TestMachineScope_VMExtensionSpecs/If_OS_type_is_Linux_and_cloud_is_not_AzurePublicCloud,_it_returns_empty
+--- PASS: TestMachineScope_VMExtensionSpecs (0.00s)
+    --- PASS: TestMachineScope_VMExtensionSpecs/If_OS_type_is_Linux_and_cloud_is_AzurePublicCloud,_it_returns_VMExtensionSpec (0.00s)
+    --- PASS: TestMachineScope_VMExtensionSpecs/If_OS_type_is_not_Linux_and_cloud_is_AzurePublicCloud,_it_returns_empty (0.00s)
+    --- PASS: TestMachineScope_VMExtensionSpecs/If_OS_type_is_Linux_and_cloud_is_not_AzurePublicCloud,_it_returns_empty (0.00s)
+=== RUN   TestMachineScope_Subnet
+=== RUN   TestMachineScope_Subnet/returns_empty_if_no_subnet_is_found_at_cluster_scope
+=== RUN   TestMachineScope_Subnet/returns_the_machine_subnet_name_if_the_same_is_present_in_the_cluster_scope
+=== RUN   TestMachineScope_Subnet/returns_empty_if_machine_subnet_name_is_not_present_in_the_cluster_scope
+--- PASS: TestMachineScope_Subnet (0.00s)
+    --- PASS: TestMachineScope_Subnet/returns_empty_if_no_subnet_is_found_at_cluster_scope (0.00s)
+    --- PASS: TestMachineScope_Subnet/returns_the_machine_subnet_name_if_the_same_is_present_in_the_cluster_scope (0.00s)
+    --- PASS: TestMachineScope_Subnet/returns_empty_if_machine_subnet_name_is_not_present_in_the_cluster_scope (0.00s)
+=== RUN   TestMachineScope_AvailabilityZone
+=== RUN   TestMachineScope_AvailabilityZone/returns_empty_if_no_failure_domain_is_present
+=== RUN   TestMachineScope_AvailabilityZone/returns_failure_domain_from_the_machine_spec
+=== RUN   TestMachineScope_AvailabilityZone/returns_failure_domain_from_the_azuremachine_spec
+--- PASS: TestMachineScope_AvailabilityZone (0.00s)
+    --- PASS: TestMachineScope_AvailabilityZone/returns_empty_if_no_failure_domain_is_present (0.00s)
+    --- PASS: TestMachineScope_AvailabilityZone/returns_failure_domain_from_the_machine_spec (0.00s)
+    --- PASS: TestMachineScope_AvailabilityZone/returns_failure_domain_from_the_azuremachine_spec (0.00s)
+=== RUN   TestMachineScope_Namespace
+=== RUN   TestMachineScope_Namespace/returns_azure_machine_namespace
+=== RUN   TestMachineScope_Namespace/returns_azure_machine_namespace_as_empty_if_namespace_is_no_specified
+--- PASS: TestMachineScope_Namespace (0.00s)
+    --- PASS: TestMachineScope_Namespace/returns_azure_machine_namespace (0.00s)
+    --- PASS: TestMachineScope_Namespace/returns_azure_machine_namespace_as_empty_if_namespace_is_no_specified (0.00s)
+=== RUN   TestMachineScope_IsControlPlane
+=== RUN   TestMachineScope_IsControlPlane/returns_false_when_machine_is_not_control_plane
+=== RUN   TestMachineScope_IsControlPlane/returns_true_when_machine_is_control_plane
+--- PASS: TestMachineScope_IsControlPlane (0.00s)
+    --- PASS: TestMachineScope_IsControlPlane/returns_false_when_machine_is_not_control_plane (0.00s)
+    --- PASS: TestMachineScope_IsControlPlane/returns_true_when_machine_is_control_plane (0.00s)
+=== RUN   TestMachineScope_Role
+=== RUN   TestMachineScope_Role/returns_node_when_machine_is_worker
+=== RUN   TestMachineScope_Role/returns_control-plane_when_machine_is_control_plane
+--- PASS: TestMachineScope_Role (0.00s)
+    --- PASS: TestMachineScope_Role/returns_node_when_machine_is_worker (0.00s)
+    --- PASS: TestMachineScope_Role/returns_control-plane_when_machine_is_control_plane (0.00s)
+=== RUN   TestMachineScope_AvailabilitySet
+=== RUN   TestMachineScope_AvailabilitySet/returns_empty_and_false_if_availability_set_is_not_enabled
+=== RUN   TestMachineScope_AvailabilitySet/returns_AvailabilitySet_name_and_true_if_availability_set_is_enabled_and_machine_is_control_plane
+=== RUN   TestMachineScope_AvailabilitySet/returns_AvailabilitySet_name_and_true_if_AvailabilitySet_is_enabled_for_worker_machine_which_is_part_of_machine_deployment
+=== RUN   TestMachineScope_AvailabilitySet/returns_empty_and_false_if_AvailabilitySet_is_enabled_but_worker_machine_is_not_part_of_machine_deployment
+--- PASS: TestMachineScope_AvailabilitySet (0.00s)
+    --- PASS: TestMachineScope_AvailabilitySet/returns_empty_and_false_if_availability_set_is_not_enabled (0.00s)
+    --- PASS: TestMachineScope_AvailabilitySet/returns_AvailabilitySet_name_and_true_if_availability_set_is_enabled_and_machine_is_control_plane (0.00s)
+    --- PASS: TestMachineScope_AvailabilitySet/returns_AvailabilitySet_name_and_true_if_AvailabilitySet_is_enabled_for_worker_machine_which_is_part_of_machine_deployment (0.00s)
+    --- PASS: TestMachineScope_AvailabilitySet/returns_empty_and_false_if_AvailabilitySet_is_enabled_but_worker_machine_is_not_part_of_machine_deployment (0.00s)
+=== RUN   TestMachineScope_VMState
+=== RUN   TestMachineScope_VMState/returns_the_VMState_if_present_in_AzureMachine_status
+=== RUN   TestMachineScope_VMState/returns_empty_if_VMState_is_not_present_in_AzureMachine_status
+--- PASS: TestMachineScope_VMState (0.00s)
+    --- PASS: TestMachineScope_VMState/returns_the_VMState_if_present_in_AzureMachine_status (0.00s)
+    --- PASS: TestMachineScope_VMState/returns_empty_if_VMState_is_not_present_in_AzureMachine_status (0.00s)
+=== RUN   TestMachineScope_GetVMImage
+=== RUN   TestMachineScope_GetVMImage/returns_AzureMachine_image_is_found_if_present_in_the_AzureMachine_spec
+=== RUN   TestMachineScope_GetVMImage/if_no_image_is_specified_and_os_specified_is_windows,_returns_windows_image
+I0923 20:38:59.750141   47079 machine.go:525]  "msg"="No image specified for machine, using default Windows Image"  "machine"="machine-name"
+=== RUN   TestMachineScope_GetVMImage/if_no_image_and_OS_is_specified,_returns_linux_image
+I0923 20:38:59.750478   47079 machine.go:529]  "msg"="No image specified for machine, using default Linux Image"  "machine"="machine-name"
+--- PASS: TestMachineScope_GetVMImage (0.00s)
+    --- PASS: TestMachineScope_GetVMImage/returns_AzureMachine_image_is_found_if_present_in_the_AzureMachine_spec (0.00s)
+    --- PASS: TestMachineScope_GetVMImage/if_no_image_is_specified_and_os_specified_is_windows,_returns_windows_image (0.00s)
+    --- PASS: TestMachineScope_GetVMImage/if_no_image_and_OS_is_specified,_returns_linux_image (0.00s)
+=== RUN   TestMachineScope_NICSpecs
+=== RUN   TestMachineScope_NICSpecs/Node_Machine_with_no_nat_gateway_and_no_public_IP_address
+=== RUN   TestMachineScope_NICSpecs/Node_Machine_with_nat_gateway
+=== RUN   TestMachineScope_NICSpecs/Node_Machine_with_public_IP_address
+=== RUN   TestMachineScope_NICSpecs/Control_Plane_Machine_with_private_LB
+=== RUN   TestMachineScope_NICSpecs/Control_Plane_Machine_with_public_LB
+--- PASS: TestMachineScope_NICSpecs (0.00s)
+    --- PASS: TestMachineScope_NICSpecs/Node_Machine_with_no_nat_gateway_and_no_public_IP_address (0.00s)
+    --- PASS: TestMachineScope_NICSpecs/Node_Machine_with_nat_gateway (0.00s)
+    --- PASS: TestMachineScope_NICSpecs/Node_Machine_with_public_IP_address (0.00s)
+    --- PASS: TestMachineScope_NICSpecs/Control_Plane_Machine_with_private_LB (0.00s)
+    --- PASS: TestMachineScope_NICSpecs/Control_Plane_Machine_with_public_LB (0.00s)
+=== RUN   TestMachinePoolScope_Name
+=== RUN   TestMachinePoolScope_Name/linux_can_be_any_length
+=== RUN   TestMachinePoolScope_Name/windows_longer_than_9_should_be_shortened
+--- PASS: TestMachinePoolScope_Name (0.00s)
+    --- PASS: TestMachinePoolScope_Name/linux_can_be_any_length (0.00s)
+    --- PASS: TestMachinePoolScope_Name/windows_longer_than_9_should_be_shortened (0.00s)
+=== RUN   TestMachinePoolScope_SetBootstrapConditions
+=== RUN   TestMachinePoolScope_SetBootstrapConditions/should_set_bootstrap_succeeded_condition_if_provisioning_state_succeeded
+=== RUN   TestMachinePoolScope_SetBootstrapConditions/should_set_bootstrap_succeeded_false_condition_with_reason_if_provisioning_state_creating
+=== RUN   TestMachinePoolScope_SetBootstrapConditions/should_set_bootstrap_succeeded_false_condition_with_reason_if_provisioning_state_failed
+--- PASS: TestMachinePoolScope_SetBootstrapConditions (0.00s)
+    --- PASS: TestMachinePoolScope_SetBootstrapConditions/should_set_bootstrap_succeeded_condition_if_provisioning_state_succeeded (0.00s)
+    --- PASS: TestMachinePoolScope_SetBootstrapConditions/should_set_bootstrap_succeeded_false_condition_with_reason_if_provisioning_state_creating (0.00s)
+    --- PASS: TestMachinePoolScope_SetBootstrapConditions/should_set_bootstrap_succeeded_false_condition_with_reason_if_provisioning_state_failed (0.00s)
+=== RUN   TestMachinePoolScope_MaxSurge
+=== RUN   TestMachinePoolScope_MaxSurge/default_surge_should_be_1_if_no_deployment_strategy_is_set
+=== RUN   TestMachinePoolScope_MaxSurge/default_surge_should_be_1_regardless_of_replica_count_with_no_surger
+=== RUN   TestMachinePoolScope_MaxSurge/default_surge_should_be_2_as_specified_by_the_surger
+=== RUN   TestMachinePoolScope_MaxSurge/default_surge_should_be_2_(50%)_of_the_desired_replicas
+--- PASS: TestMachinePoolScope_MaxSurge (0.00s)
+    --- PASS: TestMachinePoolScope_MaxSurge/default_surge_should_be_1_if_no_deployment_strategy_is_set (0.00s)
+    --- PASS: TestMachinePoolScope_MaxSurge/default_surge_should_be_1_regardless_of_replica_count_with_no_surger (0.00s)
+    --- PASS: TestMachinePoolScope_MaxSurge/default_surge_should_be_2_as_specified_by_the_surger (0.00s)
+    --- PASS: TestMachinePoolScope_MaxSurge/default_surge_should_be_2_(50%)_of_the_desired_replicas (0.00s)
+=== RUN   TestMachinePoolScope_SaveVMImageToStatus
+--- PASS: TestMachinePoolScope_SaveVMImageToStatus (0.00s)
+=== RUN   TestMachinePoolScope_GetVMImage
+=== RUN   TestMachinePoolScope_GetVMImage/should_set_and_default_the_image_if_no_image_is_specified_for_the_AzureMachinePool
+=== RUN   TestMachinePoolScope_GetVMImage/should_not_default_or_set_the_image_on_the_AzureMachinePool_if_it_already_exists
+--- PASS: TestMachinePoolScope_GetVMImage (0.00s)
+    --- PASS: TestMachinePoolScope_GetVMImage/should_set_and_default_the_image_if_no_image_is_specified_for_the_AzureMachinePool (0.00s)
+    --- PASS: TestMachinePoolScope_GetVMImage/should_not_default_or_set_the_image_on_the_AzureMachinePool_if_it_already_exists (0.00s)
+=== RUN   TestMachinePoolScope_NeedsRequeue
+=== RUN   TestMachinePoolScope_NeedsRequeue/should_requeue_if_the_machine_is_not_in_succeeded_state
+=== RUN   TestMachinePoolScope_NeedsRequeue/should_not_requeue_if_the_machine_is_in_succeeded_state
+=== RUN   TestMachinePoolScope_NeedsRequeue/should_requeue_if_the_machine_is_in_succeeded_state_but_desired_replica_count_does_not_match
+=== RUN   TestMachinePoolScope_NeedsRequeue/should_not_requeue_if_the_machine_is_in_succeeded_state_but_desired_replica_count_does_match
+=== RUN   TestMachinePoolScope_NeedsRequeue/should_requeue_if_an_instance_VM_image_does_not_match_the_VM_image_of_the_VMSS
+--- PASS: TestMachinePoolScope_NeedsRequeue (0.00s)
+    --- PASS: TestMachinePoolScope_NeedsRequeue/should_requeue_if_the_machine_is_not_in_succeeded_state (0.00s)
+    --- PASS: TestMachinePoolScope_NeedsRequeue/should_not_requeue_if_the_machine_is_in_succeeded_state (0.00s)
+    --- PASS: TestMachinePoolScope_NeedsRequeue/should_requeue_if_the_machine_is_in_succeeded_state_but_desired_replica_count_does_not_match (0.00s)
+    --- PASS: TestMachinePoolScope_NeedsRequeue/should_not_requeue_if_the_machine_is_in_succeeded_state_but_desired_replica_count_does_match (0.00s)
+    --- PASS: TestMachinePoolScope_NeedsRequeue/should_requeue_if_an_instance_VM_image_does_not_match_the_VM_image_of_the_VMSS (0.00s)
+=== RUN   TestMachinePoolScope_updateReplicasAndProviderIDs
+=== RUN   TestMachinePoolScope_updateReplicasAndProviderIDs/if_there_are_three_ready_machines_with_matching_labels,_then_should_count_them
+=== RUN   TestMachinePoolScope_updateReplicasAndProviderIDs/should_only_count_machines_with_matching_machine_pool_label
+=== RUN   TestMachinePoolScope_updateReplicasAndProviderIDs/should_only_count_machines_with_matching_cluster_name_label
+--- PASS: TestMachinePoolScope_updateReplicasAndProviderIDs (0.00s)
+    --- PASS: TestMachinePoolScope_updateReplicasAndProviderIDs/if_there_are_three_ready_machines_with_matching_labels,_then_should_count_them (0.00s)
+    --- PASS: TestMachinePoolScope_updateReplicasAndProviderIDs/should_only_count_machines_with_matching_machine_pool_label (0.00s)
+    --- PASS: TestMachinePoolScope_updateReplicasAndProviderIDs/should_only_count_machines_with_matching_cluster_name_label (0.00s)
+=== RUN   TestNewMachinePoolMachineScope
+=== RUN   TestNewMachinePoolMachineScope/successfully_create_machine_scope
+=== RUN   TestNewMachinePoolMachineScope/no_client
+=== RUN   TestNewMachinePoolMachineScope/no_ClusterScope
+=== RUN   TestNewMachinePoolMachineScope/no_MachinePool
+=== RUN   TestNewMachinePoolMachineScope/no_AzureMachinePool
+=== RUN   TestNewMachinePoolMachineScope/no_AzureMachinePoolMachine
+--- PASS: TestNewMachinePoolMachineScope (0.00s)
+    --- PASS: TestNewMachinePoolMachineScope/successfully_create_machine_scope (0.00s)
+    --- PASS: TestNewMachinePoolMachineScope/no_client (0.00s)
+    --- PASS: TestNewMachinePoolMachineScope/no_ClusterScope (0.00s)
+    --- PASS: TestNewMachinePoolMachineScope/no_MachinePool (0.00s)
+    --- PASS: TestNewMachinePoolMachineScope/no_AzureMachinePool (0.00s)
+    --- PASS: TestNewMachinePoolMachineScope/no_AzureMachinePoolMachine (0.00s)
+=== RUN   TestMachineScope_UpdateStatus
+=== RUN   TestMachineScope_UpdateStatus/should_set_kubernetes_version,_ready,_and_node_reference_upon_finding_the_node
+=== RUN   TestMachineScope_UpdateStatus/should_not_mark_AMPM_ready_if_node_is_not_ready
+=== RUN   TestMachineScope_UpdateStatus/fails_fetching_the_node
+=== RUN   TestMachineScope_UpdateStatus/should_not_mark_AMPM_ready_if_node_is_not_ready#01
+=== RUN   TestMachineScope_UpdateStatus/node_is_not_found
+=== RUN   TestMachineScope_UpdateStatus/node_is_found_by_ObjectReference
+=== RUN   TestMachineScope_UpdateStatus/instance_information_with_latest_model_populates_the_AMPM_status
+--- PASS: TestMachineScope_UpdateStatus (0.00s)
+    --- PASS: TestMachineScope_UpdateStatus/should_set_kubernetes_version,_ready,_and_node_reference_upon_finding_the_node (0.00s)
+    --- PASS: TestMachineScope_UpdateStatus/should_not_mark_AMPM_ready_if_node_is_not_ready (0.00s)
+    --- PASS: TestMachineScope_UpdateStatus/fails_fetching_the_node (0.00s)
+    --- PASS: TestMachineScope_UpdateStatus/should_not_mark_AMPM_ready_if_node_is_not_ready#01 (0.00s)
+    --- PASS: TestMachineScope_UpdateStatus/node_is_not_found (0.00s)
+    --- PASS: TestMachineScope_UpdateStatus/node_is_found_by_ObjectReference (0.00s)
+    --- PASS: TestMachineScope_UpdateStatus/instance_information_with_latest_model_populates_the_AMPM_status (0.00s)
+=== RUN   TestMachinePoolMachineScope_CordonAndDrain
+=== RUN   TestMachinePoolMachineScope_CordonAndDrain/should_skip_cordon_and_drain_if_the_node_does_not_exist_with_provider_ID
+=== RUN   TestMachinePoolMachineScope_CordonAndDrain/should_skip_cordon_and_drain_if_the_node_does_not_exist_with_node_reference
+=== RUN   TestMachinePoolMachineScope_CordonAndDrain/if_GetNodeByProviderID_fails_with_an_error,_an_error_will_be_returned
+--- PASS: TestMachinePoolMachineScope_CordonAndDrain (0.00s)
+    --- PASS: TestMachinePoolMachineScope_CordonAndDrain/should_skip_cordon_and_drain_if_the_node_does_not_exist_with_provider_ID (0.00s)
+    --- PASS: TestMachinePoolMachineScope_CordonAndDrain/should_skip_cordon_and_drain_if_the_node_does_not_exist_with_node_reference (0.00s)
+    --- PASS: TestMachinePoolMachineScope_CordonAndDrain/if_GetNodeByProviderID_fails_with_an_error,_an_error_will_be_returned (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/scope	3.225s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/scope/mocks	[no test files]
+=== RUN   TestMachinePoolRollingUpdateStrategy_Type
+--- PASS: TestMachinePoolRollingUpdateStrategy_Type (0.00s)
+=== RUN   TestMachinePoolRollingUpdateStrategy_Surge
+=== RUN   TestMachinePoolRollingUpdateStrategy_Surge/Strategy_is_empty
+=== RUN   TestMachinePoolRollingUpdateStrategy_Surge/MaxSurge_is_set_to_2
+=== RUN   TestMachinePoolRollingUpdateStrategy_Surge/MaxSurge_is_set_to_20%_and_desiredReplicas_is_20
+=== RUN   TestMachinePoolRollingUpdateStrategy_Surge/MaxSurge_is_set_to_20%_and_desiredReplicas_is_21;_rounds_up
+--- PASS: TestMachinePoolRollingUpdateStrategy_Surge (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_Surge/Strategy_is_empty (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_Surge/MaxSurge_is_set_to_2 (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_Surge/MaxSurge_is_set_to_20%_and_desiredReplicas_is_20 (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_Surge/MaxSurge_is_set_to_20%_and_desiredReplicas_is_21;_rounds_up (0.00s)
+=== RUN   TestMachinePoolScope_maxUnavailable
+=== RUN   TestMachinePoolScope_maxUnavailable/Strategy_is_empty
+=== RUN   TestMachinePoolScope_maxUnavailable/MaxUnavailable_is_nil
+=== RUN   TestMachinePoolScope_maxUnavailable/MaxUnavailable_is_set_to_2
+=== RUN   TestMachinePoolScope_maxUnavailable/MaxUnavailable_is_set_to_20%
+=== RUN   TestMachinePoolScope_maxUnavailable/MaxUnavailable_is_set_to_20%_and_it_rounds_down
+--- PASS: TestMachinePoolScope_maxUnavailable (0.00s)
+    --- PASS: TestMachinePoolScope_maxUnavailable/Strategy_is_empty (0.00s)
+    --- PASS: TestMachinePoolScope_maxUnavailable/MaxUnavailable_is_nil (0.00s)
+    --- PASS: TestMachinePoolScope_maxUnavailable/MaxUnavailable_is_set_to_2 (0.00s)
+    --- PASS: TestMachinePoolScope_maxUnavailable/MaxUnavailable_is_set_to_20% (0.00s)
+    --- PASS: TestMachinePoolScope_maxUnavailable/MaxUnavailable_is_set_to_20%_and_it_rounds_down (0.00s)
+=== RUN   TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete
+=== RUN   TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/should_not_select_machines_to_delete_if_less_than_desired_replica_count
+=== RUN   TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_over-provisioned,_select_a_machine_with_an_out-of-date_model
+=== RUN   TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_over-provisioned,_select_the_oldest_machine
+=== RUN   TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_over-provisioned,_select_machines_ordered_by_creation_date
+=== RUN   TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_over-provisioned,_select_machines_ordered_by_newest_first
+=== RUN   TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_maxUnavailable_is_1,_and_1_is_not_the_latest_model,_delete_it.
+=== RUN   TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_maxUnavailable_is_1,_and_all_are_the_latest_model,_delete_nothing.
+=== RUN   TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_maxUnavailable_is_2,_and_there_are_2_with_the_latest_model_==_false,_delete_2.
+=== RUN   TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_maxUnavailable_is_45%,_and_there_are_2_with_the_latest_model_==_false,_delete_1.
+=== RUN   TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_maxUnavailable_is_30%,_and_there_are_2_with_the_latest_model_==_false,_delete_0.
+--- PASS: TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/should_not_select_machines_to_delete_if_less_than_desired_replica_count (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_over-provisioned,_select_a_machine_with_an_out-of-date_model (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_over-provisioned,_select_the_oldest_machine (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_over-provisioned,_select_machines_ordered_by_creation_date (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_over-provisioned,_select_machines_ordered_by_newest_first (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_maxUnavailable_is_1,_and_1_is_not_the_latest_model,_delete_it. (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_maxUnavailable_is_1,_and_all_are_the_latest_model,_delete_nothing. (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_maxUnavailable_is_2,_and_there_are_2_with_the_latest_model_==_false,_delete_2. (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_maxUnavailable_is_45%,_and_there_are_2_with_the_latest_model_==_false,_delete_1. (0.00s)
+    --- PASS: TestMachinePoolRollingUpdateStrategy_SelectMachinesToDelete/if_maxUnavailable_is_30%,_and_there_are_2_with_the_latest_model_==_false,_delete_0. (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/scope/strategies/machinepool_deployments	1.639s
+=== RUN   TestReconcile
+    agentpools_test.go:83: Testing agentpool provision state: Canceled
+=== RUN   TestReconcile/agentpool_in_terminal_provisioning_state
+=== PAUSE TestReconcile/agentpool_in_terminal_provisioning_state
+=== CONT  TestReconcile
+    agentpools_test.go:83: Testing agentpool provision state: Succeeded
+=== RUN   TestReconcile/agentpool_in_terminal_provisioning_state#01
+=== PAUSE TestReconcile/agentpool_in_terminal_provisioning_state#01
+=== CONT  TestReconcile
+    agentpools_test.go:83: Testing agentpool provision state: Failed
+=== RUN   TestReconcile/agentpool_in_terminal_provisioning_state#02
+=== PAUSE TestReconcile/agentpool_in_terminal_provisioning_state#02
+=== CONT  TestReconcile
+    agentpools_test.go:83: Testing agentpool provision state: Deleting
+=== RUN   TestReconcile/agentpool_in_nonterminal_provisioning_state
+=== PAUSE TestReconcile/agentpool_in_nonterminal_provisioning_state
+=== CONT  TestReconcile
+    agentpools_test.go:83: Testing agentpool provision state: InProgress
+=== RUN   TestReconcile/agentpool_in_nonterminal_provisioning_state#01
+=== PAUSE TestReconcile/agentpool_in_nonterminal_provisioning_state#01
+=== CONT  TestReconcile
+    agentpools_test.go:83: Testing agentpool provision state: randomStringHere
+=== RUN   TestReconcile/agentpool_in_nonterminal_provisioning_state#02
+=== PAUSE TestReconcile/agentpool_in_nonterminal_provisioning_state#02
+=== CONT  TestReconcile
+    agentpools_test.go:251: Testing no agentpool exists
+=== RUN   TestReconcile/no_agentpool_exists
+=== PAUSE TestReconcile/no_agentpool_exists
+=== CONT  TestReconcile
+    agentpools_test.go:251: Testing fail to get existing agent pool
+=== RUN   TestReconcile/fail_to_get_existing_agent_pool
+=== PAUSE TestReconcile/fail_to_get_existing_agent_pool
+=== CONT  TestReconcile
+    agentpools_test.go:251: Testing can create an Agent Pool
+=== RUN   TestReconcile/can_create_an_Agent_Pool
+=== PAUSE TestReconcile/can_create_an_Agent_Pool
+=== CONT  TestReconcile
+    agentpools_test.go:251: Testing fail to create an Agent Pool
+=== RUN   TestReconcile/fail_to_create_an_Agent_Pool
+=== PAUSE TestReconcile/fail_to_create_an_Agent_Pool
+=== CONT  TestReconcile
+    agentpools_test.go:251: Testing fail to update an Agent Pool
+=== RUN   TestReconcile/fail_to_update_an_Agent_Pool
+=== PAUSE TestReconcile/fail_to_update_an_Agent_Pool
+=== CONT  TestReconcile
+    agentpools_test.go:251: Testing no update needed on Agent Pool
+=== RUN   TestReconcile/no_update_needed_on_Agent_Pool
+=== PAUSE TestReconcile/no_update_needed_on_Agent_Pool
+=== CONT  TestReconcile/agentpool_in_terminal_provisioning_state
+=== CONT  TestReconcile/fail_to_get_existing_agent_pool
+=== CONT  TestReconcile/fail_to_update_an_Agent_Pool
+=== CONT  TestReconcile/fail_to_create_an_Agent_Pool
+=== CONT  TestReconcile/can_create_an_Agent_Pool
+=== CONT  TestReconcile/agentpool_in_nonterminal_provisioning_state#01
+=== CONT  TestReconcile/no_update_needed_on_Agent_Pool
+=== CONT  TestReconcile/agentpool_in_terminal_provisioning_state#02
+=== CONT  TestReconcile/agentpool_in_nonterminal_provisioning_state
+=== CONT  TestReconcile/no_agentpool_exists
+=== CONT  TestReconcile/agentpool_in_terminal_provisioning_state#01
+=== CONT  TestReconcile/agentpool_in_nonterminal_provisioning_state#02
+--- PASS: TestReconcile (0.00s)
+    --- PASS: TestReconcile/fail_to_get_existing_agent_pool (0.00s)
+    --- PASS: TestReconcile/can_create_an_Agent_Pool (0.00s)
+    --- PASS: TestReconcile/fail_to_create_an_Agent_Pool (0.00s)
+    --- PASS: TestReconcile/agentpool_in_nonterminal_provisioning_state#01 (0.00s)
+    --- PASS: TestReconcile/agentpool_in_nonterminal_provisioning_state (0.00s)
+    --- PASS: TestReconcile/fail_to_update_an_Agent_Pool (0.00s)
+    --- PASS: TestReconcile/no_agentpool_exists (0.00s)
+    --- PASS: TestReconcile/agentpool_in_terminal_provisioning_state (0.00s)
+    --- PASS: TestReconcile/no_update_needed_on_Agent_Pool (0.00s)
+    --- PASS: TestReconcile/agentpool_in_nonterminal_provisioning_state#02 (0.00s)
+    --- PASS: TestReconcile/agentpool_in_terminal_provisioning_state#01 (0.00s)
+    --- PASS: TestReconcile/agentpool_in_terminal_provisioning_state#02 (0.00s)
+=== RUN   TestDeleteAgentPools
+=== RUN   TestDeleteAgentPools/successfully_delete_an_existing_agent_pool
+=== PAUSE TestDeleteAgentPools/successfully_delete_an_existing_agent_pool
+=== RUN   TestDeleteAgentPools/agent_pool_already_deleted
+=== PAUSE TestDeleteAgentPools/agent_pool_already_deleted
+=== RUN   TestDeleteAgentPools/agent_pool_deletion_fails
+=== PAUSE TestDeleteAgentPools/agent_pool_deletion_fails
+=== CONT  TestDeleteAgentPools/successfully_delete_an_existing_agent_pool
+=== CONT  TestDeleteAgentPools/agent_pool_deletion_fails
+=== CONT  TestDeleteAgentPools/agent_pool_already_deleted
+--- PASS: TestDeleteAgentPools (0.00s)
+    --- PASS: TestDeleteAgentPools/successfully_delete_an_existing_agent_pool (0.00s)
+    --- PASS: TestDeleteAgentPools/agent_pool_deletion_fails (0.00s)
+    --- PASS: TestDeleteAgentPools/agent_pool_already_deleted (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/agentpools	3.568s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/agentpools/mock_agentpools	[no test files]
+=== RUN   TestProcessOngoingOperation
+=== RUN   TestProcessOngoingOperation/no_future_data_stored_in_status
+=== PAUSE TestProcessOngoingOperation/no_future_data_stored_in_status
+=== RUN   TestProcessOngoingOperation/future_data_is_not_valid
+=== PAUSE TestProcessOngoingOperation/future_data_is_not_valid
+=== RUN   TestProcessOngoingOperation/fail_to_check_if_ongoing_operation_is_done
+=== PAUSE TestProcessOngoingOperation/fail_to_check_if_ongoing_operation_is_done
+=== RUN   TestProcessOngoingOperation/ongoing_operation_is_not_done
+=== PAUSE TestProcessOngoingOperation/ongoing_operation_is_not_done
+=== RUN   TestProcessOngoingOperation/operation_is_done
+=== PAUSE TestProcessOngoingOperation/operation_is_done
+=== CONT  TestProcessOngoingOperation/no_future_data_stored_in_status
+=== CONT  TestProcessOngoingOperation/ongoing_operation_is_not_done
+=== CONT  TestProcessOngoingOperation/operation_is_done
+=== CONT  TestProcessOngoingOperation/fail_to_check_if_ongoing_operation_is_done
+=== CONT  TestProcessOngoingOperation/future_data_is_not_valid
+I0923 20:38:58.844068   47074 async.go:36]  "msg"="no long running operation found"  "resource"="test-resource" "service"="test-service"
+I0923 20:38:58.844128   47074 async.go:54]  "msg"="long running operation is still ongoing"  "resource"="test-resource" "service"="test-service"
+I0923 20:38:58.844188   47074 async.go:59]  "msg"="long running operation has completed"  "resource"="test-resource" "service"="test-service"
+--- PASS: TestProcessOngoingOperation (0.00s)
+    --- PASS: TestProcessOngoingOperation/future_data_is_not_valid (0.00s)
+    --- PASS: TestProcessOngoingOperation/fail_to_check_if_ongoing_operation_is_done (0.00s)
+    --- PASS: TestProcessOngoingOperation/no_future_data_stored_in_status (0.00s)
+    --- PASS: TestProcessOngoingOperation/operation_is_done (0.00s)
+    --- PASS: TestProcessOngoingOperation/ongoing_operation_is_not_done (0.00s)
+=== RUN   TestCreateResource
+=== RUN   TestCreateResource/create_operation_is_already_in_progress
+=== PAUSE TestCreateResource/create_operation_is_already_in_progress
+=== RUN   TestCreateResource/create_async_returns_success
+=== PAUSE TestCreateResource/create_async_returns_success
+=== RUN   TestCreateResource/error_occurs_while_running_async_create
+=== PAUSE TestCreateResource/error_occurs_while_running_async_create
+=== RUN   TestCreateResource/create_async_exits_before_completing
+=== PAUSE TestCreateResource/create_async_exits_before_completing
+=== CONT  TestCreateResource/create_operation_is_already_in_progress
+=== CONT  TestCreateResource/error_occurs_while_running_async_create
+=== CONT  TestCreateResource/create_async_returns_success
+=== CONT  TestCreateResource/create_async_exits_before_completing
+I0923 20:38:58.844531   47074 async.go:76]  "msg"="creating resource"  "resource"="test-resource" "resourceGroup"="test-group" "service"="test-service"
+I0923 20:38:58.844557   47074 async.go:54]  "msg"="long running operation is still ongoing"  "resource"="test-resource" "service"="test-service"
+I0923 20:38:58.844571   47074 async.go:76]  "msg"="creating resource"  "resource"="test-resource" "resourceGroup"="test-group" "service"="test-service"
+I0923 20:38:58.844585   47074 async.go:76]  "msg"="creating resource"  "resource"="test-resource" "resourceGroup"="test-group" "service"="test-service"
+I0923 20:38:58.844595   47074 async.go:91]  "msg"="successfully created resource"  "resource"="test-resource" "resourceGroup"="test-group" "service"="test-service"
+--- PASS: TestCreateResource (0.00s)
+    --- PASS: TestCreateResource/error_occurs_while_running_async_create (0.00s)
+    --- PASS: TestCreateResource/create_operation_is_already_in_progress (0.00s)
+    --- PASS: TestCreateResource/create_async_returns_success (0.00s)
+    --- PASS: TestCreateResource/create_async_exits_before_completing (0.00s)
+=== RUN   TestDeleteResource
+=== RUN   TestDeleteResource/delete_operation_is_already_in_progress
+=== PAUSE TestDeleteResource/delete_operation_is_already_in_progress
+=== RUN   TestDeleteResource/delete_async_returns_success
+=== PAUSE TestDeleteResource/delete_async_returns_success
+=== RUN   TestDeleteResource/error_occurs_while_running_async_delete
+=== PAUSE TestDeleteResource/error_occurs_while_running_async_delete
+=== RUN   TestDeleteResource/delete_async_exits_before_completing
+=== PAUSE TestDeleteResource/delete_async_exits_before_completing
+=== CONT  TestDeleteResource/delete_operation_is_already_in_progress
+=== CONT  TestDeleteResource/error_occurs_while_running_async_delete
+=== CONT  TestDeleteResource/delete_async_exits_before_completing
+=== CONT  TestDeleteResource/delete_async_returns_success
+I0923 20:38:58.844813   47074 async.go:107]  "msg"="deleting resource"  "resource"="test-resource" "resourceGroup"="test-group" "service"="test-service"
+I0923 20:38:58.844819   47074 async.go:54]  "msg"="long running operation is still ongoing"  "resource"="test-resource" "service"="test-service"
+I0923 20:38:58.844829   47074 async.go:107]  "msg"="deleting resource"  "resource"="test-resource" "resourceGroup"="test-group" "service"="test-service"
+I0923 20:38:58.844840   47074 async.go:107]  "msg"="deleting resource"  "resource"="test-resource" "resourceGroup"="test-group" "service"="test-service"
+I0923 20:38:58.844867   47074 async.go:125]  "msg"="successfully deleted resource"  "resource"="test-resource" "resourceGroup"="test-group" "service"="test-service"
+--- PASS: TestDeleteResource (0.00s)
+    --- PASS: TestDeleteResource/delete_operation_is_already_in_progress (0.00s)
+    --- PASS: TestDeleteResource/error_occurs_while_running_async_delete (0.00s)
+    --- PASS: TestDeleteResource/delete_async_exits_before_completing (0.00s)
+    --- PASS: TestDeleteResource/delete_async_returns_success (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/async	2.535s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/async/mock_async	[no test files]
+=== RUN   TestReconcileAvailabilitySets
+=== RUN   TestReconcileAvailabilitySets/create_or_update_availability_set
+=== PAUSE TestReconcileAvailabilitySets/create_or_update_availability_set
+=== RUN   TestReconcileAvailabilitySets/noop_if_the_machine_does_not_need_to_be_assigned_an_availability_set_(machines_without_a_deployment)
+=== PAUSE TestReconcileAvailabilitySets/noop_if_the_machine_does_not_need_to_be_assigned_an_availability_set_(machines_without_a_deployment)
+=== RUN   TestReconcileAvailabilitySets/return_error
+=== PAUSE TestReconcileAvailabilitySets/return_error
+=== CONT  TestReconcileAvailabilitySets/create_or_update_availability_set
+=== CONT  TestReconcileAvailabilitySets/return_error
+=== CONT  TestReconcileAvailabilitySets/noop_if_the_machine_does_not_need_to_be_assigned_an_availability_set_(machines_without_a_deployment)
+I0923 20:38:59.271376   47075 availabilitysets.go:83]  "msg"="creating availability set"  "availability set"="as-name"
+I0923 20:38:59.271392   47075 availabilitysets.go:83]  "msg"="creating availability set"  "availability set"="as-name"
+I0923 20:38:59.271579   47075 availabilitysets.go:107]  "msg"="successfully created availability set"  "availability set"="as-name"
+--- PASS: TestReconcileAvailabilitySets (0.00s)
+    --- PASS: TestReconcileAvailabilitySets/noop_if_the_machine_does_not_need_to_be_assigned_an_availability_set_(machines_without_a_deployment) (0.00s)
+    --- PASS: TestReconcileAvailabilitySets/return_error (0.00s)
+    --- PASS: TestReconcileAvailabilitySets/create_or_update_availability_set (0.00s)
+=== RUN   TestDeleteAvailabilitySets
+=== RUN   TestDeleteAvailabilitySets/deletes_availability_set
+=== PAUSE TestDeleteAvailabilitySets/deletes_availability_set
+=== RUN   TestDeleteAvailabilitySets/noop_if_AvailabilitySet_returns_false
+=== PAUSE TestDeleteAvailabilitySets/noop_if_AvailabilitySet_returns_false
+=== RUN   TestDeleteAvailabilitySets/noop_if_availability_set_has_vms
+=== PAUSE TestDeleteAvailabilitySets/noop_if_availability_set_has_vms
+=== RUN   TestDeleteAvailabilitySets/noop_if_availability_set_is_already_deleted_-_get_returns_404
+=== PAUSE TestDeleteAvailabilitySets/noop_if_availability_set_is_already_deleted_-_get_returns_404
+=== RUN   TestDeleteAvailabilitySets/noop_if_availability_set_is_already_deleted_-_delete_returns_404
+=== PAUSE TestDeleteAvailabilitySets/noop_if_availability_set_is_already_deleted_-_delete_returns_404
+=== RUN   TestDeleteAvailabilitySets/returns_error_when_availability_set_get_fails
+=== PAUSE TestDeleteAvailabilitySets/returns_error_when_availability_set_get_fails
+=== RUN   TestDeleteAvailabilitySets/returns_error_when_delete_fails
+=== PAUSE TestDeleteAvailabilitySets/returns_error_when_delete_fails
+=== CONT  TestDeleteAvailabilitySets/deletes_availability_set
+=== CONT  TestDeleteAvailabilitySets/noop_if_availability_set_is_already_deleted_-_delete_returns_404
+=== CONT  TestDeleteAvailabilitySets/returns_error_when_delete_fails
+=== CONT  TestDeleteAvailabilitySets/noop_if_availability_set_has_vms
+I0923 20:38:59.271857   47075 availabilitysets.go:137]  "msg"="deleting availability set"  "availability set"="as-name"
+I0923 20:38:59.271866   47075 availabilitysets.go:137]  "msg"="deleting availability set"  "availability set"="as-name"
+=== CONT  TestDeleteAvailabilitySets/returns_error_when_availability_set_get_fails
+I0923 20:38:59.271881   47075 availabilitysets.go:148]  "msg"="successfully delete availability set"  "availability set"="as-name"
+=== CONT  TestDeleteAvailabilitySets/noop_if_availability_set_is_already_deleted_-_get_returns_404
+I0923 20:38:59.271914   47075 availabilitysets.go:137]  "msg"="deleting availability set"  "availability set"="as-name"
+=== CONT  TestDeleteAvailabilitySets/noop_if_AvailabilitySet_returns_false
+--- PASS: TestDeleteAvailabilitySets (0.00s)
+    --- PASS: TestDeleteAvailabilitySets/deletes_availability_set (0.00s)
+    --- PASS: TestDeleteAvailabilitySets/noop_if_availability_set_is_already_deleted_-_delete_returns_404 (0.00s)
+    --- PASS: TestDeleteAvailabilitySets/returns_error_when_delete_fails (0.00s)
+    --- PASS: TestDeleteAvailabilitySets/noop_if_availability_set_has_vms (0.00s)
+    --- PASS: TestDeleteAvailabilitySets/noop_if_AvailabilitySet_returns_false (0.00s)
+    --- PASS: TestDeleteAvailabilitySets/returns_error_when_availability_set_get_fails (0.00s)
+    --- PASS: TestDeleteAvailabilitySets/noop_if_availability_set_is_already_deleted_-_get_returns_404 (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/availabilitysets	2.930s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/availabilitysets/mock_availabilitysets	[no test files]
+=== RUN   TestReconcileBastionHosts
+=== RUN   TestReconcileBastionHosts/fail_to_get_subnets
+=== PAUSE TestReconcileBastionHosts/fail_to_get_subnets
+=== RUN   TestReconcileBastionHosts/fail_to_get_publicip
+=== PAUSE TestReconcileBastionHosts/fail_to_get_publicip
+=== RUN   TestReconcileBastionHosts/create_publicip_fails
+=== PAUSE TestReconcileBastionHosts/create_publicip_fails
+=== RUN   TestReconcileBastionHosts/fails_to_get_a_created_publicip
+=== PAUSE TestReconcileBastionHosts/fails_to_get_a_created_publicip
+=== RUN   TestReconcileBastionHosts/bastion_successfully_created_with_created_public_ip
+=== PAUSE TestReconcileBastionHosts/bastion_successfully_created_with_created_public_ip
+=== RUN   TestReconcileBastionHosts/bastion_successfully_created
+=== PAUSE TestReconcileBastionHosts/bastion_successfully_created
+=== RUN   TestReconcileBastionHosts/fail_to_create_a_bastion
+=== PAUSE TestReconcileBastionHosts/fail_to_create_a_bastion
+=== CONT  TestReconcileBastionHosts/fail_to_get_subnets
+=== CONT  TestReconcileBastionHosts/fail_to_create_a_bastion
+=== CONT  TestReconcileBastionHosts/fails_to_get_a_created_publicip
+=== CONT  TestReconcileBastionHosts/bastion_successfully_created
+=== CONT  TestReconcileBastionHosts/bastion_successfully_created_with_created_public_ip
+=== CONT  TestReconcileBastionHosts/create_publicip_fails
+=== CONT  TestReconcileBastionHosts/fail_to_get_publicip
+I0923 20:39:00.618056   47094 azurebastion.go:34]  "msg"="getting azure bastion public IP"  "publicIP"="my-publicip"
+I0923 20:39:00.618056   47094 azurebastion.go:34]  "msg"="getting azure bastion public IP"  "publicIP"="my-publicip"
+I0923 20:39:00.618056   47094 azurebastion.go:34]  "msg"="getting azure bastion public IP"  "publicIP"="my-publicip"
+I0923 20:39:00.618130   47094 azurebastion.go:34]  "msg"="getting azure bastion public IP"  "publicIP"="my-publicip"
+I0923 20:39:00.618140   47094 azurebastion.go:34]  "msg"="getting azure bastion public IP"  "publicIP"="my-publicip"
+I0923 20:39:00.618164   47094 azurebastion.go:34]  "msg"="getting azure bastion public IP"  "publicIP"="my-publicip"
+I0923 20:39:00.618174   47094 azurebastion.go:34]  "msg"="getting azure bastion public IP"  "publicIP"="my-publicip"
+I0923 20:39:00.618343   47094 azurebastion.go:40]  "msg"="getting azure bastion subnet"  "subnet"={"name":"my-subnet","securityGroup":{},"routeTable":{},"natGateway":{"ip":{"name":""}}}
+I0923 20:39:00.618355   47094 azurebastion.go:40]  "msg"="getting azure bastion subnet"  "subnet"={"name":"my-subnet","securityGroup":{},"routeTable":{},"natGateway":{"ip":{"name":""}}}
+I0923 20:39:00.618363   47094 azurebastion.go:46]  "msg"="creating bastion host"  "bastion"="my-bastion"
+I0923 20:39:00.618366   47094 azurebastion.go:40]  "msg"="getting azure bastion subnet"  "subnet"={"name":"my-subnet","securityGroup":{},"routeTable":{},"natGateway":{"ip":{"name":""}}}
+I0923 20:39:00.618379   47094 azurebastion.go:46]  "msg"="creating bastion host"  "bastion"="my-bastion"
+I0923 20:39:00.618383   47094 azurebastion.go:40]  "msg"="getting azure bastion subnet"  "subnet"={"name":"my-subnet","securityGroup":{},"routeTable":{},"natGateway":{"ip":{"name":""}}}
+I0923 20:39:00.618396   47094 azurebastion.go:40]  "msg"="getting azure bastion subnet"  "subnet"={"name":"my-subnet","securityGroup":{},"routeTable":{},"natGateway":{"ip":{"name":""}}}
+I0923 20:39:00.618409   47094 azurebastion.go:40]  "msg"="getting azure bastion subnet"  "subnet"={"name":"my-subnet","securityGroup":{},"routeTable":{},"natGateway":{"ip":{"name":""}}}
+I0923 20:39:00.618381   47094 azurebastion.go:46]  "msg"="creating bastion host"  "bastion"="my-bastion"
+I0923 20:39:00.618415   47094 azurebastion.go:40]  "msg"="getting azure bastion subnet"  "subnet"={"name":"my-subnet","securityGroup":{},"routeTable":{},"natGateway":{"ip":{"name":""}}}
+I0923 20:39:00.618418   47094 azurebastion.go:46]  "msg"="creating bastion host"  "bastion"="my-bastion"
+I0923 20:39:00.618429   47094 azurebastion.go:46]  "msg"="creating bastion host"  "bastion"="my-bastion"
+I0923 20:39:00.618435   47094 azurebastion.go:46]  "msg"="creating bastion host"  "bastion"="my-bastion"
+I0923 20:39:00.618461   47094 azurebastion.go:46]  "msg"="creating bastion host"  "bastion"="my-bastion"
+--- PASS: TestReconcileBastionHosts (0.00s)
+    --- PASS: TestReconcileBastionHosts/fail_to_get_subnets (0.00s)
+    --- PASS: TestReconcileBastionHosts/bastion_successfully_created (0.00s)
+    --- PASS: TestReconcileBastionHosts/fails_to_get_a_created_publicip (0.00s)
+    --- PASS: TestReconcileBastionHosts/fail_to_create_a_bastion (0.00s)
+    --- PASS: TestReconcileBastionHosts/bastion_successfully_created_with_created_public_ip (0.00s)
+    --- PASS: TestReconcileBastionHosts/create_publicip_fails (0.00s)
+    --- PASS: TestReconcileBastionHosts/fail_to_get_publicip (0.00s)
+=== RUN   TestDeleteBastionHost
+=== RUN   TestDeleteBastionHost/successfully_delete_an_existing_bastion_host
+=== PAUSE TestDeleteBastionHost/successfully_delete_an_existing_bastion_host
+=== RUN   TestDeleteBastionHost/bastion_host_already_deleted
+=== PAUSE TestDeleteBastionHost/bastion_host_already_deleted
+=== RUN   TestDeleteBastionHost/bastion_host_deletion_fails
+=== PAUSE TestDeleteBastionHost/bastion_host_deletion_fails
+=== CONT  TestDeleteBastionHost/successfully_delete_an_existing_bastion_host
+=== CONT  TestDeleteBastionHost/bastion_host_deletion_fails
+=== CONT  TestDeleteBastionHost/bastion_host_already_deleted
+I0923 20:39:00.618634   47094 azurebastion.go:89]  "msg"="deleting bastion host"  "bastion"="my-bastionhost"
+I0923 20:39:00.618641   47094 azurebastion.go:89]  "msg"="deleting bastion host"  "bastion"="my-bastionhost"
+I0923 20:39:00.618644   47094 azurebastion.go:89]  "msg"="deleting bastion host"  "bastion"="my-bastionhost"
+--- PASS: TestDeleteBastionHost (0.00s)
+    --- PASS: TestDeleteBastionHost/successfully_delete_an_existing_bastion_host (0.00s)
+    --- PASS: TestDeleteBastionHost/bastion_host_already_deleted (0.00s)
+    --- PASS: TestDeleteBastionHost/bastion_host_deletion_fails (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/bastionhosts	3.695s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/bastionhosts/mocks_bastionhosts	[no test files]
+=== RUN   TestDeleteDisk
+=== RUN   TestDeleteDisk/delete_the_disk
+=== PAUSE TestDeleteDisk/delete_the_disk
+=== RUN   TestDeleteDisk/disk_already_deleted
+=== PAUSE TestDeleteDisk/disk_already_deleted
+=== RUN   TestDeleteDisk/error_while_trying_to_delete_the_disk
+=== PAUSE TestDeleteDisk/error_while_trying_to_delete_the_disk
+=== CONT  TestDeleteDisk/delete_the_disk
+=== CONT  TestDeleteDisk/error_while_trying_to_delete_the_disk
+=== CONT  TestDeleteDisk/disk_already_deleted
+I0923 20:39:01.053578   47097 disks.go:64]  "msg"="deleting disk"  "disk"="my-disk-1"
+I0923 20:39:01.053628   47097 disks.go:64]  "msg"="deleting disk"  "disk"="my-disk-1"
+I0923 20:39:01.053642   47097 disks.go:64]  "msg"="deleting disk"  "disk"="my-disk-1"
+I0923 20:39:01.053852   47097 disks.go:74]  "msg"="successfully deleted disk"  "disk"="my-disk-1"
+I0923 20:39:01.053857   47097 disks.go:64]  "msg"="deleting disk"  "disk"="my-disk-2"
+I0923 20:39:01.053879   47097 disks.go:64]  "msg"="deleting disk"  "disk"="honk-disk"
+I0923 20:39:01.053891   47097 disks.go:74]  "msg"="successfully deleted disk"  "disk"="honk-disk"
+--- PASS: TestDeleteDisk (0.00s)
+    --- PASS: TestDeleteDisk/error_while_trying_to_delete_the_disk (0.00s)
+    --- PASS: TestDeleteDisk/disk_already_deleted (0.00s)
+    --- PASS: TestDeleteDisk/delete_the_disk (0.00s)
+=== RUN   TestDiskSpecs
+=== RUN   TestDiskSpecs/only_os_disk
+=== PAUSE TestDiskSpecs/only_os_disk
+=== RUN   TestDiskSpecs/os_and_data_disks
+=== PAUSE TestDiskSpecs/os_and_data_disks
+=== RUN   TestDiskSpecs/os_and_multiple_data_disks
+=== PAUSE TestDiskSpecs/os_and_multiple_data_disks
+=== CONT  TestDiskSpecs/only_os_disk
+=== CONT  TestDiskSpecs/os_and_multiple_data_disks
+=== CONT  TestDiskSpecs/os_and_data_disks
+--- PASS: TestDiskSpecs (0.00s)
+    --- PASS: TestDiskSpecs/os_and_data_disks (0.00s)
+    --- PASS: TestDiskSpecs/only_os_disk (0.00s)
+    --- PASS: TestDiskSpecs/os_and_multiple_data_disks (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/disks	4.076s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/disks/mock_disks	[no test files]
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/groups [build failed]
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/groups/mock_groups	[no test files]
+=== RUN   TestReconcileInboundNATRule
+=== RUN   TestReconcileInboundNATRule/NAT_rule_successfully_created
+=== PAUSE TestReconcileInboundNATRule/NAT_rule_successfully_created
+=== RUN   TestReconcileInboundNATRule/fail_to_get_LB
+=== PAUSE TestReconcileInboundNATRule/fail_to_get_LB
+=== RUN   TestReconcileInboundNATRule/fail_to_create_NAT_rule
+=== PAUSE TestReconcileInboundNATRule/fail_to_create_NAT_rule
+=== RUN   TestReconcileInboundNATRule/NAT_rule_already_exists
+=== PAUSE TestReconcileInboundNATRule/NAT_rule_already_exists
+=== CONT  TestReconcileInboundNATRule/NAT_rule_successfully_created
+=== CONT  TestReconcileInboundNATRule/fail_to_create_NAT_rule
+=== CONT  TestReconcileInboundNATRule/fail_to_get_LB
+=== CONT  TestReconcileInboundNATRule/NAT_rule_already_exists
+I0923 20:39:01.480535   47099 inboundnatrules.go:61]  "msg"="creating inbound NAT rule"  "NAT rule"="my-machine"
+I0923 20:39:01.480535   47099 inboundnatrules.go:61]  "msg"="creating inbound NAT rule"  "NAT rule"="my-machine-nat-rule"
+I0923 20:39:01.480550   47099 inboundnatrules.go:61]  "msg"="creating inbound NAT rule"  "NAT rule"="my-machine"
+I0923 20:39:01.480741   47099 inboundnatrules.go:129]  "msg"="NAT rule already exists"  "NAT rule"="my-machine-nat-rule"
+I0923 20:39:01.480750   47099 inboundnatrules.go:61]  "msg"="creating inbound NAT rule"  "NAT rule"="my-other-nat-rule"
+I0923 20:39:01.480555   47099 inboundnatrules.go:61]  "msg"="creating inbound NAT rule"  "NAT rule"="my-machine"
+I0923 20:39:01.480763   47099 inboundnatrules.go:149]  "msg"="Found available port"  "port"=22
+I0923 20:39:01.480765   47099 inboundnatrules.go:143]  "msg"="Found available port"  "port"=2202
+I0923 20:39:01.480774   47099 inboundnatrules.go:96]  "msg"="Creating rule %s using port %d"  "NAT rule"="my-other-nat-rule" "port"=22
+I0923 20:39:01.480781   47099 inboundnatrules.go:96]  "msg"="Creating rule %s using port %d"  "NAT rule"="my-machine" "port"=2202
+I0923 20:39:01.480787   47099 inboundnatrules.go:103]  "msg"="successfully created inbound NAT rule"  "NAT rule"="my-other-nat-rule"
+I0923 20:39:01.480790   47099 inboundnatrules.go:149]  "msg"="Found available port"  "port"=22
+I0923 20:39:01.480805   47099 inboundnatrules.go:96]  "msg"="Creating rule %s using port %d"  "NAT rule"="my-machine" "port"=22
+I0923 20:39:01.480826   47099 inboundnatrules.go:103]  "msg"="successfully created inbound NAT rule"  "NAT rule"="my-machine"
+--- PASS: TestReconcileInboundNATRule (0.00s)
+    --- PASS: TestReconcileInboundNATRule/fail_to_get_LB (0.00s)
+    --- PASS: TestReconcileInboundNATRule/NAT_rule_already_exists (0.00s)
+    --- PASS: TestReconcileInboundNATRule/fail_to_create_NAT_rule (0.00s)
+    --- PASS: TestReconcileInboundNATRule/NAT_rule_successfully_created (0.00s)
+=== RUN   TestDeleteNetworkInterface
+=== RUN   TestDeleteNetworkInterface/successfully_delete_an_existing_NAT_rule
+=== PAUSE TestDeleteNetworkInterface/successfully_delete_an_existing_NAT_rule
+=== RUN   TestDeleteNetworkInterface/NAT_rule_already_deleted
+=== PAUSE TestDeleteNetworkInterface/NAT_rule_already_deleted
+=== RUN   TestDeleteNetworkInterface/NAT_rule_deletion_fails
+=== PAUSE TestDeleteNetworkInterface/NAT_rule_deletion_fails
+=== CONT  TestDeleteNetworkInterface/successfully_delete_an_existing_NAT_rule
+=== CONT  TestDeleteNetworkInterface/NAT_rule_deletion_fails
+=== CONT  TestDeleteNetworkInterface/NAT_rule_already_deleted
+I0923 20:39:01.481016   47099 inboundnatrules.go:114]  "msg"="deleting inbound NAT rule"  "NAT rule"="azure-md-0"
+I0923 20:39:01.481017   47099 inboundnatrules.go:114]  "msg"="deleting inbound NAT rule"  "NAT rule"="azure-md-2"
+I0923 20:39:01.481028   47099 inboundnatrules.go:114]  "msg"="deleting inbound NAT rule"  "NAT rule"="azure-md-1"
+I0923 20:39:01.481030   47099 inboundnatrules.go:120]  "msg"="successfully deleted inbound NAT rule"  "NAT rule"="azure-md-0"
+I0923 20:39:01.481045   47099 inboundnatrules.go:120]  "msg"="successfully deleted inbound NAT rule"  "NAT rule"="azure-md-1"
+--- PASS: TestDeleteNetworkInterface (0.00s)
+    --- PASS: TestDeleteNetworkInterface/NAT_rule_deletion_fails (0.00s)
+    --- PASS: TestDeleteNetworkInterface/successfully_delete_an_existing_NAT_rule (0.00s)
+    --- PASS: TestDeleteNetworkInterface/NAT_rule_already_deleted (0.00s)
+=== RUN   TestNatRuleExists
+=== RUN   TestNatRuleExists/Rule_exists
+=== PAUSE TestNatRuleExists/Rule_exists
+=== RUN   TestNatRuleExists/Rule_doesn't_exist
+=== PAUSE TestNatRuleExists/Rule_doesn't_exist
+=== RUN   TestNatRuleExists/No_rules_exist
+=== PAUSE TestNatRuleExists/No_rules_exist
+=== CONT  TestNatRuleExists/Rule_exists
+=== CONT  TestNatRuleExists/No_rules_exist
+=== CONT  TestNatRuleExists/Rule_doesn't_exist
+I0923 20:39:01.481173   47099 inboundnatrules.go:129]  "msg"="NAT rule already exists"  "NAT rule"="my-rule"
+--- PASS: TestNatRuleExists (0.00s)
+    --- PASS: TestNatRuleExists/No_rules_exist (0.00s)
+    --- PASS: TestNatRuleExists/Rule_exists (0.00s)
+    --- PASS: TestNatRuleExists/Rule_doesn't_exist (0.00s)
+=== RUN   TestGetAvailablePort
+=== RUN   TestGetAvailablePort/Empty_ports
+=== PAUSE TestGetAvailablePort/Empty_ports
+=== RUN   TestGetAvailablePort/22_taken
+=== PAUSE TestGetAvailablePort/22_taken
+=== RUN   TestGetAvailablePort/Existing_ports
+=== PAUSE TestGetAvailablePort/Existing_ports
+=== RUN   TestGetAvailablePort/No_ports_available
+=== PAUSE TestGetAvailablePort/No_ports_available
+=== CONT  TestGetAvailablePort/Empty_ports
+=== CONT  TestGetAvailablePort/Existing_ports
+=== CONT  TestGetAvailablePort/No_ports_available
+=== CONT  TestGetAvailablePort/22_taken
+I0923 20:39:01.481306   47099 inboundnatrules.go:149]  "msg"="Found available port"  "port"=22
+I0923 20:39:01.481317   47099 inboundnatrules.go:143]  "msg"="Found available port"  "port"=2203
+I0923 20:39:01.481342   47099 inboundnatrules.go:143]  "msg"="Found available port"  "port"=2201
+--- PASS: TestGetAvailablePort (0.00s)
+    --- PASS: TestGetAvailablePort/Empty_ports (0.00s)
+    --- PASS: TestGetAvailablePort/No_ports_available (0.00s)
+    --- PASS: TestGetAvailablePort/Existing_ports (0.00s)
+    --- PASS: TestGetAvailablePort/22_taken (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/inboundnatrules	4.369s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/inboundnatrules/mock_inboundnatrules	[no test files]
+=== RUN   TestReconcileLoadBalancer
+=== RUN   TestReconcileLoadBalancer/fail_to_create_a_public_LB
+=== PAUSE TestReconcileLoadBalancer/fail_to_create_a_public_LB
+=== RUN   TestReconcileLoadBalancer/create_public_apiserver_LB
+=== PAUSE TestReconcileLoadBalancer/create_public_apiserver_LB
+=== RUN   TestReconcileLoadBalancer/create_internal_apiserver_LB
+=== PAUSE TestReconcileLoadBalancer/create_internal_apiserver_LB
+=== RUN   TestReconcileLoadBalancer/create_node_outbound_LB
+=== PAUSE TestReconcileLoadBalancer/create_node_outbound_LB
+=== RUN   TestReconcileLoadBalancer/create_multiple_LBs
+=== PAUSE TestReconcileLoadBalancer/create_multiple_LBs
+=== RUN   TestReconcileLoadBalancer/LB_already_exists_and_needs_no_updates
+=== PAUSE TestReconcileLoadBalancer/LB_already_exists_and_needs_no_updates
+=== RUN   TestReconcileLoadBalancer/LB_already_exists_and_is_missing_properties
+=== PAUSE TestReconcileLoadBalancer/LB_already_exists_and_is_missing_properties
+=== CONT  TestReconcileLoadBalancer/fail_to_create_a_public_LB
+=== CONT  TestReconcileLoadBalancer/create_multiple_LBs
+=== CONT  TestReconcileLoadBalancer/LB_already_exists_and_is_missing_properties
+=== CONT  TestReconcileLoadBalancer/create_node_outbound_LB
+=== CONT  TestReconcileLoadBalancer/create_public_apiserver_LB
+=== CONT  TestReconcileLoadBalancer/LB_already_exists_and_needs_no_updates
+=== CONT  TestReconcileLoadBalancer/create_internal_apiserver_LB
+I0923 20:39:01.898478   47100 loadbalancers.go:139]  "msg"="creating load balancer"  "load balancer"="my-publiclb"
+I0923 20:39:01.898524   47100 loadbalancers.go:139]  "msg"="creating load balancer"  "load balancer"="my-lb"
+I0923 20:39:01.898534   47100 loadbalancers.go:86]  "msg"="found existing load balancer, checking if updates are needed"  "load balancer"="my-publiclb"
+I0923 20:39:01.898546   47100 loadbalancers.go:86]  "msg"="found existing load balancer, checking if updates are needed"  "load balancer"="my-publiclb"
+I0923 20:39:01.898796   47100 loadbalancers.go:172]  "msg"="successfully created load balancer"  "load balancer"="my-lb"
+I0923 20:39:01.898841   47100 loadbalancers.go:139]  "msg"="creating load balancer"  "load balancer"="my-lb-2"
+I0923 20:39:01.898536   47100 loadbalancers.go:139]  "msg"="creating load balancer"  "load balancer"="my-cluster"
+I0923 20:39:01.898570   47100 loadbalancers.go:139]  "msg"="creating load balancer"  "load balancer"="my-publiclb"
+I0923 20:39:01.898639   47100 loadbalancers.go:139]  "msg"="creating load balancer"  "load balancer"="my-private-lb"
+I0923 20:39:01.898865   47100 loadbalancers.go:135]  "msg"="LB exists and no defaults are missing, skipping update"  "load balancer"="my-publiclb"
+I0923 20:39:01.898883   47100 loadbalancers.go:172]  "msg"="successfully created load balancer"  "load balancer"="my-lb-2"
+I0923 20:39:01.898901   47100 loadbalancers.go:139]  "msg"="creating load balancer"  "load balancer"="my-lb-3"
+I0923 20:39:01.898933   47100 loadbalancers.go:172]  "msg"="successfully created load balancer"  "load balancer"="my-lb-3"
+I0923 20:39:01.899063   47100 loadbalancers.go:172]  "msg"="successfully created load balancer"  "load balancer"="my-private-lb"
+I0923 20:39:01.899087   47100 loadbalancers.go:172]  "msg"="successfully created load balancer"  "load balancer"="my-cluster"
+I0923 20:39:01.899088   47100 loadbalancers.go:172]  "msg"="successfully created load balancer"  "load balancer"="my-publiclb"
+I0923 20:39:01.899099   47100 loadbalancers.go:172]  "msg"="successfully created load balancer"  "load balancer"="my-publiclb"
+--- PASS: TestReconcileLoadBalancer (0.00s)
+    --- PASS: TestReconcileLoadBalancer/fail_to_create_a_public_LB (0.00s)
+    --- PASS: TestReconcileLoadBalancer/LB_already_exists_and_needs_no_updates (0.00s)
+    --- PASS: TestReconcileLoadBalancer/create_multiple_LBs (0.00s)
+    --- PASS: TestReconcileLoadBalancer/create_internal_apiserver_LB (0.00s)
+    --- PASS: TestReconcileLoadBalancer/create_node_outbound_LB (0.00s)
+    --- PASS: TestReconcileLoadBalancer/LB_already_exists_and_is_missing_properties (0.00s)
+    --- PASS: TestReconcileLoadBalancer/create_public_apiserver_LB (0.00s)
+=== RUN   TestDeleteLoadBalancer
+=== RUN   TestDeleteLoadBalancer/successfully_delete_an_existing_load_balancer
+=== PAUSE TestDeleteLoadBalancer/successfully_delete_an_existing_load_balancer
+=== RUN   TestDeleteLoadBalancer/load_balancer_already_deleted
+=== PAUSE TestDeleteLoadBalancer/load_balancer_already_deleted
+=== RUN   TestDeleteLoadBalancer/load_balancer_deletion_fails
+=== PAUSE TestDeleteLoadBalancer/load_balancer_deletion_fails
+=== CONT  TestDeleteLoadBalancer/successfully_delete_an_existing_load_balancer
+=== CONT  TestDeleteLoadBalancer/load_balancer_deletion_fails
+=== CONT  TestDeleteLoadBalancer/load_balancer_already_deleted
+I0923 20:39:01.899258   47100 loadbalancers.go:183]  "msg"="deleting load balancer"  "load balancer"="my-internallb"
+I0923 20:39:01.899266   47100 loadbalancers.go:183]  "msg"="deleting load balancer"  "load balancer"="my-publiclb"
+I0923 20:39:01.899271   47100 loadbalancers.go:183]  "msg"="deleting load balancer"  "load balancer"="my-publiclb"
+I0923 20:39:01.899278   47100 loadbalancers.go:193]  "msg"="deleted public load balancer"  "load balancer"="my-internallb"
+I0923 20:39:01.899293   47100 loadbalancers.go:183]  "msg"="deleting load balancer"  "load balancer"="my-publiclb"
+I0923 20:39:01.899306   47100 loadbalancers.go:193]  "msg"="deleted public load balancer"  "load balancer"="my-publiclb"
+--- PASS: TestDeleteLoadBalancer (0.00s)
+    --- PASS: TestDeleteLoadBalancer/load_balancer_already_deleted (0.00s)
+    --- PASS: TestDeleteLoadBalancer/load_balancer_deletion_fails (0.00s)
+    --- PASS: TestDeleteLoadBalancer/successfully_delete_an_existing_load_balancer (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/loadbalancers	4.748s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/loadbalancers/mock_loadbalancers	[no test files]
+=== RUN   TestReconcile
+    managedclusters_test.go:86: Testing managedcluster provision state: Canceled
+=== RUN   TestReconcile/managedcluster_in_terminal_provisioning_state
+=== CONT  TestReconcile
+    managedclusters_test.go:86: Testing managedcluster provision state: Succeeded
+=== RUN   TestReconcile/managedcluster_in_terminal_provisioning_state#01
+=== CONT  TestReconcile
+    managedclusters_test.go:86: Testing managedcluster provision state: Failed
+=== RUN   TestReconcile/managedcluster_in_terminal_provisioning_state#02
+=== CONT  TestReconcile
+    managedclusters_test.go:86: Testing managedcluster provision state: Deleting
+=== RUN   TestReconcile/managedcluster_in_nonterminal_provisioning_state
+=== CONT  TestReconcile
+    managedclusters_test.go:86: Testing managedcluster provision state: InProgress
+=== RUN   TestReconcile/managedcluster_in_nonterminal_provisioning_state#01
+=== CONT  TestReconcile
+    managedclusters_test.go:86: Testing managedcluster provision state: randomStringHere
+=== RUN   TestReconcile/managedcluster_in_nonterminal_provisioning_state#02
+=== CONT  TestReconcile
+    managedclusters_test.go:146: Testing no managedcluster exists
+=== RUN   TestReconcile/no_managedcluster_exists
+--- PASS: TestReconcile (0.00s)
+    --- PASS: TestReconcile/managedcluster_in_terminal_provisioning_state (0.00s)
+    --- PASS: TestReconcile/managedcluster_in_terminal_provisioning_state#01 (0.00s)
+    --- PASS: TestReconcile/managedcluster_in_terminal_provisioning_state#02 (0.00s)
+    --- PASS: TestReconcile/managedcluster_in_nonterminal_provisioning_state (0.00s)
+    --- PASS: TestReconcile/managedcluster_in_nonterminal_provisioning_state#01 (0.00s)
+    --- PASS: TestReconcile/managedcluster_in_nonterminal_provisioning_state#02 (0.00s)
+    --- PASS: TestReconcile/no_managedcluster_exists (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/managedclusters	5.484s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/managedclusters/mock_managedclusters	[no test files]
+=== RUN   TestReconcileNatGateways
+=== RUN   TestReconcileNatGateways/nat_gateways_in_custom_vnet_mode
+=== PAUSE TestReconcileNatGateways/nat_gateways_in_custom_vnet_mode
+=== RUN   TestReconcileNatGateways/nat_gateway_create_successfully
+=== PAUSE TestReconcileNatGateways/nat_gateway_create_successfully
+=== RUN   TestReconcileNatGateways/update_nat_gateway_if_actual_state_does_not_match_desired_state
+=== PAUSE TestReconcileNatGateways/update_nat_gateway_if_actual_state_does_not_match_desired_state
+=== RUN   TestReconcileNatGateways/nat_gateway_is_not_updated_if_it's_up_to_date
+=== PAUSE TestReconcileNatGateways/nat_gateway_is_not_updated_if_it's_up_to_date
+=== RUN   TestReconcileNatGateways/fail_when_getting_existing_nat_gateway
+=== PAUSE TestReconcileNatGateways/fail_when_getting_existing_nat_gateway
+=== RUN   TestReconcileNatGateways/fail_to_create_a_nat_gateway
+=== PAUSE TestReconcileNatGateways/fail_to_create_a_nat_gateway
+=== CONT  TestReconcileNatGateways/nat_gateways_in_custom_vnet_mode
+=== CONT  TestReconcileNatGateways/fail_when_getting_existing_nat_gateway
+=== CONT  TestReconcileNatGateways/update_nat_gateway_if_actual_state_does_not_match_desired_state
+=== CONT  TestReconcileNatGateways/fail_to_create_a_nat_gateway
+=== CONT  TestReconcileNatGateways/nat_gateway_create_successfully
+=== CONT  TestReconcileNatGateways/nat_gateway_is_not_updated_if_it's_up_to_date
+I0923 20:39:02.320021   47101 natgateways.go:62]  "msg"="Skipping nat gateways reconcile in custom vnet mode"  
+I0923 20:39:02.320219   47101 natgateways.go:74]  "msg"="nat gateway already exists"  "nat gateway"="my-node-natgateway"
+I0923 20:39:02.320281   47101 natgateways.go:79]  "msg"="Nat Gateway exists with expected values, skipping update"  "nat gateway"="my-node-natgateway"
+I0923 20:39:02.320080   47101 natgateways.go:74]  "msg"="nat gateway already exists"  "nat gateway"="my-node-natgateway"
+I0923 20:39:02.320304   47101 natgateways.go:84]  "msg"="updating NAT gateway IP name to match the spec"  "desired name"="different-pip-name" "old name"="pip-my-node-natgateway-node-subnet-natgw"
+I0923 20:39:02.320125   47101 natgateways.go:88]  "msg"="nat gateway doesn't exist yet, creating it"  "nat gateway"="my-node-natgateway"
+I0923 20:39:02.320091   47101 natgateways.go:88]  "msg"="nat gateway doesn't exist yet, creating it"  "nat gateway"="my-node-natgateway"
+I0923 20:39:02.320370   47101 natgateways.go:106]  "msg"="successfully created nat gateway"  "nat gateway"="my-node-natgateway"
+I0923 20:39:02.320392   47101 natgateways.go:106]  "msg"="successfully created nat gateway"  "nat gateway"="my-node-natgateway"
+--- PASS: TestReconcileNatGateways (0.00s)
+    --- PASS: TestReconcileNatGateways/fail_when_getting_existing_nat_gateway (0.00s)
+    --- PASS: TestReconcileNatGateways/nat_gateways_in_custom_vnet_mode (0.00s)
+    --- PASS: TestReconcileNatGateways/nat_gateway_is_not_updated_if_it's_up_to_date (0.00s)
+    --- PASS: TestReconcileNatGateways/update_nat_gateway_if_actual_state_does_not_match_desired_state (0.00s)
+    --- PASS: TestReconcileNatGateways/fail_to_create_a_nat_gateway (0.00s)
+    --- PASS: TestReconcileNatGateways/nat_gateway_create_successfully (0.00s)
+=== RUN   TestDeleteNatGateway
+=== RUN   TestDeleteNatGateway/nat_gateways_in_custom_vnet_mode
+=== PAUSE TestDeleteNatGateway/nat_gateways_in_custom_vnet_mode
+=== RUN   TestDeleteNatGateway/nat_gateway_deleted_successfully
+=== PAUSE TestDeleteNatGateway/nat_gateway_deleted_successfully
+=== RUN   TestDeleteNatGateway/nat_gateway_already_deleted
+=== PAUSE TestDeleteNatGateway/nat_gateway_already_deleted
+=== RUN   TestDeleteNatGateway/nat_gateway_deletion_fails
+=== PAUSE TestDeleteNatGateway/nat_gateway_deletion_fails
+=== CONT  TestDeleteNatGateway/nat_gateways_in_custom_vnet_mode
+=== CONT  TestDeleteNatGateway/nat_gateway_deletion_fails
+=== CONT  TestDeleteNatGateway/nat_gateway_deleted_successfully
+=== CONT  TestDeleteNatGateway/nat_gateway_already_deleted
+I0923 20:39:02.321100   47101 natgateways.go:156]  "msg"="Skipping nat gateway deletion in custom vnet mode"  
+I0923 20:39:02.321128   47101 natgateways.go:160]  "msg"="deleting nat gateway"  "nat gateway"="my-node-natgateway"
+I0923 20:39:02.321138   47101 natgateways.go:160]  "msg"="deleting nat gateway"  "nat gateway"="my-node-natgateway"
+I0923 20:39:02.321150   47101 natgateways.go:160]  "msg"="deleting nat gateway"  "nat gateway"="my-node-natgateway"
+I0923 20:39:02.321159   47101 natgateways.go:170]  "msg"="successfully deleted nat gateway"  "nat gateway"="my-node-natgateway"
+--- PASS: TestDeleteNatGateway (0.00s)
+    --- PASS: TestDeleteNatGateway/nat_gateways_in_custom_vnet_mode (0.00s)
+    --- PASS: TestDeleteNatGateway/nat_gateway_deletion_fails (0.00s)
+    --- PASS: TestDeleteNatGateway/nat_gateway_already_deleted (0.00s)
+    --- PASS: TestDeleteNatGateway/nat_gateway_deleted_successfully (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/natgateways	5.073s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/natgateways/mock_natgateways	[no test files]
+=== RUN   TestReconcileNetworkInterface
+=== RUN   TestReconcileNetworkInterface/network_interface_already_exists
+=== PAUSE TestReconcileNetworkInterface/network_interface_already_exists
+=== RUN   TestReconcileNetworkInterface/node_network_interface_create_fails
+=== PAUSE TestReconcileNetworkInterface/node_network_interface_create_fails
+=== RUN   TestReconcileNetworkInterface/node_network_interface_with_Static_private_IP_successfully_created
+=== PAUSE TestReconcileNetworkInterface/node_network_interface_with_Static_private_IP_successfully_created
+=== RUN   TestReconcileNetworkInterface/node_network_interface_with_Dynamic_private_IP_successfully_created
+=== PAUSE TestReconcileNetworkInterface/node_network_interface_with_Dynamic_private_IP_successfully_created
+=== RUN   TestReconcileNetworkInterface/control_plane_network_interface_successfully_created
+=== PAUSE TestReconcileNetworkInterface/control_plane_network_interface_successfully_created
+=== RUN   TestReconcileNetworkInterface/network_interface_with_Public_IP_successfully_created
+=== PAUSE TestReconcileNetworkInterface/network_interface_with_Public_IP_successfully_created
+=== RUN   TestReconcileNetworkInterface/network_interface_with_accelerated_networking_successfully_created
+=== PAUSE TestReconcileNetworkInterface/network_interface_with_accelerated_networking_successfully_created
+=== RUN   TestReconcileNetworkInterface/network_interface_without_accelerated_networking_successfully_created
+=== PAUSE TestReconcileNetworkInterface/network_interface_without_accelerated_networking_successfully_created
+=== RUN   TestReconcileNetworkInterface/network_interface_with_ipv6_created_successfully
+=== PAUSE TestReconcileNetworkInterface/network_interface_with_ipv6_created_successfully
+=== CONT  TestReconcileNetworkInterface/network_interface_already_exists
+=== CONT  TestReconcileNetworkInterface/network_interface_with_Public_IP_successfully_created
+=== CONT  TestReconcileNetworkInterface/node_network_interface_with_Dynamic_private_IP_successfully_created
+=== CONT  TestReconcileNetworkInterface/node_network_interface_with_Static_private_IP_successfully_created
+=== CONT  TestReconcileNetworkInterface/network_interface_with_accelerated_networking_successfully_created
+=== CONT  TestReconcileNetworkInterface/node_network_interface_create_fails
+=== CONT  TestReconcileNetworkInterface/network_interface_without_accelerated_networking_successfully_created
+=== CONT  TestReconcileNetworkInterface/network_interface_with_ipv6_created_successfully
+=== CONT  TestReconcileNetworkInterface/control_plane_network_interface_successfully_created
+I0923 20:39:03.170974   47103 networkinterfaces.go:158]  "msg"="successfully created network interface"  "network interface"="my-public-net-interface"
+I0923 20:39:03.171289   47103 networkinterfaces.go:158]  "msg"="successfully created network interface"  "network interface"="my-net-interface"
+I0923 20:39:03.171178   47103 networkinterfaces.go:158]  "msg"="successfully created network interface"  "network interface"="my-net-interface"
+I0923 20:39:03.171182   47103 networkinterfaces.go:158]  "msg"="successfully created network interface"  "network interface"="my-net-interface"
+I0923 20:39:03.171333   47103 networkinterfaces.go:158]  "msg"="successfully created network interface"  "network interface"="my-net-interface"
+I0923 20:39:03.171246   47103 networkinterfaces.go:158]  "msg"="successfully created network interface"  "network interface"="my-net-interface"
+I0923 20:39:03.171396   47103 networkinterfaces.go:158]  "msg"="successfully created network interface"  "network interface"="my-net-interface"
+--- PASS: TestReconcileNetworkInterface (0.00s)
+    --- PASS: TestReconcileNetworkInterface/network_interface_already_exists (0.00s)
+    --- PASS: TestReconcileNetworkInterface/node_network_interface_create_fails (0.00s)
+    --- PASS: TestReconcileNetworkInterface/network_interface_with_Public_IP_successfully_created (0.00s)
+    --- PASS: TestReconcileNetworkInterface/node_network_interface_with_Static_private_IP_successfully_created (0.00s)
+    --- PASS: TestReconcileNetworkInterface/network_interface_with_accelerated_networking_successfully_created (0.00s)
+    --- PASS: TestReconcileNetworkInterface/network_interface_without_accelerated_networking_successfully_created (0.00s)
+    --- PASS: TestReconcileNetworkInterface/control_plane_network_interface_successfully_created (0.00s)
+    --- PASS: TestReconcileNetworkInterface/node_network_interface_with_Dynamic_private_IP_successfully_created (0.00s)
+    --- PASS: TestReconcileNetworkInterface/network_interface_with_ipv6_created_successfully (0.00s)
+=== RUN   TestDeleteNetworkInterface
+=== RUN   TestDeleteNetworkInterface/successfully_delete_an_existing_network_interface
+=== PAUSE TestDeleteNetworkInterface/successfully_delete_an_existing_network_interface
+=== RUN   TestDeleteNetworkInterface/network_interface_already_deleted
+=== PAUSE TestDeleteNetworkInterface/network_interface_already_deleted
+=== RUN   TestDeleteNetworkInterface/network_interface_deletion_fails
+=== PAUSE TestDeleteNetworkInterface/network_interface_deletion_fails
+=== CONT  TestDeleteNetworkInterface/successfully_delete_an_existing_network_interface
+=== CONT  TestDeleteNetworkInterface/network_interface_deletion_fails
+=== CONT  TestDeleteNetworkInterface/network_interface_already_deleted
+I0923 20:39:03.171673   47103 networkinterfaces.go:170]  "msg"="deleting network interface %s"  "network interface"="my-net-interface"
+I0923 20:39:03.171682   47103 networkinterfaces.go:170]  "msg"="deleting network interface %s"  "network interface"="my-net-interface"
+I0923 20:39:03.171686   47103 networkinterfaces.go:170]  "msg"="deleting network interface %s"  "network interface"="my-net-interface"
+I0923 20:39:03.171703   47103 networkinterfaces.go:175]  "msg"="successfully deleted NIC"  "network interface"="my-net-interface"
+I0923 20:39:03.171711   47103 networkinterfaces.go:175]  "msg"="successfully deleted NIC"  "network interface"="my-net-interface"
+--- PASS: TestDeleteNetworkInterface (0.00s)
+    --- PASS: TestDeleteNetworkInterface/successfully_delete_an_existing_network_interface (0.00s)
+    --- PASS: TestDeleteNetworkInterface/network_interface_already_deleted (0.00s)
+    --- PASS: TestDeleteNetworkInterface/network_interface_deletion_fails (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/networkinterfaces	5.865s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/networkinterfaces/mock_networkinterfaces	[no test files]
+=== RUN   TestReconcilePrivateDNS
+=== RUN   TestReconcilePrivateDNS/no_private_dns
+=== PAUSE TestReconcilePrivateDNS/no_private_dns
+=== RUN   TestReconcilePrivateDNS/create_ipv4_private_dns_successfully
+=== PAUSE TestReconcilePrivateDNS/create_ipv4_private_dns_successfully
+=== RUN   TestReconcilePrivateDNS/create_ipv6_private_dns_successfully
+=== PAUSE TestReconcilePrivateDNS/create_ipv6_private_dns_successfully
+=== RUN   TestReconcilePrivateDNS/link_creation_fails
+=== PAUSE TestReconcilePrivateDNS/link_creation_fails
+=== CONT  TestReconcilePrivateDNS/no_private_dns
+=== CONT  TestReconcilePrivateDNS/create_ipv6_private_dns_successfully
+=== CONT  TestReconcilePrivateDNS/create_ipv4_private_dns_successfully
+=== CONT  TestReconcilePrivateDNS/link_creation_fails
+I0923 20:39:03.608061   47108 privatedns.go:61]  "msg"="creating private DNS zone"  "private dns zone"="my-dns-zone"
+I0923 20:39:03.608064   47108 privatedns.go:61]  "msg"="creating private DNS zone"  "private dns zone"="my-dns-zone"
+I0923 20:39:03.608298   47108 privatedns.go:66]  "msg"="successfully created private DNS zone"  "private dns zone"="my-dns-zone"
+I0923 20:39:03.608122   47108 privatedns.go:61]  "msg"="creating private DNS zone"  "private dns zone"="my-dns-zone"
+I0923 20:39:03.608308   47108 privatedns.go:66]  "msg"="successfully created private DNS zone"  "private dns zone"="my-dns-zone"
+I0923 20:39:03.608316   47108 privatedns.go:69]  "msg"="creating a virtual network link"  "private dns zone"="my-dns-zone" "virtual network"="my-vnet"
+I0923 20:39:03.608326   47108 privatedns.go:69]  "msg"="creating a virtual network link"  "private dns zone"="my-dns-zone" "virtual network"="my-vnet"
+I0923 20:39:03.608339   47108 privatedns.go:83]  "msg"="successfully created virtual network link"  "private dns zone"="my-dns-zone" "virtual network"="my-vnet"
+I0923 20:39:03.608345   47108 privatedns.go:66]  "msg"="successfully created private DNS zone"  "private dns zone"="my-dns-zone"
+I0923 20:39:03.608352   47108 privatedns.go:87]  "msg"="creating record set"  "private dns zone"="my-dns-zone" "record"="hostname-2"
+I0923 20:39:03.608360   47108 privatedns.go:69]  "msg"="creating a virtual network link"  "private dns zone"="my-dns-zone" "virtual network"="my-vnet"
+I0923 20:39:03.608364   47108 privatedns.go:83]  "msg"="successfully created virtual network link"  "private dns zone"="my-dns-zone" "virtual network"="my-vnet"
+I0923 20:39:03.608373   47108 privatedns.go:107]  "msg"="successfully created record set"  "private dns zone"="my-dns-zone" "record"="hostname-2"
+I0923 20:39:03.608383   47108 privatedns.go:87]  "msg"="creating record set"  "private dns zone"="my-dns-zone" "record"="hostname-1"
+I0923 20:39:03.608416   47108 privatedns.go:107]  "msg"="successfully created record set"  "private dns zone"="my-dns-zone" "record"="hostname-1"
+--- PASS: TestReconcilePrivateDNS (0.00s)
+    --- PASS: TestReconcilePrivateDNS/no_private_dns (0.00s)
+    --- PASS: TestReconcilePrivateDNS/create_ipv6_private_dns_successfully (0.00s)
+    --- PASS: TestReconcilePrivateDNS/link_creation_fails (0.00s)
+    --- PASS: TestReconcilePrivateDNS/create_ipv4_private_dns_successfully (0.00s)
+=== RUN   TestDeletePrivateDNS
+=== RUN   TestDeletePrivateDNS/no_private_dns
+=== PAUSE TestDeletePrivateDNS/no_private_dns
+=== RUN   TestDeletePrivateDNS/delete_the_dns_zone
+=== PAUSE TestDeletePrivateDNS/delete_the_dns_zone
+=== RUN   TestDeletePrivateDNS/link_already_deleted
+=== PAUSE TestDeletePrivateDNS/link_already_deleted
+=== RUN   TestDeletePrivateDNS/zone_already_deleted
+=== PAUSE TestDeletePrivateDNS/zone_already_deleted
+=== RUN   TestDeletePrivateDNS/error_while_trying_to_delete_the_link
+=== PAUSE TestDeletePrivateDNS/error_while_trying_to_delete_the_link
+=== RUN   TestDeletePrivateDNS/error_while_trying_to_delete_the_zone
+=== PAUSE TestDeletePrivateDNS/error_while_trying_to_delete_the_zone
+=== CONT  TestDeletePrivateDNS/no_private_dns
+=== CONT  TestDeletePrivateDNS/zone_already_deleted
+=== CONT  TestDeletePrivateDNS/link_already_deleted
+=== CONT  TestDeletePrivateDNS/error_while_trying_to_delete_the_zone
+=== CONT  TestDeletePrivateDNS/delete_the_dns_zone
+=== CONT  TestDeletePrivateDNS/error_while_trying_to_delete_the_link
+I0923 20:39:03.608698   47108 privatedns.go:121]  "msg"="removing virtual network link"  "private dns zone"="my-dns-zone" "virtual network"="my-vnet"
+I0923 20:39:03.608706   47108 privatedns.go:121]  "msg"="removing virtual network link"  "private dns zone"="my-dns-zone" "virtual network"="my-vnet"
+I0923 20:39:03.608717   47108 privatedns.go:121]  "msg"="removing virtual network link"  "private dns zone"="my-dns-zone" "virtual network"="my-vnet"
+I0923 20:39:03.608726   47108 privatedns.go:128]  "msg"="deleting private dns zone"  "private dns zone"="my-dns-zone"
+I0923 20:39:03.608741   47108 privatedns.go:128]  "msg"="deleting private dns zone"  "private dns zone"="my-dns-zone"
+I0923 20:39:03.608747   47108 privatedns.go:137]  "msg"="successfully deleted private dns zone"  "private dns zone"="my-dns-zone"
+I0923 20:39:03.608745   47108 privatedns.go:121]  "msg"="removing virtual network link"  "private dns zone"="my-dns-zone" "virtual network"="my-vnet"
+I0923 20:39:03.608758   47108 privatedns.go:128]  "msg"="deleting private dns zone"  "private dns zone"="my-dns-zone"
+I0923 20:39:03.608779   47108 privatedns.go:137]  "msg"="successfully deleted private dns zone"  "private dns zone"="my-dns-zone"
+I0923 20:39:03.608812   47108 privatedns.go:121]  "msg"="removing virtual network link"  "private dns zone"="my-dns-zone" "virtual network"="my-vnet"
+I0923 20:39:03.608835   47108 privatedns.go:128]  "msg"="deleting private dns zone"  "private dns zone"="my-dns-zone"
+--- PASS: TestDeletePrivateDNS (0.00s)
+    --- PASS: TestDeletePrivateDNS/no_private_dns (0.00s)
+    --- PASS: TestDeletePrivateDNS/link_already_deleted (0.00s)
+    --- PASS: TestDeletePrivateDNS/zone_already_deleted (0.00s)
+    --- PASS: TestDeletePrivateDNS/delete_the_dns_zone (0.00s)
+    --- PASS: TestDeletePrivateDNS/error_while_trying_to_delete_the_link (0.00s)
+    --- PASS: TestDeletePrivateDNS/error_while_trying_to_delete_the_zone (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/privatedns	5.898s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/privatedns/mock_privatedns	[no test files]
+=== RUN   TestReconcilePublicIP
+=== RUN   TestReconcilePublicIP/can_create_public_IPs
+=== PAUSE TestReconcilePublicIP/can_create_public_IPs
+=== RUN   TestReconcilePublicIP/fail_to_create_a_public_IP
+=== PAUSE TestReconcilePublicIP/fail_to_create_a_public_IP
+=== CONT  TestReconcilePublicIP/can_create_public_IPs
+=== CONT  TestReconcilePublicIP/fail_to_create_a_public_IP
+I0923 20:39:04.110099   47110 publicips.go:61]  "msg"="creating public IP"  "public ip"="my-publicip"
+I0923 20:39:04.110113   47110 publicips.go:61]  "msg"="creating public IP"  "public ip"="my-publicip"
+I0923 20:39:04.110572   47110 publicips.go:104]  "msg"="successfully created public IP"  "public ip"="my-publicip"
+I0923 20:39:04.110591   47110 publicips.go:61]  "msg"="creating public IP"  "public ip"="my-publicip-2"
+I0923 20:39:04.110693   47110 publicips.go:104]  "msg"="successfully created public IP"  "public ip"="my-publicip-2"
+I0923 20:39:04.110713   47110 publicips.go:61]  "msg"="creating public IP"  "public ip"="my-publicip-3"
+I0923 20:39:04.110785   47110 publicips.go:104]  "msg"="successfully created public IP"  "public ip"="my-publicip-3"
+I0923 20:39:04.110804   47110 publicips.go:61]  "msg"="creating public IP"  "public ip"="my-publicip-ipv6"
+I0923 20:39:04.110867   47110 publicips.go:104]  "msg"="successfully created public IP"  "public ip"="my-publicip-ipv6"
+--- PASS: TestReconcilePublicIP (0.00s)
+    --- PASS: TestReconcilePublicIP/fail_to_create_a_public_IP (0.00s)
+    --- PASS: TestReconcilePublicIP/can_create_public_IPs (0.00s)
+=== RUN   TestDeletePublicIP
+=== RUN   TestDeletePublicIP/successfully_delete_two_existing_public_IP
+=== PAUSE TestDeletePublicIP/successfully_delete_two_existing_public_IP
+=== RUN   TestDeletePublicIP/public_ip_already_deleted
+=== PAUSE TestDeletePublicIP/public_ip_already_deleted
+=== RUN   TestDeletePublicIP/public_ip_deletion_fails
+=== PAUSE TestDeletePublicIP/public_ip_deletion_fails
+=== RUN   TestDeletePublicIP/skip_unmanaged_public_ip_deletion
+=== PAUSE TestDeletePublicIP/skip_unmanaged_public_ip_deletion
+=== CONT  TestDeletePublicIP/successfully_delete_two_existing_public_IP
+=== CONT  TestDeletePublicIP/public_ip_deletion_fails
+=== CONT  TestDeletePublicIP/public_ip_already_deleted
+=== CONT  TestDeletePublicIP/skip_unmanaged_public_ip_deletion
+I0923 20:39:04.111160   47110 publicips.go:126]  "msg"="deleting public IP"  "public ip"="my-publicip"
+I0923 20:39:04.111163   47110 publicips.go:126]  "msg"="deleting public IP"  "public ip"="my-publicip"
+I0923 20:39:04.111190   47110 publicips.go:136]  "msg"="deleted public IP"  "public ip"="my-publicip"
+I0923 20:39:04.111214   47110 publicips.go:126]  "msg"="deleting public IP"  "public ip"="my-publicip-2"
+I0923 20:39:04.111233   47110 publicips.go:122]  "msg"="Skipping IP deletion for unmanaged public IP"  "public ip"="my-publicip"
+I0923 20:39:04.111236   47110 publicips.go:136]  "msg"="deleted public IP"  "public ip"="my-publicip-2"
+I0923 20:39:04.111264   47110 publicips.go:126]  "msg"="deleting public IP"  "public ip"="my-publicip-2"
+I0923 20:39:04.111264   47110 publicips.go:122]  "msg"="Skipping IP deletion for unmanaged public IP"  "public ip"="my-publicip"
+I0923 20:39:04.111283   47110 publicips.go:136]  "msg"="deleted public IP"  "public ip"="my-publicip-2"
+I0923 20:39:04.111296   47110 publicips.go:126]  "msg"="deleting public IP"  "public ip"="my-publicip-2"
+I0923 20:39:04.111320   47110 publicips.go:136]  "msg"="deleted public IP"  "public ip"="my-publicip-2"
+--- PASS: TestDeletePublicIP (0.00s)
+    --- PASS: TestDeletePublicIP/public_ip_deletion_fails (0.00s)
+    --- PASS: TestDeletePublicIP/successfully_delete_two_existing_public_IP (0.00s)
+    --- PASS: TestDeletePublicIP/public_ip_already_deleted (0.00s)
+    --- PASS: TestDeletePublicIP/skip_unmanaged_public_ip_deletion (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/publicips	6.269s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/publicips/mock_publicips	[no test files]
+=== RUN   TestCacheGet
+=== RUN   TestCacheGet/should_find
+=== PAUSE TestCacheGet/should_find
+=== RUN   TestCacheGet/should_not_find
+=== PAUSE TestCacheGet/should_not_find
+=== CONT  TestCacheGet/should_find
+=== CONT  TestCacheGet/should_not_find
+--- PASS: TestCacheGet (0.00s)
+    --- PASS: TestCacheGet/should_find (0.00s)
+    --- PASS: TestCacheGet/should_not_find (0.00s)
+=== RUN   TestCacheGetZones
+=== RUN   TestCacheGetZones/should_find_1_result
+=== PAUSE TestCacheGetZones/should_find_1_result
+=== RUN   TestCacheGetZones/should_find_2_results
+=== PAUSE TestCacheGetZones/should_find_2_results
+=== RUN   TestCacheGetZones/should_not_find_due_to_location_mismatch
+=== PAUSE TestCacheGetZones/should_not_find_due_to_location_mismatch
+=== RUN   TestCacheGetZones/should_not_find_due_to_location_restriction
+=== PAUSE TestCacheGetZones/should_not_find_due_to_location_restriction
+=== RUN   TestCacheGetZones/should_not_find_due_to_zone_restriction
+=== PAUSE TestCacheGetZones/should_not_find_due_to_zone_restriction
+=== CONT  TestCacheGetZones/should_find_1_result
+=== CONT  TestCacheGetZones/should_not_find_due_to_location_restriction
+=== CONT  TestCacheGetZones/should_not_find_due_to_location_mismatch
+=== CONT  TestCacheGetZones/should_not_find_due_to_zone_restriction
+=== CONT  TestCacheGetZones/should_find_2_results
+--- PASS: TestCacheGetZones (0.00s)
+    --- PASS: TestCacheGetZones/should_not_find_due_to_zone_restriction (0.00s)
+    --- PASS: TestCacheGetZones/should_not_find_due_to_location_mismatch (0.00s)
+    --- PASS: TestCacheGetZones/should_not_find_due_to_location_restriction (0.00s)
+    --- PASS: TestCacheGetZones/should_find_1_result (0.00s)
+    --- PASS: TestCacheGetZones/should_find_2_results (0.00s)
+=== RUN   TestCacheGetZonesWithVMSize
+=== RUN   TestCacheGetZonesWithVMSize/should_not_find_due_to_size_mismatch
+=== PAUSE TestCacheGetZonesWithVMSize/should_not_find_due_to_size_mismatch
+=== RUN   TestCacheGetZonesWithVMSize/should_not_find_due_to_location_mismatch
+=== PAUSE TestCacheGetZonesWithVMSize/should_not_find_due_to_location_mismatch
+=== RUN   TestCacheGetZonesWithVMSize/should_not_find_due_to_location_restriction
+=== PAUSE TestCacheGetZonesWithVMSize/should_not_find_due_to_location_restriction
+=== RUN   TestCacheGetZonesWithVMSize/should_not_find_due_to_zone_restriction
+=== PAUSE TestCacheGetZonesWithVMSize/should_not_find_due_to_zone_restriction
+=== RUN   TestCacheGetZonesWithVMSize/should_find_1_result
+=== PAUSE TestCacheGetZonesWithVMSize/should_find_1_result
+=== RUN   TestCacheGetZonesWithVMSize/should_find_2_results
+=== PAUSE TestCacheGetZonesWithVMSize/should_find_2_results
+=== CONT  TestCacheGetZonesWithVMSize/should_not_find_due_to_size_mismatch
+=== CONT  TestCacheGetZonesWithVMSize/should_find_2_results
+=== CONT  TestCacheGetZonesWithVMSize/should_find_1_result
+=== CONT  TestCacheGetZonesWithVMSize/should_not_find_due_to_zone_restriction
+=== CONT  TestCacheGetZonesWithVMSize/should_not_find_due_to_location_restriction
+=== CONT  TestCacheGetZonesWithVMSize/should_not_find_due_to_location_mismatch
+--- PASS: TestCacheGetZonesWithVMSize (0.00s)
+    --- PASS: TestCacheGetZonesWithVMSize/should_not_find_due_to_size_mismatch (0.00s)
+    --- PASS: TestCacheGetZonesWithVMSize/should_find_2_results (0.00s)
+    --- PASS: TestCacheGetZonesWithVMSize/should_find_1_result (0.00s)
+    --- PASS: TestCacheGetZonesWithVMSize/should_not_find_due_to_zone_restriction (0.00s)
+    --- PASS: TestCacheGetZonesWithVMSize/should_not_find_due_to_location_restriction (0.00s)
+    --- PASS: TestCacheGetZonesWithVMSize/should_not_find_due_to_location_mismatch (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/resourceskus	6.516s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/resourceskus/mock_resourceskus	[no test files]
+=== RUN   TestReconcileRoleAssignmentsVM
+=== RUN   TestReconcileRoleAssignmentsVM/create_a_role_assignment
+=== PAUSE TestReconcileRoleAssignmentsVM/create_a_role_assignment
+=== RUN   TestReconcileRoleAssignmentsVM/error_getting_VM
+=== PAUSE TestReconcileRoleAssignmentsVM/error_getting_VM
+=== RUN   TestReconcileRoleAssignmentsVM/return_error_when_creating_a_role_assignment
+=== PAUSE TestReconcileRoleAssignmentsVM/return_error_when_creating_a_role_assignment
+=== CONT  TestReconcileRoleAssignmentsVM/create_a_role_assignment
+=== CONT  TestReconcileRoleAssignmentsVM/return_error_when_creating_a_role_assignment
+=== CONT  TestReconcileRoleAssignmentsVM/error_getting_VM
+I0923 20:39:05.026596   47125 roleassignments.go:94]  "msg"="successfully created role assignment for generated Identity for VM"  "virtual machine"="test-vm"
+--- PASS: TestReconcileRoleAssignmentsVM (0.00s)
+    --- PASS: TestReconcileRoleAssignmentsVM/error_getting_VM (0.00s)
+    --- PASS: TestReconcileRoleAssignmentsVM/return_error_when_creating_a_role_assignment (0.00s)
+    --- PASS: TestReconcileRoleAssignmentsVM/create_a_role_assignment (0.00s)
+=== RUN   TestReconcileRoleAssignmentsVMSS
+=== RUN   TestReconcileRoleAssignmentsVMSS/create_a_role_assignment
+=== PAUSE TestReconcileRoleAssignmentsVMSS/create_a_role_assignment
+=== RUN   TestReconcileRoleAssignmentsVMSS/error_getting_VMSS
+=== PAUSE TestReconcileRoleAssignmentsVMSS/error_getting_VMSS
+=== RUN   TestReconcileRoleAssignmentsVMSS/return_error_when_creating_a_role_assignment
+=== PAUSE TestReconcileRoleAssignmentsVMSS/return_error_when_creating_a_role_assignment
+=== CONT  TestReconcileRoleAssignmentsVMSS/create_a_role_assignment
+=== CONT  TestReconcileRoleAssignmentsVMSS/return_error_when_creating_a_role_assignment
+=== CONT  TestReconcileRoleAssignmentsVMSS/error_getting_VMSS
+I0923 20:39:05.027020   47125 roleassignments.go:113]  "msg"="successfully created role assignment for generated Identity for VMSS"  "virtual machine scale set"="test-vmss"
+--- PASS: TestReconcileRoleAssignmentsVMSS (0.00s)
+    --- PASS: TestReconcileRoleAssignmentsVMSS/error_getting_VMSS (0.00s)
+    --- PASS: TestReconcileRoleAssignmentsVMSS/return_error_when_creating_a_role_assignment (0.00s)
+    --- PASS: TestReconcileRoleAssignmentsVMSS/create_a_role_assignment (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/roleassignments	5.935s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/roleassignments/mock_roleassignments	[no test files]
+=== RUN   TestReconcileRouteTables
+=== RUN   TestReconcileRouteTables/route_tables_in_custom_vnet_mode
+=== PAUSE TestReconcileRouteTables/route_tables_in_custom_vnet_mode
+=== RUN   TestReconcileRouteTables/route_table_create_successfully
+=== PAUSE TestReconcileRouteTables/route_table_create_successfully
+=== RUN   TestReconcileRouteTables/do_not_create_route_table_if_already_exists
+=== PAUSE TestReconcileRouteTables/do_not_create_route_table_if_already_exists
+=== RUN   TestReconcileRouteTables/fail_when_getting_existing_route_table
+=== PAUSE TestReconcileRouteTables/fail_when_getting_existing_route_table
+=== RUN   TestReconcileRouteTables/fail_to_create_a_route_table
+=== PAUSE TestReconcileRouteTables/fail_to_create_a_route_table
+=== CONT  TestReconcileRouteTables/route_tables_in_custom_vnet_mode
+=== CONT  TestReconcileRouteTables/fail_when_getting_existing_route_table
+=== CONT  TestReconcileRouteTables/do_not_create_route_table_if_already_exists
+=== CONT  TestReconcileRouteTables/route_table_create_successfully
+=== CONT  TestReconcileRouteTables/fail_to_create_a_route_table
+I0923 20:39:05.528672   47128 routetables.go:60]  "msg"="Skipping route tables reconcile in custom vnet mode"  
+I0923 20:39:05.528772   47128 routetables.go:80]  "msg"="creating Route Table"  "route table"="my-cp-routetable"
+I0923 20:39:05.528781   47128 routetables.go:80]  "msg"="creating Route Table"  "route table"="my-cp-routetable"
+I0923 20:39:05.528923   47128 routetables.go:93]  "msg"="successfully created route table"  "route table"="my-cp-routetable"
+I0923 20:39:05.528951   47128 routetables.go:80]  "msg"="creating Route Table"  "route table"="my-node-routetable"
+I0923 20:39:05.528977   47128 routetables.go:93]  "msg"="successfully created route table"  "route table"="my-node-routetable"
+--- PASS: TestReconcileRouteTables (0.00s)
+    --- PASS: TestReconcileRouteTables/fail_when_getting_existing_route_table (0.00s)
+    --- PASS: TestReconcileRouteTables/do_not_create_route_table_if_already_exists (0.00s)
+    --- PASS: TestReconcileRouteTables/route_tables_in_custom_vnet_mode (0.00s)
+    --- PASS: TestReconcileRouteTables/fail_to_create_a_route_table (0.00s)
+    --- PASS: TestReconcileRouteTables/route_table_create_successfully (0.00s)
+=== RUN   TestDeleteRouteTable
+=== RUN   TestDeleteRouteTable/route_tables_in_custom_vnet_mode
+=== PAUSE TestDeleteRouteTable/route_tables_in_custom_vnet_mode
+=== RUN   TestDeleteRouteTable/route_table_deleted_successfully
+=== PAUSE TestDeleteRouteTable/route_table_deleted_successfully
+=== RUN   TestDeleteRouteTable/route_table_already_deleted
+=== PAUSE TestDeleteRouteTable/route_table_already_deleted
+=== RUN   TestDeleteRouteTable/route_table_deletion_fails
+=== PAUSE TestDeleteRouteTable/route_table_deletion_fails
+=== CONT  TestDeleteRouteTable/route_tables_in_custom_vnet_mode
+=== CONT  TestDeleteRouteTable/route_table_already_deleted
+=== CONT  TestDeleteRouteTable/route_table_deleted_successfully
+=== CONT  TestDeleteRouteTable/route_table_deletion_fails
+I0923 20:39:05.529242   47128 routetables.go:104]  "msg"="Skipping route table deletion in custom vnet mode"  
+I0923 20:39:05.529307   47128 routetables.go:108]  "msg"="deleting route table"  "route table"="my-cp-routetable"
+I0923 20:39:05.529308   47128 routetables.go:108]  "msg"="deleting route table"  "route table"="my-cp-routetable"
+I0923 20:39:05.529323   47128 routetables.go:108]  "msg"="deleting route table"  "route table"="my-cp-routetable"
+I0923 20:39:05.529332   47128 routetables.go:118]  "msg"="successfully deleted route table"  "route table"="my-cp-routetable"
+I0923 20:39:05.529338   47128 routetables.go:108]  "msg"="deleting route table"  "route table"="my-node-routetable"
+I0923 20:39:05.529346   47128 routetables.go:108]  "msg"="deleting route table"  "route table"="my-node-routetable"
+I0923 20:39:05.529366   47128 routetables.go:118]  "msg"="successfully deleted route table"  "route table"="my-node-routetable"
+--- PASS: TestDeleteRouteTable (0.00s)
+    --- PASS: TestDeleteRouteTable/route_tables_in_custom_vnet_mode (0.00s)
+    --- PASS: TestDeleteRouteTable/route_table_already_deleted (0.00s)
+    --- PASS: TestDeleteRouteTable/route_table_deletion_fails (0.00s)
+    --- PASS: TestDeleteRouteTable/route_table_deleted_successfully (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/routetables	6.093s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/routetables/mock_routetables	[no test files]
+=== RUN   TestNewService
+--- PASS: TestNewService (0.00s)
+=== RUN   TestGetExistingVMSS
+=== RUN   TestGetExistingVMSS/scale_set_not_found
+=== PAUSE TestGetExistingVMSS/scale_set_not_found
+=== RUN   TestGetExistingVMSS/get_existing_vmss
+=== PAUSE TestGetExistingVMSS/get_existing_vmss
+=== RUN   TestGetExistingVMSS/list_instances_fails
+=== PAUSE TestGetExistingVMSS/list_instances_fails
+=== CONT  TestGetExistingVMSS/scale_set_not_found
+=== CONT  TestGetExistingVMSS/get_existing_vmss
+=== CONT  TestGetExistingVMSS/list_instances_fails
+=== CONT  TestGetExistingVMSS/scale_set_not_found
+    scalesets_test.go:215: failed to get existing vmss: #: Not found: StatusCode=404
+=== CONT  TestGetExistingVMSS/list_instances_fails
+    scalesets_test.go:215: failed to list instances: #: Not found: StatusCode=404
+--- PASS: TestGetExistingVMSS (0.00s)
+    --- PASS: TestGetExistingVMSS/get_existing_vmss (0.00s)
+    --- PASS: TestGetExistingVMSS/scale_set_not_found (0.00s)
+    --- PASS: TestGetExistingVMSS/list_instances_fails (0.00s)
+=== RUN   TestReconcileVMSS
+=== RUN   TestReconcileVMSS/should_start_creating_a_vmss
+=== PAUSE TestReconcileVMSS/should_start_creating_a_vmss
+=== RUN   TestReconcileVMSS/should_finish_creating_a_vmss_when_long_running_operation_is_done
+=== PAUSE TestReconcileVMSS/should_finish_creating_a_vmss_when_long_running_operation_is_done
+=== RUN   TestReconcileVMSS/Windows_VMSS_should_not_get_patched
+=== PAUSE TestReconcileVMSS/Windows_VMSS_should_not_get_patched
+=== RUN   TestReconcileVMSS/should_start_creating_vmss_with_defaulted_accelerated_networking_when_size_allows
+=== PAUSE TestReconcileVMSS/should_start_creating_vmss_with_defaulted_accelerated_networking_when_size_allows
+=== RUN   TestReconcileVMSS/should_start_creating_a_vmss_with_spot_vm
+=== PAUSE TestReconcileVMSS/should_start_creating_a_vmss_with_spot_vm
+=== RUN   TestReconcileVMSS/should_start_creating_a_vmss_with_spot_vm_and_a_maximum_price
+=== PAUSE TestReconcileVMSS/should_start_creating_a_vmss_with_spot_vm_and_a_maximum_price
+=== RUN   TestReconcileVMSS/should_start_creating_a_vmss_with_encryption
+=== PAUSE TestReconcileVMSS/should_start_creating_a_vmss_with_encryption
+=== RUN   TestReconcileVMSS/can_start_creating_a_vmss_with_user_assigned_identity
+=== PAUSE TestReconcileVMSS/can_start_creating_a_vmss_with_user_assigned_identity
+=== RUN   TestReconcileVMSS/should_start_creating_a_vmss_with_encryption_at_host_enabled
+=== PAUSE TestReconcileVMSS/should_start_creating_a_vmss_with_encryption_at_host_enabled
+=== RUN   TestReconcileVMSS/creating_a_vmss_with_encryption_at_host_enabled_for_unsupported_VM_type_fails
+=== PAUSE TestReconcileVMSS/creating_a_vmss_with_encryption_at_host_enabled_for_unsupported_VM_type_fails
+=== RUN   TestReconcileVMSS/should_start_updating_when_scale_set_already_exists_and_not_currently_in_a_long_running_operation
+=== PAUSE TestReconcileVMSS/should_start_updating_when_scale_set_already_exists_and_not_currently_in_a_long_running_operation
+=== RUN   TestReconcileVMSS/less_than_2_vCPUs
+=== PAUSE TestReconcileVMSS/less_than_2_vCPUs
+=== RUN   TestReconcileVMSS/Memory_is_less_than_2Gi
+=== PAUSE TestReconcileVMSS/Memory_is_less_than_2Gi
+=== RUN   TestReconcileVMSS/failed_to_get_SKU
+=== PAUSE TestReconcileVMSS/failed_to_get_SKU
+=== RUN   TestReconcileVMSS/fails_with_internal_error
+=== PAUSE TestReconcileVMSS/fails_with_internal_error
+=== RUN   TestReconcileVMSS/fail_to_create_a_vm_with_ultra_disk_enabled
+=== PAUSE TestReconcileVMSS/fail_to_create_a_vm_with_ultra_disk_enabled
+=== CONT  TestReconcileVMSS/should_start_creating_a_vmss
+=== CONT  TestReconcileVMSS/should_start_creating_a_vmss_with_encryption_at_host_enabled
+=== CONT  TestReconcileVMSS/Memory_is_less_than_2Gi
+=== CONT  TestReconcileVMSS/should_start_creating_a_vmss_with_spot_vm
+=== CONT  TestReconcileVMSS/should_start_updating_when_scale_set_already_exists_and_not_currently_in_a_long_running_operation
+=== CONT  TestReconcileVMSS/fails_with_internal_error
+=== CONT  TestReconcileVMSS/fail_to_create_a_vm_with_ultra_disk_enabled
+=== CONT  TestReconcileVMSS/should_start_creating_a_vmss_with_encryption
+=== CONT  TestReconcileVMSS/can_start_creating_a_vmss_with_user_assigned_identity
+=== CONT  TestReconcileVMSS/failed_to_get_SKU
+=== CONT  TestReconcileVMSS/Windows_VMSS_should_not_get_patched
+=== CONT  TestReconcileVMSS/should_start_creating_vmss_with_defaulted_accelerated_networking_when_size_allows
+=== CONT  TestReconcileVMSS/should_finish_creating_a_vmss_when_long_running_operation_is_done
+=== CONT  TestReconcileVMSS/less_than_2_vCPUs
+=== CONT  TestReconcileVMSS/creating_a_vmss_with_encryption_at_host_enabled_for_unsupported_VM_type_fails
+=== CONT  TestReconcileVMSS/should_start_creating_a_vmss_with_spot_vm_and_a_maximum_price
+I0923 20:39:06.073677   47130 scalesets.go:226]  "msg"="starting to create VMSS"  "scale set"="my-vmss"
+I0923 20:39:06.074104   47130 scalesets.go:226]  "msg"="starting to create VMSS"  "scale set"="my-vmss"
+I0923 20:39:06.073677   47130 scalesets.go:226]  "msg"="starting to create VMSS"  "scale set"="my-vmss"
+I0923 20:39:06.074441   47130 scalesets.go:226]  "msg"="starting to create VMSS"  "scale set"="my-vmss"
+I0923 20:39:06.073978   47130 scalesets.go:226]  "msg"="starting to create VMSS"  "scale set"="my-vmss"
+I0923 20:39:06.073718   47130 scalesets.go:226]  "msg"="starting to create VMSS"  "scale set"="my-vmss"
+I0923 20:39:06.074062   47130 scalesets.go:226]  "msg"="starting to create VMSS"  "scale set"="my-vmss"
+I0923 20:39:06.075034   47130 scalesets.go:263]  "msg"="nothing to update on vmss"  "hasChanges"=false "newReplicas"=2 "oldReplicas"=2 "scale set"="my-vmss"
+I0923 20:39:06.075039   47130 scalesets.go:263]  "msg"="nothing to update on vmss"  "hasChanges"=false "newReplicas"=2 "oldReplicas"=2 "scale set"="my-vmss"
+I0923 20:39:06.075794   47130 scalesets.go:256]  "msg"="surging..."  "surge"=3
+I0923 20:39:06.075892   47130 scalesets.go:267]  "msg"="patching vmss"  "patch"={"properties":{"upgradePolicy":{"mode":"Manual"},"virtualMachineProfile":{"osProfile":{"customData":"fake-bootstrap-data","linuxConfiguration":{"disablePasswordAuthentication":true,"ssh":{"publicKeys":[{"path":"/home/capi/.ssh/authorized_keys","keyData":"fakesshkey\n"}]}}},"storageProfile":{"imageReference":{"offer":"my-offer","publisher":"fake-publisher","sku":"sku-id","version":"2.0"},"osDisk":{"diskSizeGB":120,"managedDisk":{"storageAccountType":"Premium_LRS"}},"dataDisks":[{"name":"my-vmss_my_disk","lun":0,"createOption":"Empty","diskSizeGB":128},{"name":"my-vmss_my_disk_with_managed_disk","lun":1,"createOption":"Empty","diskSizeGB":128,"managedDisk":{"storageAccountType":"Standard_LRS"}},{"name":"my-vmss_managed_disk_with_encryption","lun":2,"createOption":"Empty","diskSizeGB":128,"managedDisk":{"storageAccountType":"Standard_LRS","diskEncryptionSet":{"id":"encryption_id"}}},{"name":"my-vmss_my_disk_with_ultra_disks","lun":3,"createOption":"Empty","diskSizeGB":128,"managedDisk":{"storageAccountType":"UltraSSD_LRS"}}]},"diagnosticsProfile":{"bootDiagnostics":{"enabled":true}},"extensionProfile":{"extensions":[{"name":"someExtension","properties":{"protectedSettings":{"commandToExecute":"echo hello"},"publisher":"somePublisher","type":"someExtension","typeHandlerVersion":"someVersion"}}]},"scheduledEventsProfile":{"terminateNotificationProfile":{"notBeforeTimeout":"PT7M","enable":true}}},"overprovision":false,"singlePlacementGroup":false,"additionalCapabilities":{"ultraSSDEnabled":true}},"sku":{"name":"VM_SIZE","tier":"Standard","capacity":3},"tags":{"Name":"my-vmss","sigs.k8s.io_cluster-api-provider-azure_cluster_my-cluster":"owned","sigs.k8s.io_cluster-api-provider-azure_role":"node"}} "scale set"="my-vmss"
+I0923 20:39:06.076096   47130 scalesets.go:277]  "msg"="successfully started to update vmss"  "scale set"="my-vmss"
+--- PASS: TestReconcileVMSS (0.00s)
+    --- PASS: TestReconcileVMSS/Memory_is_less_than_2Gi (0.00s)
+    --- PASS: TestReconcileVMSS/fail_to_create_a_vm_with_ultra_disk_enabled (0.00s)
+    --- PASS: TestReconcileVMSS/fails_with_internal_error (0.00s)
+    --- PASS: TestReconcileVMSS/failed_to_get_SKU (0.00s)
+    --- PASS: TestReconcileVMSS/creating_a_vmss_with_encryption_at_host_enabled_for_unsupported_VM_type_fails (0.00s)
+    --- PASS: TestReconcileVMSS/less_than_2_vCPUs (0.00s)
+    --- PASS: TestReconcileVMSS/should_start_creating_a_vmss (0.00s)
+    --- PASS: TestReconcileVMSS/should_start_creating_a_vmss_with_encryption_at_host_enabled (0.00s)
+    --- PASS: TestReconcileVMSS/should_start_creating_vmss_with_defaulted_accelerated_networking_when_size_allows (0.00s)
+    --- PASS: TestReconcileVMSS/should_start_creating_a_vmss_with_spot_vm_and_a_maximum_price (0.00s)
+    --- PASS: TestReconcileVMSS/can_start_creating_a_vmss_with_user_assigned_identity (0.00s)
+    --- PASS: TestReconcileVMSS/should_start_creating_a_vmss_with_spot_vm (0.00s)
+    --- PASS: TestReconcileVMSS/should_start_creating_a_vmss_with_encryption (0.00s)
+    --- PASS: TestReconcileVMSS/Windows_VMSS_should_not_get_patched (0.00s)
+    --- PASS: TestReconcileVMSS/should_finish_creating_a_vmss_when_long_running_operation_is_done (0.00s)
+    --- PASS: TestReconcileVMSS/should_start_updating_when_scale_set_already_exists_and_not_currently_in_a_long_running_operation (0.01s)
+=== RUN   TestDeleteVMSS
+=== RUN   TestDeleteVMSS/successfully_delete_an_existing_vmss
+=== PAUSE TestDeleteVMSS/successfully_delete_an_existing_vmss
+=== RUN   TestDeleteVMSS/vmss_already_deleted
+=== PAUSE TestDeleteVMSS/vmss_already_deleted
+=== RUN   TestDeleteVMSS/vmss_deletion_fails
+=== PAUSE TestDeleteVMSS/vmss_deletion_fails
+=== CONT  TestDeleteVMSS/successfully_delete_an_existing_vmss
+=== CONT  TestDeleteVMSS/vmss_deletion_fails
+=== CONT  TestDeleteVMSS/vmss_already_deleted
+I0923 20:39:06.076390   47130 scalesets.go:187]  "msg"="deleting VMSS"  "scale set"="my-vmss"
+I0923 20:39:06.076396   47130 scalesets.go:187]  "msg"="deleting VMSS"  "scale set"="my-vmss"
+--- PASS: TestDeleteVMSS (0.00s)
+    --- PASS: TestDeleteVMSS/successfully_delete_an_existing_vmss (0.00s)
+    --- PASS: TestDeleteVMSS/vmss_already_deleted (0.00s)
+    --- PASS: TestDeleteVMSS/vmss_deletion_fails (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/scalesets	6.214s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/scalesets/mock_scalesets	[no test files]
+=== RUN   TestNewService
+--- PASS: TestNewService (0.00s)
+=== RUN   TestService_Reconcile
+=== RUN   TestService_Reconcile/should_reconcile_successfully
+=== RUN   TestService_Reconcile/if_404,_then_should_respond_with_transient_error
+=== RUN   TestService_Reconcile/if_other_error,_then_should_respond_with_error
+--- PASS: TestService_Reconcile (0.00s)
+    --- PASS: TestService_Reconcile/should_reconcile_successfully (0.00s)
+    --- PASS: TestService_Reconcile/if_404,_then_should_respond_with_transient_error (0.00s)
+    --- PASS: TestService_Reconcile/if_other_error,_then_should_respond_with_error (0.00s)
+=== RUN   TestService_Delete
+=== RUN   TestService_Delete/should_start_deleting_successfully_if_no_long_running_operation_is_active
+=== RUN   TestService_Delete/should_finish_deleting_successfully_when_there's_a_long_running_operation_that_has_completed
+=== RUN   TestService_Delete/should_not_error_when_deleting,_but_resource_is_404
+=== RUN   TestService_Delete/should_error_when_deleting,_but_a_non-404_error_is_returned_from_DELETE_call
+=== RUN   TestService_Delete/should_return_error_when_a_long_running_operation_is_active_and_getting_the_result_returns_an_error
+--- PASS: TestService_Delete (0.00s)
+    --- PASS: TestService_Delete/should_start_deleting_successfully_if_no_long_running_operation_is_active (0.00s)
+    --- PASS: TestService_Delete/should_finish_deleting_successfully_when_there's_a_long_running_operation_that_has_completed (0.00s)
+    --- PASS: TestService_Delete/should_not_error_when_deleting,_but_resource_is_404 (0.00s)
+    --- PASS: TestService_Delete/should_error_when_deleting,_but_a_non-404_error_is_returned_from_DELETE_call (0.00s)
+    --- PASS: TestService_Delete/should_return_error_when_a_long_running_operation_is_active_and_getting_the_result_returns_an_error (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/scalesetvms	6.348s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/scalesetvms/mock_scalesetvms	[no test files]
+=== RUN   TestReconcileSecurityGroups
+=== RUN   TestReconcileSecurityGroups/security_groups_do_not_exist
+=== PAUSE TestReconcileSecurityGroups/security_groups_do_not_exist
+=== RUN   TestReconcileSecurityGroups/security_group_exists
+=== PAUSE TestReconcileSecurityGroups/security_group_exists
+=== RUN   TestReconcileSecurityGroups/skipping_network_security_group_reconcile_in_custom_VNet_mode
+=== PAUSE TestReconcileSecurityGroups/skipping_network_security_group_reconcile_in_custom_VNet_mode
+=== CONT  TestReconcileSecurityGroups/security_groups_do_not_exist
+=== CONT  TestReconcileSecurityGroups/skipping_network_security_group_reconcile_in_custom_VNet_mode
+=== CONT  TestReconcileSecurityGroups/security_group_exists
+I0923 20:39:07.197990   47136 securitygroups.go:61]  "msg"="Skipping network security group reconcile in custom VNet mode"  
+I0923 20:39:07.198121   47136 securitygroups.go:93]  "msg"="creating security group"  "security group"="nsg-one"
+I0923 20:39:07.198380   47136 securitygroups.go:110]  "msg"="successfully created or updated security group"  "security group"="nsg-one"
+I0923 20:39:07.198430   47136 securitygroups.go:89]  "msg"="security group exists and no default rules are missing, skipping update"  "security group"="nsg-two"
+I0923 20:39:07.198455   47136 securitygroups.go:110]  "msg"="successfully created or updated security group"  "security group"="nsg-one"
+I0923 20:39:07.198500   47136 securitygroups.go:93]  "msg"="creating security group"  "security group"="nsg-two"
+I0923 20:39:07.198577   47136 securitygroups.go:110]  "msg"="successfully created or updated security group"  "security group"="nsg-two"
+--- PASS: TestReconcileSecurityGroups (0.00s)
+    --- PASS: TestReconcileSecurityGroups/skipping_network_security_group_reconcile_in_custom_VNet_mode (0.00s)
+    --- PASS: TestReconcileSecurityGroups/security_group_exists (0.00s)
+    --- PASS: TestReconcileSecurityGroups/security_groups_do_not_exist (0.00s)
+=== RUN   TestDeleteSecurityGroups
+=== RUN   TestDeleteSecurityGroups/security_groups_exist
+=== PAUSE TestDeleteSecurityGroups/security_groups_exist
+=== RUN   TestDeleteSecurityGroups/security_group_already_deleted
+=== PAUSE TestDeleteSecurityGroups/security_group_already_deleted
+=== RUN   TestDeleteSecurityGroups/skipping_network_security_group_delete_in_custom_VNet_mode
+=== PAUSE TestDeleteSecurityGroups/skipping_network_security_group_delete_in_custom_VNet_mode
+=== CONT  TestDeleteSecurityGroups/security_groups_exist
+=== CONT  TestDeleteSecurityGroups/skipping_network_security_group_delete_in_custom_VNet_mode
+=== CONT  TestDeleteSecurityGroups/security_group_already_deleted
+I0923 20:39:07.198867   47136 securitygroups.go:144]  "msg"="Skipping network security group delete in custom VNet mode"  
+I0923 20:39:07.198953   47136 securitygroups.go:149]  "msg"="deleting security group"  "security group"="nsg-one"
+I0923 20:39:07.198957   47136 securitygroups.go:149]  "msg"="deleting security group"  "security group"="nsg-one"
+I0923 20:39:07.198981   47136 securitygroups.go:159]  "msg"="successfully deleted security group"  "security group"="nsg-one"
+I0923 20:39:07.198997   47136 securitygroups.go:149]  "msg"="deleting security group"  "security group"="nsg-two"
+I0923 20:39:07.199003   47136 securitygroups.go:149]  "msg"="deleting security group"  "security group"="nsg-two"
+I0923 20:39:07.199025   47136 securitygroups.go:159]  "msg"="successfully deleted security group"  "security group"="nsg-two"
+I0923 20:39:07.199032   47136 securitygroups.go:159]  "msg"="successfully deleted security group"  "security group"="nsg-two"
+--- PASS: TestDeleteSecurityGroups (0.00s)
+    --- PASS: TestDeleteSecurityGroups/skipping_network_security_group_delete_in_custom_VNet_mode (0.00s)
+    --- PASS: TestDeleteSecurityGroups/security_groups_exist (0.00s)
+    --- PASS: TestDeleteSecurityGroups/security_group_already_deleted (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/securitygroups	6.774s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/securitygroups/mock_securitygroups	[no test files]
+=== RUN   TestReconcileSubnets
+=== RUN   TestReconcileSubnets/subnet_does_not_exist
+=== PAUSE TestReconcileSubnets/subnet_does_not_exist
+=== RUN   TestReconcileSubnets/subnet_ipv6_does_not_exist
+=== PAUSE TestReconcileSubnets/subnet_ipv6_does_not_exist
+=== RUN   TestReconcileSubnets/fail_to_create_subnet
+=== PAUSE TestReconcileSubnets/fail_to_create_subnet
+=== RUN   TestReconcileSubnets/fail_to_get_existing_subnet
+=== PAUSE TestReconcileSubnets/fail_to_get_existing_subnet
+=== RUN   TestReconcileSubnets/vnet_was_provided_but_subnet_is_missing
+=== PAUSE TestReconcileSubnets/vnet_was_provided_but_subnet_is_missing
+=== RUN   TestReconcileSubnets/vnet_was_provided_and_subnet_exists
+=== PAUSE TestReconcileSubnets/vnet_was_provided_and_subnet_exists
+=== RUN   TestReconcileSubnets/vnet_for_ipv6_is_provided
+=== PAUSE TestReconcileSubnets/vnet_for_ipv6_is_provided
+=== RUN   TestReconcileSubnets/doesn't_overwrite_existing_NAT_Gateway
+=== PAUSE TestReconcileSubnets/doesn't_overwrite_existing_NAT_Gateway
+=== RUN   TestReconcileSubnets/spec_has_empty_CIDR_and_ID_data_but_GET_from_Azure_has_the_values
+=== PAUSE TestReconcileSubnets/spec_has_empty_CIDR_and_ID_data_but_GET_from_Azure_has_the_values
+=== CONT  TestReconcileSubnets/subnet_does_not_exist
+=== CONT  TestReconcileSubnets/vnet_was_provided_and_subnet_exists
+=== CONT  TestReconcileSubnets/doesn't_overwrite_existing_NAT_Gateway
+=== CONT  TestReconcileSubnets/vnet_for_ipv6_is_provided
+=== CONT  TestReconcileSubnets/spec_has_empty_CIDR_and_ID_data_but_GET_from_Azure_has_the_values
+=== CONT  TestReconcileSubnets/fail_to_get_existing_subnet
+=== CONT  TestReconcileSubnets/subnet_ipv6_does_not_exist
+=== CONT  TestReconcileSubnets/fail_to_create_subnet
+=== CONT  TestReconcileSubnets/vnet_was_provided_but_subnet_is_missing
+I0923 20:39:07.792429   47138 subnets.go:103]  "msg"="creating subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
+I0923 20:39:07.792680   47138 subnets.go:103]  "msg"="creating subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
+I0923 20:39:07.792449   47138 subnets.go:103]  "msg"="creating subnet in vnet"  "subnet"="my-ipv6-subnet" "vnet"="my-vnet"
+I0923 20:39:07.793128   47138 subnets.go:117]  "msg"="successfully created subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
+I0923 20:39:07.793273   47138 subnets.go:117]  "msg"="successfully created subnet in vnet"  "subnet"="my-ipv6-subnet" "vnet"="my-vnet"
+--- PASS: TestReconcileSubnets (0.00s)
+    --- PASS: TestReconcileSubnets/doesn't_overwrite_existing_NAT_Gateway (0.00s)
+    --- PASS: TestReconcileSubnets/vnet_was_provided_and_subnet_exists (0.00s)
+    --- PASS: TestReconcileSubnets/spec_has_empty_CIDR_and_ID_data_but_GET_from_Azure_has_the_values (0.00s)
+    --- PASS: TestReconcileSubnets/vnet_for_ipv6_is_provided (0.00s)
+    --- PASS: TestReconcileSubnets/fail_to_get_existing_subnet (0.00s)
+    --- PASS: TestReconcileSubnets/fail_to_create_subnet (0.00s)
+    --- PASS: TestReconcileSubnets/subnet_does_not_exist (0.00s)
+    --- PASS: TestReconcileSubnets/subnet_ipv6_does_not_exist (0.00s)
+    --- PASS: TestReconcileSubnets/vnet_was_provided_but_subnet_is_missing (0.00s)
+=== RUN   TestDeleteSubnets
+=== RUN   TestDeleteSubnets/subnet_deleted_successfully
+=== PAUSE TestDeleteSubnets/subnet_deleted_successfully
+=== RUN   TestDeleteSubnets/subnet_already_deleted
+=== PAUSE TestDeleteSubnets/subnet_already_deleted
+=== RUN   TestDeleteSubnets/node_subnet_already_deleted_and_controlplane_subnet_deleted_successfully
+=== PAUSE TestDeleteSubnets/node_subnet_already_deleted_and_controlplane_subnet_deleted_successfully
+=== RUN   TestDeleteSubnets/skip_delete_if_vnet_is_managed
+=== PAUSE TestDeleteSubnets/skip_delete_if_vnet_is_managed
+=== RUN   TestDeleteSubnets/fail_delete_subnet
+=== PAUSE TestDeleteSubnets/fail_delete_subnet
+=== CONT  TestDeleteSubnets/subnet_deleted_successfully
+=== CONT  TestDeleteSubnets/skip_delete_if_vnet_is_managed
+=== CONT  TestDeleteSubnets/fail_delete_subnet
+=== CONT  TestDeleteSubnets/node_subnet_already_deleted_and_controlplane_subnet_deleted_successfully
+=== CONT  TestDeleteSubnets/subnet_already_deleted
+I0923 20:39:07.794029   47138 subnets.go:130]  "msg"="Skipping subnets deletion in custom vnet mode"  
+I0923 20:39:07.794032   47138 subnets.go:133]  "msg"="deleting subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
+I0923 20:39:07.794068   47138 subnets.go:143]  "msg"="successfully deleted subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
+I0923 20:39:07.794069   47138 subnets.go:133]  "msg"="deleting subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
+I0923 20:39:07.794091   47138 subnets.go:133]  "msg"="deleting subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
+I0923 20:39:07.794101   47138 subnets.go:133]  "msg"="deleting subnet in vnet"  "subnet"="my-subnet-1" "vnet"="my-vnet"
+I0923 20:39:07.794076   47138 subnets.go:133]  "msg"="deleting subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
+I0923 20:39:07.794136   47138 subnets.go:133]  "msg"="deleting subnet in vnet"  "subnet"="my-subnet-1" "vnet"="my-vnet"
+I0923 20:39:07.794154   47138 subnets.go:143]  "msg"="successfully deleted subnet in vnet"  "subnet"="my-subnet-1" "vnet"="my-vnet"
+I0923 20:39:07.794165   47138 subnets.go:143]  "msg"="successfully deleted subnet in vnet"  "subnet"="my-subnet-1" "vnet"="my-vnet"
+--- PASS: TestDeleteSubnets (0.00s)
+    --- PASS: TestDeleteSubnets/skip_delete_if_vnet_is_managed (0.00s)
+    --- PASS: TestDeleteSubnets/subnet_already_deleted (0.00s)
+    --- PASS: TestDeleteSubnets/fail_delete_subnet (0.00s)
+    --- PASS: TestDeleteSubnets/subnet_deleted_successfully (0.00s)
+    --- PASS: TestDeleteSubnets/node_subnet_already_deleted_and_controlplane_subnet_deleted_successfully (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/subnets	7.093s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/subnets/mock_subnets	[no test files]
+=== RUN   TestReconcileTags
+=== RUN   TestReconcileTags/create_tags
+=== PAUSE TestReconcileTags/create_tags
+=== RUN   TestReconcileTags/error_getting_existing_tags
+=== PAUSE TestReconcileTags/error_getting_existing_tags
+=== RUN   TestReconcileTags/error_updating_tags
+=== PAUSE TestReconcileTags/error_updating_tags
+=== RUN   TestReconcileTags/tags_unchanged
+=== PAUSE TestReconcileTags/tags_unchanged
+=== CONT  TestReconcileTags/create_tags
+=== CONT  TestReconcileTags/error_updating_tags
+=== CONT  TestReconcileTags/error_getting_existing_tags
+=== CONT  TestReconcileTags/tags_unchanged
+I0923 20:39:08.259740   47141 tags.go:66]  "msg"="Updating tags"  
+I0923 20:39:08.259740   47141 tags.go:66]  "msg"="Updating tags"  
+I0923 20:39:08.259747   47141 tags.go:66]  "msg"="Updating tags"  
+I0923 20:39:08.260041   47141 tags.go:91]  "msg"="successfully updated tags"  
+I0923 20:39:08.260053   47141 tags.go:66]  "msg"="Updating tags"  
+I0923 20:39:08.260071   47141 tags.go:91]  "msg"="successfully updated tags"  
+--- PASS: TestReconcileTags (0.00s)
+    --- PASS: TestReconcileTags/tags_unchanged (0.00s)
+    --- PASS: TestReconcileTags/error_getting_existing_tags (0.00s)
+    --- PASS: TestReconcileTags/error_updating_tags (0.00s)
+    --- PASS: TestReconcileTags/create_tags (0.00s)
+=== RUN   TestTagsChanged
+=== RUN   TestTagsChanged/tag_deleted_and_another_created
+=== RUN   TestTagsChanged/tags_are_the_same
+=== RUN   TestTagsChanged/tag_value_changed
+=== RUN   TestTagsChanged/tag_deleted
+=== RUN   TestTagsChanged/tag_created
+--- PASS: TestTagsChanged (0.00s)
+    --- PASS: TestTagsChanged/tag_deleted_and_another_created (0.00s)
+    --- PASS: TestTagsChanged/tags_are_the_same (0.00s)
+    --- PASS: TestTagsChanged/tag_value_changed (0.00s)
+    --- PASS: TestTagsChanged/tag_deleted (0.00s)
+    --- PASS: TestTagsChanged/tag_created (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	7.119s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags/mock_tags	[no test files]
+=== RUN   TestGetExistingVM
+=== RUN   TestGetExistingVM/get_existing_vm
+=== PAUSE TestGetExistingVM/get_existing_vm
+=== RUN   TestGetExistingVM/vm_not_found
+=== PAUSE TestGetExistingVM/vm_not_found
+=== RUN   TestGetExistingVM/vm_retrieval_fails
+=== PAUSE TestGetExistingVM/vm_retrieval_fails
+=== RUN   TestGetExistingVM/get_existing_vm:_error_getting_public_IP
+=== PAUSE TestGetExistingVM/get_existing_vm:_error_getting_public_IP
+=== RUN   TestGetExistingVM/get_existing_vm:_public_IP_not_found
+=== PAUSE TestGetExistingVM/get_existing_vm:_public_IP_not_found
+=== CONT  TestGetExistingVM/get_existing_vm
+=== CONT  TestGetExistingVM/get_existing_vm:_error_getting_public_IP
+=== CONT  TestGetExistingVM/get_existing_vm:_public_IP_not_found
+=== CONT  TestGetExistingVM/vm_retrieval_fails
+=== CONT  TestGetExistingVM/vm_not_found
+--- PASS: TestGetExistingVM (0.00s)
+    --- PASS: TestGetExistingVM/get_existing_vm:_error_getting_public_IP (0.00s)
+    --- PASS: TestGetExistingVM/get_existing_vm:_public_IP_not_found (0.00s)
+    --- PASS: TestGetExistingVM/vm_not_found (0.00s)
+    --- PASS: TestGetExistingVM/vm_retrieval_fails (0.00s)
+    --- PASS: TestGetExistingVM/get_existing_vm (0.00s)
+=== RUN   TestReconcileVM
+=== RUN   TestReconcileVM/can_create_a_vm
+=== PAUSE TestReconcileVM/can_create_a_vm
+=== RUN   TestReconcileVM/can_create_a_vm_with_system_assigned_identity
+=== PAUSE TestReconcileVM/can_create_a_vm_with_system_assigned_identity
+=== RUN   TestReconcileVM/can_create_a_vm_with_user_assigned_identity
+=== PAUSE TestReconcileVM/can_create_a_vm_with_user_assigned_identity
+=== RUN   TestReconcileVM/can_create_a_spot_vm
+=== PAUSE TestReconcileVM/can_create_a_spot_vm
+=== RUN   TestReconcileVM/can_create_a_windows_vm
+=== PAUSE TestReconcileVM/can_create_a_windows_vm
+=== RUN   TestReconcileVM/can_create_a_vm_with_encryption
+=== PAUSE TestReconcileVM/can_create_a_vm_with_encryption
+=== RUN   TestReconcileVM/can_create_a_vm_with_encryption_at_host
+=== PAUSE TestReconcileVM/can_create_a_vm_with_encryption_at_host
+=== RUN   TestReconcileVM/can_create_a_vm_and_assign_it_to_an_availability_set
+=== PAUSE TestReconcileVM/can_create_a_vm_and_assign_it_to_an_availability_set
+=== RUN   TestReconcileVM/creating_a_vm_with_encryption_at_host_enabled_for_unsupported_VM_type_fails
+=== PAUSE TestReconcileVM/creating_a_vm_with_encryption_at_host_enabled_for_unsupported_VM_type_fails
+=== RUN   TestReconcileVM/vm_creation_fails
+=== PAUSE TestReconcileVM/vm_creation_fails
+=== RUN   TestReconcileVM/cannot_create_vm_if_vCPU_is_less_than_2
+=== PAUSE TestReconcileVM/cannot_create_vm_if_vCPU_is_less_than_2
+=== RUN   TestReconcileVM/cannot_create_vm_if_memory_is_less_than_2Gi
+=== PAUSE TestReconcileVM/cannot_create_vm_if_memory_is_less_than_2Gi
+=== RUN   TestReconcileVM/cannot_create_vm_if_does_not_support_ephemeral_os
+=== PAUSE TestReconcileVM/cannot_create_vm_if_does_not_support_ephemeral_os
+=== RUN   TestReconcileVM/can_create_a_vm_with_EphemeralOSDisk
+=== PAUSE TestReconcileVM/can_create_a_vm_with_EphemeralOSDisk
+=== RUN   TestReconcileVM/can_create_a_vm_with_a_marketplace_image_using_a_plan
+=== PAUSE TestReconcileVM/can_create_a_vm_with_a_marketplace_image_using_a_plan
+=== RUN   TestReconcileVM/fails_when_there_is_a_provider_id_present,_but_cannot_find_vm_
+=== PAUSE TestReconcileVM/fails_when_there_is_a_provider_id_present,_but_cannot_find_vm_
+=== RUN   TestReconcileVM/can_create_a_vm_with_a_SIG_image_using_a_plan
+=== PAUSE TestReconcileVM/can_create_a_vm_with_a_SIG_image_using_a_plan
+=== RUN   TestReconcileVM/can_create_a_vm_with_ultra_disk_enabled
+=== PAUSE TestReconcileVM/can_create_a_vm_with_ultra_disk_enabled
+=== RUN   TestReconcileVM/fail_to_create_a_vm_with_ultra_disk_enabled
+=== PAUSE TestReconcileVM/fail_to_create_a_vm_with_ultra_disk_enabled
+=== CONT  TestReconcileVM/can_create_a_vm
+=== CONT  TestReconcileVM/cannot_create_vm_if_vCPU_is_less_than_2
+=== CONT  TestReconcileVM/can_create_a_vm_with_encryption
+=== CONT  TestReconcileVM/fails_when_there_is_a_provider_id_present,_but_cannot_find_vm_
+=== CONT  TestReconcileVM/creating_a_vm_with_encryption_at_host_enabled_for_unsupported_VM_type_fails
+=== CONT  TestReconcileVM/vm_creation_fails
+=== CONT  TestReconcileVM/can_create_a_vm_and_assign_it_to_an_availability_set
+=== CONT  TestReconcileVM/can_create_a_windows_vm
+=== CONT  TestReconcileVM/fail_to_create_a_vm_with_ultra_disk_enabled
+=== CONT  TestReconcileVM/cannot_create_vm_if_does_not_support_ephemeral_os
+=== CONT  TestReconcileVM/can_create_a_vm_with_ultra_disk_enabled
+=== CONT  TestReconcileVM/can_create_a_vm_with_user_assigned_identity
+=== CONT  TestReconcileVM/can_create_a_vm_with_encryption_at_host
+=== CONT  TestReconcileVM/cannot_create_vm_if_memory_is_less_than_2Gi
+=== CONT  TestReconcileVM/can_create_a_vm_with_EphemeralOSDisk
+I0923 20:39:08.717000   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+=== CONT  TestReconcileVM/can_create_a_vm_with_a_marketplace_image_using_a_plan
+I0923 20:39:08.717620   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-ultra-ssd-vm"
+I0923 20:39:08.717634   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.717728   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.717000   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.717000   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.717808   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+=== CONT  TestReconcileVM/can_create_a_spot_vm
+=== CONT  TestReconcileVM/can_create_a_vm_with_system_assigned_identity
+=== CONT  TestReconcileVM/can_create_a_vm_with_a_SIG_image_using_a_plan
+I0923 20:39:08.717999   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.718010   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.718012   47143 virtualmachines.go:208]  "msg"="successfully created VM"  "vm"="my-vm"
+I0923 20:39:08.717091   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.718110   47143 virtualmachines.go:208]  "msg"="successfully created VM"  "vm"="my-vm"
+I0923 20:39:08.718118   47143 virtualmachines.go:208]  "msg"="successfully created VM"  "vm"="my-vm"
+I0923 20:39:08.717103   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.717576   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.718314   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.718338   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.718172   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.718421   47143 virtualmachines.go:208]  "msg"="successfully created VM"  "vm"="my-vm"
+I0923 20:39:08.718527   47143 virtualmachines.go:208]  "msg"="successfully created VM"  "vm"="my-vm"
+I0923 20:39:08.718794   47143 virtualmachines.go:208]  "msg"="successfully created VM"  "vm"="my-vm"
+I0923 20:39:08.718183   47143 virtualmachines.go:208]  "msg"="successfully created VM"  "vm"="my-vm"
+I0923 20:39:08.718823   47143 virtualmachines.go:208]  "msg"="successfully created VM"  "vm"="my-ultra-ssd-vm"
+I0923 20:39:08.717119   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.717127   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-ultra-ssd-vm"
+I0923 20:39:08.717490   47143 virtualmachines.go:103]  "msg"="creating VM"  "vm"="my-vm"
+I0923 20:39:08.718427   47143 virtualmachines.go:208]  "msg"="successfully created VM"  "vm"="my-vm"
+I0923 20:39:08.718903   47143 virtualmachines.go:208]  "msg"="successfully created VM"  "vm"="my-vm"
+I0923 20:39:08.718976   47143 virtualmachines.go:208]  "msg"="successfully created VM"  "vm"="my-vm"
+I0923 20:39:08.718999   47143 virtualmachines.go:208]  "msg"="successfully created VM"  "vm"="my-vm"
+--- PASS: TestReconcileVM (0.00s)
+    --- PASS: TestReconcileVM/fails_when_there_is_a_provider_id_present,_but_cannot_find_vm_ (0.00s)
+    --- PASS: TestReconcileVM/vm_creation_fails (0.00s)
+    --- PASS: TestReconcileVM/cannot_create_vm_if_vCPU_is_less_than_2 (0.00s)
+    --- PASS: TestReconcileVM/can_create_a_vm_with_encryption (0.00s)
+    --- PASS: TestReconcileVM/can_create_a_vm_with_system_assigned_identity (0.00s)
+    --- PASS: TestReconcileVM/can_create_a_vm_with_encryption_at_host (0.00s)
+    --- PASS: TestReconcileVM/cannot_create_vm_if_does_not_support_ephemeral_os (0.00s)
+    --- PASS: TestReconcileVM/can_create_a_spot_vm (0.00s)
+    --- PASS: TestReconcileVM/can_create_a_vm_with_user_assigned_identity (0.00s)
+    --- PASS: TestReconcileVM/can_create_a_windows_vm (0.00s)
+    --- PASS: TestReconcileVM/can_create_a_vm_with_EphemeralOSDisk (0.00s)
+    --- PASS: TestReconcileVM/can_create_a_vm_with_ultra_disk_enabled (0.00s)
+    --- PASS: TestReconcileVM/creating_a_vm_with_encryption_at_host_enabled_for_unsupported_VM_type_fails (0.00s)
+    --- PASS: TestReconcileVM/fail_to_create_a_vm_with_ultra_disk_enabled (0.00s)
+    --- PASS: TestReconcileVM/cannot_create_vm_if_memory_is_less_than_2Gi (0.00s)
+    --- PASS: TestReconcileVM/can_create_a_vm (0.00s)
+    --- PASS: TestReconcileVM/can_create_a_vm_and_assign_it_to_an_availability_set (0.00s)
+    --- PASS: TestReconcileVM/can_create_a_vm_with_a_SIG_image_using_a_plan (0.00s)
+    --- PASS: TestReconcileVM/can_create_a_vm_with_a_marketplace_image_using_a_plan (0.00s)
+=== RUN   TestDeleteVM
+=== RUN   TestDeleteVM/successfully_delete_an_existing_vm
+=== PAUSE TestDeleteVM/successfully_delete_an_existing_vm
+=== RUN   TestDeleteVM/vm_already_deleted
+=== PAUSE TestDeleteVM/vm_already_deleted
+=== RUN   TestDeleteVM/vm_deletion_fails
+=== PAUSE TestDeleteVM/vm_deletion_fails
+=== CONT  TestDeleteVM/successfully_delete_an_existing_vm
+=== CONT  TestDeleteVM/vm_deletion_fails
+=== CONT  TestDeleteVM/vm_already_deleted
+I0923 20:39:08.719272   47143 virtualmachines.go:220]  "msg"="deleting VM"  "vm"="my-existing-vm"
+I0923 20:39:08.719272   47143 virtualmachines.go:220]  "msg"="deleting VM"  "vm"="my-vm"
+I0923 20:39:08.719298   47143 virtualmachines.go:230]  "msg"="successfully deleted VM"  "vm"="my-existing-vm"
+I0923 20:39:08.719273   47143 virtualmachines.go:220]  "msg"="deleting VM"  "vm"="my-vm"
+--- PASS: TestDeleteVM (0.00s)
+    --- PASS: TestDeleteVM/successfully_delete_an_existing_vm (0.00s)
+    --- PASS: TestDeleteVM/vm_deletion_fails (0.00s)
+    --- PASS: TestDeleteVM/vm_already_deleted (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/virtualmachines	7.114s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/virtualmachines/mock_virtualmachines	[no test files]
+=== RUN   TestReconcileVnet
+=== RUN   TestReconcileVnet/managed_vnet_exists
+=== PAUSE TestReconcileVnet/managed_vnet_exists
+=== RUN   TestReconcileVnet/managed_ipv6_vnet_exists
+=== PAUSE TestReconcileVnet/managed_ipv6_vnet_exists
+=== RUN   TestReconcileVnet/vnet_created_successufuly
+=== PAUSE TestReconcileVnet/vnet_created_successufuly
+=== RUN   TestReconcileVnet/ipv6_vnet_created_successufuly
+=== PAUSE TestReconcileVnet/ipv6_vnet_created_successufuly
+=== RUN   TestReconcileVnet/unmanaged_vnet_exists
+=== PAUSE TestReconcileVnet/unmanaged_vnet_exists
+=== RUN   TestReconcileVnet/custom_vnet_not_found
+=== PAUSE TestReconcileVnet/custom_vnet_not_found
+=== RUN   TestReconcileVnet/failed_to_fetch_vnet
+=== PAUSE TestReconcileVnet/failed_to_fetch_vnet
+=== RUN   TestReconcileVnet/fail_to_create_vnet
+=== PAUSE TestReconcileVnet/fail_to_create_vnet
+=== CONT  TestReconcileVnet/managed_vnet_exists
+=== CONT  TestReconcileVnet/unmanaged_vnet_exists
+=== CONT  TestReconcileVnet/ipv6_vnet_created_successufuly
+=== CONT  TestReconcileVnet/managed_ipv6_vnet_exists
+=== CONT  TestReconcileVnet/failed_to_fetch_vnet
+=== CONT  TestReconcileVnet/fail_to_create_vnet
+=== CONT  TestReconcileVnet/custom_vnet_not_found
+=== CONT  TestReconcileVnet/vnet_created_successufuly
+I0923 20:39:09.194940   47145 virtualnetworks.go:83]  "msg"="creating VNet"  "VNet"="vnet-ipv6-new"
+I0923 20:39:09.194944   47145 virtualnetworks.go:78]  "msg"="Working on custom VNet"  "vnet-id"="azure/custom-vnet/id"
+I0923 20:39:09.194993   47145 virtualnetworks.go:83]  "msg"="creating VNet"  "VNet"="custom-vnet"
+I0923 20:39:09.195000   47145 virtualnetworks.go:83]  "msg"="creating VNet"  "VNet"="custom-vnet"
+I0923 20:39:09.195103   47145 virtualnetworks.go:83]  "msg"="creating VNet"  "VNet"="vnet-new"
+I0923 20:39:09.195231   47145 virtualnetworks.go:104]  "msg"="successfully created VNet"  "VNet"="custom-vnet"
+I0923 20:39:09.195265   47145 virtualnetworks.go:104]  "msg"="successfully created VNet"  "VNet"="vnet-new"
+I0923 20:39:09.195272   47145 virtualnetworks.go:104]  "msg"="successfully created VNet"  "VNet"="vnet-ipv6-new"
+--- PASS: TestReconcileVnet (0.00s)
+    --- PASS: TestReconcileVnet/managed_vnet_exists (0.00s)
+    --- PASS: TestReconcileVnet/managed_ipv6_vnet_exists (0.00s)
+    --- PASS: TestReconcileVnet/failed_to_fetch_vnet (0.00s)
+    --- PASS: TestReconcileVnet/unmanaged_vnet_exists (0.00s)
+    --- PASS: TestReconcileVnet/custom_vnet_not_found (0.00s)
+    --- PASS: TestReconcileVnet/fail_to_create_vnet (0.00s)
+    --- PASS: TestReconcileVnet/vnet_created_successufuly (0.00s)
+    --- PASS: TestReconcileVnet/ipv6_vnet_created_successufuly (0.00s)
+=== RUN   TestDeleteVnet
+=== RUN   TestDeleteVnet/managed_vnet_exists
+=== PAUSE TestDeleteVnet/managed_vnet_exists
+=== RUN   TestDeleteVnet/managed_vnet_already_deleted
+=== PAUSE TestDeleteVnet/managed_vnet_already_deleted
+=== RUN   TestDeleteVnet/unmanaged_vnet
+=== PAUSE TestDeleteVnet/unmanaged_vnet
+=== RUN   TestDeleteVnet/fail_to_delete_vnet
+=== PAUSE TestDeleteVnet/fail_to_delete_vnet
+=== CONT  TestDeleteVnet/managed_vnet_exists
+=== CONT  TestDeleteVnet/unmanaged_vnet
+=== CONT  TestDeleteVnet/fail_to_delete_vnet
+=== CONT  TestDeleteVnet/managed_vnet_already_deleted
+I0923 20:39:09.195464   47145 virtualnetworks.go:123]  "msg"="Skipping VNet deletion in custom vnet mode"  
+I0923 20:39:09.195468   47145 virtualnetworks.go:127]  "msg"="deleting VNet"  "VNet"="vnet-exists"
+I0923 20:39:09.195481   47145 virtualnetworks.go:138]  "msg"="successfully deleted VNet"  "VNet"="vnet-exists"
+I0923 20:39:09.195484   47145 virtualnetworks.go:127]  "msg"="deleting VNet"  "VNet"="vnet-exists"
+--- PASS: TestDeleteVnet (0.00s)
+    --- PASS: TestDeleteVnet/managed_vnet_already_deleted (0.00s)
+    --- PASS: TestDeleteVnet/unmanaged_vnet (0.00s)
+    --- PASS: TestDeleteVnet/managed_vnet_exists (0.00s)
+    --- PASS: TestDeleteVnet/fail_to_delete_vnet (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/virtualnetworks	7.216s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/virtualnetworks/mock_virtualnetworks	[no test files]
+=== RUN   TestReconcileVMExtension
+=== RUN   TestReconcileVMExtension/extension_is_in_succeeded_state
+=== PAUSE TestReconcileVMExtension/extension_is_in_succeeded_state
+=== RUN   TestReconcileVMExtension/extension_is_in_failed_state
+=== PAUSE TestReconcileVMExtension/extension_is_in_failed_state
+=== RUN   TestReconcileVMExtension/extension_is_still_creating
+=== PAUSE TestReconcileVMExtension/extension_is_still_creating
+=== RUN   TestReconcileVMExtension/reconcile_multiple_extensions
+=== PAUSE TestReconcileVMExtension/reconcile_multiple_extensions
+=== RUN   TestReconcileVMExtension/error_getting_the_extension
+=== PAUSE TestReconcileVMExtension/error_getting_the_extension
+=== RUN   TestReconcileVMExtension/error_creating_the_extension
+=== PAUSE TestReconcileVMExtension/error_creating_the_extension
+=== CONT  TestReconcileVMExtension/extension_is_in_succeeded_state
+=== CONT  TestReconcileVMExtension/error_getting_the_extension
+=== CONT  TestReconcileVMExtension/reconcile_multiple_extensions
+=== CONT  TestReconcileVMExtension/extension_is_in_failed_state
+=== CONT  TestReconcileVMExtension/error_creating_the_extension
+=== CONT  TestReconcileVMExtension/extension_is_still_creating
+I0923 20:39:09.604928   47148 vmextensions.go:69]  "msg"="creating VM extension"  "vm extension"="my-extension-1"
+I0923 20:39:09.604945   47148 vmextensions.go:69]  "msg"="creating VM extension"  "vm extension"="my-extension-1"
+I0923 20:39:09.605231   47148 vmextensions.go:89]  "msg"="successfully created VM extension"  "vm extension"="my-extension-1"
+I0923 20:39:09.605267   47148 vmextensions.go:69]  "msg"="creating VM extension"  "vm extension"="other-extension"
+I0923 20:39:09.605297   47148 vmextensions.go:89]  "msg"="successfully created VM extension"  "vm extension"="other-extension"
+--- PASS: TestReconcileVMExtension (0.00s)
+    --- PASS: TestReconcileVMExtension/extension_is_in_failed_state (0.00s)
+    --- PASS: TestReconcileVMExtension/error_getting_the_extension (0.00s)
+    --- PASS: TestReconcileVMExtension/extension_is_in_succeeded_state (0.00s)
+    --- PASS: TestReconcileVMExtension/extension_is_still_creating (0.00s)
+    --- PASS: TestReconcileVMExtension/error_creating_the_extension (0.00s)
+    --- PASS: TestReconcileVMExtension/reconcile_multiple_extensions (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmextensions	7.176s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmextensions/mock_vmextensions	[no test files]
+=== RUN   TestReconcileVMSSExtension
+=== RUN   TestReconcileVMSSExtension/extension_already_exists
+=== PAUSE TestReconcileVMSSExtension/extension_already_exists
+=== RUN   TestReconcileVMSSExtension/extension_does_not_exist
+=== PAUSE TestReconcileVMSSExtension/extension_does_not_exist
+=== RUN   TestReconcileVMSSExtension/error_getting_the_extension
+=== PAUSE TestReconcileVMSSExtension/error_getting_the_extension
+=== CONT  TestReconcileVMSSExtension/extension_already_exists
+=== CONT  TestReconcileVMSSExtension/error_getting_the_extension
+=== CONT  TestReconcileVMSSExtension/extension_does_not_exist
+--- PASS: TestReconcileVMSSExtension (0.00s)
+    --- PASS: TestReconcileVMSSExtension/extension_does_not_exist (0.00s)
+    --- PASS: TestReconcileVMSSExtension/extension_already_exists (0.00s)
+    --- PASS: TestReconcileVMSSExtension/error_getting_the_extension (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmssextensions	5.665s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmssextensions/mock_vmssextensions	[no test files]
+=== RUN   TestAzureClusterReconcilerDelete
+=== RUN   TestAzureClusterReconcilerDelete/Resource_Group_not_owned_by_cluster
+=== PAUSE TestAzureClusterReconcilerDelete/Resource_Group_not_owned_by_cluster
+=== RUN   TestAzureClusterReconcilerDelete/Load_Balancer_delete_fails
+=== PAUSE TestAzureClusterReconcilerDelete/Load_Balancer_delete_fails
+=== RUN   TestAzureClusterReconcilerDelete/Route_table_delete_fails
+=== PAUSE TestAzureClusterReconcilerDelete/Route_table_delete_fails
+=== RUN   TestAzureClusterReconcilerDelete/Resource_Group_is_deleted_successfully
+=== PAUSE TestAzureClusterReconcilerDelete/Resource_Group_is_deleted_successfully
+=== RUN   TestAzureClusterReconcilerDelete/Resource_Group_delete_fails
+=== PAUSE TestAzureClusterReconcilerDelete/Resource_Group_delete_fails
+=== CONT  TestAzureClusterReconcilerDelete/Resource_Group_not_owned_by_cluster
+=== CONT  TestAzureClusterReconcilerDelete/Resource_Group_is_deleted_successfully
+=== CONT  TestAzureClusterReconcilerDelete/Load_Balancer_delete_fails
+=== CONT  TestAzureClusterReconcilerDelete/Route_table_delete_fails
+=== CONT  TestAzureClusterReconcilerDelete/Resource_Group_delete_fails
+--- PASS: TestAzureClusterReconcilerDelete (0.00s)
+    --- PASS: TestAzureClusterReconcilerDelete/Resource_Group_is_deleted_successfully (0.00s)
+    --- PASS: TestAzureClusterReconcilerDelete/Resource_Group_not_owned_by_cluster (0.00s)
+    --- PASS: TestAzureClusterReconcilerDelete/Load_Balancer_delete_fails (0.00s)
+    --- PASS: TestAzureClusterReconcilerDelete/Resource_Group_delete_fails (0.00s)
+    --- PASS: TestAzureClusterReconcilerDelete/Route_table_delete_fails (0.00s)
+=== RUN   TestUnclonedMachinesPredicate
+=== RUN   TestUnclonedMachinesPredicate/cloned_node_should_return_false
+=== PAUSE TestUnclonedMachinesPredicate/cloned_node_should_return_false
+=== RUN   TestUnclonedMachinesPredicate/uncloned_worker_node_should_return_true
+=== PAUSE TestUnclonedMachinesPredicate/uncloned_worker_node_should_return_true
+=== RUN   TestUnclonedMachinesPredicate/uncloned_control_plane_node_should_return_true
+=== PAUSE TestUnclonedMachinesPredicate/uncloned_control_plane_node_should_return_true
+=== CONT  TestUnclonedMachinesPredicate/cloned_node_should_return_false
+=== CONT  TestUnclonedMachinesPredicate/uncloned_worker_node_should_return_true
+=== CONT  TestUnclonedMachinesPredicate/uncloned_control_plane_node_should_return_true
+--- PASS: TestUnclonedMachinesPredicate (0.00s)
+    --- PASS: TestUnclonedMachinesPredicate/cloned_node_should_return_false (0.00s)
+    --- PASS: TestUnclonedMachinesPredicate/uncloned_worker_node_should_return_true (0.00s)
+    --- PASS: TestUnclonedMachinesPredicate/uncloned_control_plane_node_should_return_true (0.00s)
+=== RUN   TestAzureJSONMachineReconciler
+=== RUN   TestAzureJSONMachineReconciler/should_reconcile_normally
+=== RUN   TestAzureJSONMachineReconciler/missing_azure_cluster_should_return_error
+E0923 20:39:13.111064   47329 azurejson_machine_controller.go:160]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachine"="my-machine" "cluster"="my-cluster" "namespace"="" 
+--- PASS: TestAzureJSONMachineReconciler (0.01s)
+    --- PASS: TestAzureJSONMachineReconciler/should_reconcile_normally (0.00s)
+    --- PASS: TestAzureJSONMachineReconciler/missing_azure_cluster_should_return_error (0.00s)
+=== RUN   TestAzureJSONPoolReconciler
+=== RUN   TestAzureJSONPoolReconciler/should_reconcile_normally
+=== RUN   TestAzureJSONPoolReconciler/missing_azure_cluster_should_return_error
+E0923 20:39:13.115052   47329 azurejson_machinepool_controller.go:127]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachinePool"="my-azure-machine-pool" "cluster"="my-cluster" "machinePool"="my-machine-pool" "namespace"="" 
+--- PASS: TestAzureJSONPoolReconciler (0.00s)
+    --- PASS: TestAzureJSONPoolReconciler/should_reconcile_normally (0.00s)
+    --- PASS: TestAzureJSONPoolReconciler/missing_azure_cluster_should_return_error (0.00s)
+=== RUN   TestAzureJSONTemplateReconciler
+=== RUN   TestAzureJSONTemplateReconciler/should_reconcile_normally
+=== RUN   TestAzureJSONTemplateReconciler/missing_azure_cluster_should_return_error
+E0923 20:39:13.117285   47329 azurejson_machinetemplate_controller.go:123]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachineTemplate"="my-json-template" "cluster"="my-cluster" "namespace"="" 
+--- PASS: TestAzureJSONTemplateReconciler (0.00s)
+    --- PASS: TestAzureJSONTemplateReconciler/should_reconcile_normally (0.00s)
+    --- PASS: TestAzureJSONTemplateReconciler/missing_azure_cluster_should_return_error (0.00s)
+=== RUN   TestConditions
+=== RUN   TestConditions/cluster_infrastructure_is_not_ready_yet
+I0923 20:39:13.118997   47329 azuremachine_controller.go:250]  "msg"="Reconciling AzureMachine"  
+I0923 20:39:13.119253   47329 azuremachine_controller.go:265]  "msg"="Cluster infrastructure is not ready yet"  
+=== RUN   TestConditions/bootstrap_data_secret_reference_is_not_yet_available
+I0923 20:39:13.119380   47329 azuremachine_controller.go:250]  "msg"="Reconciling AzureMachine"  
+I0923 20:39:13.119568   47329 azuremachine_controller.go:272]  "msg"="Bootstrap data secret reference is not yet available"  
+--- PASS: TestConditions (0.00s)
+    --- PASS: TestConditions/cluster_infrastructure_is_not_ready_yet (0.00s)
+    --- PASS: TestConditions/bootstrap_data_secret_reference_is_not_yet_available (0.00s)
+=== RUN   TestAzureClusterToAzureMachinesMapper
+--- PASS: TestAzureClusterToAzureMachinesMapper (0.00s)
+=== RUN   TestGetCloudProviderConfig
+=== RUN   TestGetCloudProviderConfig/system-assigned-identity
+=== RUN   TestGetCloudProviderConfig/user-assigned-identity
+=== RUN   TestGetCloudProviderConfig/serviceprincipal_with_custom_vnet
+=== RUN   TestGetCloudProviderConfig/with_rate_limits
+=== RUN   TestGetCloudProviderConfig/with_back-off_config
+=== RUN   TestGetCloudProviderConfig/serviceprincipal
+--- PASS: TestGetCloudProviderConfig (0.00s)
+    --- PASS: TestGetCloudProviderConfig/system-assigned-identity (0.00s)
+    --- PASS: TestGetCloudProviderConfig/user-assigned-identity (0.00s)
+    --- PASS: TestGetCloudProviderConfig/serviceprincipal_with_custom_vnet (0.00s)
+    --- PASS: TestGetCloudProviderConfig/with_rate_limits (0.00s)
+    --- PASS: TestGetCloudProviderConfig/with_back-off_config (0.00s)
+    --- PASS: TestGetCloudProviderConfig/serviceprincipal (0.00s)
+=== RUN   TestReconcileAzureSecret
+2021-09-23T20:39:13.123+0530	INFO	azurecluster-resource	default	{"name": "foo"}
+=== RUN   TestReconcileAzureSecret/azuremachine_should_reconcile_secret_successfully
+=== RUN   TestReconcileAzureSecret/azuremachinepool_should_reconcile_secret_successfully
+=== RUN   TestReconcileAzureSecret/azuremachinetemplate_should_reconcile_secret_successfully
+--- PASS: TestReconcileAzureSecret (0.00s)
+    --- PASS: TestReconcileAzureSecret/azuremachine_should_reconcile_secret_successfully (0.00s)
+    --- PASS: TestReconcileAzureSecret/azuremachinepool_should_reconcile_secret_successfully (0.00s)
+    --- PASS: TestReconcileAzureSecret/azuremachinetemplate_should_reconcile_secret_successfully (0.00s)
+=== RUN   TestAPIs
+Running Suite: Controller Suite
+===============================
+Random Seed: 1632409753
+Will run 4 of 4 specs
+
+2021-09-23T20:39:13.127+0530	DEBUG	controller-runtime.test-env	starting control plane
+2021-09-23T20:39:13.136+0530	ERROR	controller-runtime.test-env	unable to start the controlplane	{"tries": 0, "error": "fork/exec /usr/local/kubebuilder/bin/etcd: no such file or directory"}
+sigs.k8s.io/controller-runtime/pkg/envtest.(*Environment).startControlPlane
+	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.9.6/pkg/envtest/server.go:330
+sigs.k8s.io/controller-runtime/pkg/envtest.(*Environment).Start
+	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.9.6/pkg/envtest/server.go:260
+sigs.k8s.io/cluster-api-provider-azure/internal/test/env.NewTestEnvironment
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/internal/test/env/env.go:104
+sigs.k8s.io/cluster-api-provider-azure/controllers.glob..func4
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:51
+reflect.Value.call
+	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:543
+reflect.Value.Call
+	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:339
+github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49
+github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86
+2021-09-23T20:39:13.141+0530	ERROR	controller-runtime.test-env	unable to start the controlplane	{"tries": 1, "error": "fork/exec /usr/local/kubebuilder/bin/etcd: no such file or directory"}
+sigs.k8s.io/controller-runtime/pkg/envtest.(*Environment).startControlPlane
+	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.9.6/pkg/envtest/server.go:330
+sigs.k8s.io/controller-runtime/pkg/envtest.(*Environment).Start
+	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.9.6/pkg/envtest/server.go:260
+sigs.k8s.io/cluster-api-provider-azure/internal/test/env.NewTestEnvironment
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/internal/test/env/env.go:104
+sigs.k8s.io/cluster-api-provider-azure/controllers.glob..func4
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:51
+reflect.Value.call
+	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:543
+reflect.Value.Call
+	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:339
+github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49
+github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86
+2021-09-23T20:39:13.144+0530	ERROR	controller-runtime.test-env	unable to start the controlplane	{"tries": 2, "error": "fork/exec /usr/local/kubebuilder/bin/etcd: no such file or directory"}
+sigs.k8s.io/controller-runtime/pkg/envtest.(*Environment).startControlPlane
+	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.9.6/pkg/envtest/server.go:330
+sigs.k8s.io/controller-runtime/pkg/envtest.(*Environment).Start
+	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.9.6/pkg/envtest/server.go:260
+sigs.k8s.io/cluster-api-provider-azure/internal/test/env.NewTestEnvironment
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/internal/test/env/env.go:104
+sigs.k8s.io/cluster-api-provider-azure/controllers.glob..func4
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:51
+reflect.Value.call
+	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:543
+reflect.Value.Call
+	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:339
+github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49
+github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86
+2021-09-23T20:39:13.149+0530	ERROR	controller-runtime.test-env	unable to start the controlplane	{"tries": 3, "error": "fork/exec /usr/local/kubebuilder/bin/etcd: no such file or directory"}
+sigs.k8s.io/controller-runtime/pkg/envtest.(*Environment).startControlPlane
+	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.9.6/pkg/envtest/server.go:330
+sigs.k8s.io/controller-runtime/pkg/envtest.(*Environment).Start
+	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.9.6/pkg/envtest/server.go:260
+sigs.k8s.io/cluster-api-provider-azure/internal/test/env.NewTestEnvironment
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/internal/test/env/env.go:104
+sigs.k8s.io/cluster-api-provider-azure/controllers.glob..func4
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:51
+reflect.Value.call
+	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:543
+reflect.Value.Call
+	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:339
+github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49
+github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86
+2021-09-23T20:39:13.152+0530	ERROR	controller-runtime.test-env	unable to start the controlplane	{"tries": 4, "error": "fork/exec /usr/local/kubebuilder/bin/etcd: no such file or directory"}
+sigs.k8s.io/controller-runtime/pkg/envtest.(*Environment).startControlPlane
+	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.9.6/pkg/envtest/server.go:330
+sigs.k8s.io/controller-runtime/pkg/envtest.(*Environment).Start
+	/Users/karuppiahn/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.9.6/pkg/envtest/server.go:260
+sigs.k8s.io/cluster-api-provider-azure/internal/test/env.NewTestEnvironment
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/internal/test/env/env.go:104
+sigs.k8s.io/cluster-api-provider-azure/controllers.glob..func4
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:51
+reflect.Value.call
+	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:543
+reflect.Value.Call
+	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:339
+github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49
+github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86
+STEP: bootstrapping test environment
+Panic [0.025 seconds]
+[BeforeSuite] BeforeSuite 
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:49
+
+  Test Panicked
+  unable to start control plane itself: failed to start the controlplane. retried 5 times: fork/exec /usr/local/kubebuilder/bin/etcd: no such file or directory
+  /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/internal/test/env/env.go:105
+
+  Full Stack Trace
+  sigs.k8s.io/cluster-api-provider-azure/internal/test/env.NewTestEnvironment()
+  	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/internal/test/env/env.go:105 +0x2d1
+  sigs.k8s.io/cluster-api-provider-azure/controllers.glob..func4(0x0)
+  	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:51 +0x4e
+  reflect.Value.call({0x25588a0, 0x2929690, 0x13}, {0x283cdd7, 0x4}, {0xc000a8bf70, 0x1, 0x1})
+  	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:543 +0x814
+  reflect.Value.Call({0x25588a0, 0x2929690, 0x0}, {0xc000606770, 0x1, 0x1})
+  	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:339 +0xc5
+  github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1(0x0)
+  	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49 +0x14f
+  github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1()
+  	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86 +0x7a
+  created by github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync
+  	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:71 +0xd2
+------------------------------
+
+
+Ran 4 of 0 Specs in 0.026 seconds
+FAIL! -- 0 Passed | 4 Failed | 0 Pending | 0 Skipped
+You're using deprecated Ginkgo functionality:
+=============================================
+Ginkgo 2.0 is under active development and will introduce (a small number of) breaking changes.
+To learn more, view the migration guide at https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md
+To comment, chime in at https://github.com/onsi/ginkgo/issues/711
+
+  You are using a custom reporter.  Support for custom reporters will likely be removed in V2.  Most users were using them to generate junit or teamcity reports and this functionality will be merged into the core reporter.  In addition, Ginkgo 2.0 will support emitting a JSON-formatted report that users can then manipulate to generate custom reports.
+
+  If this change will be impactful to you please leave a comment on https://github.com/onsi/ginkgo/issues/711
+  Learn more at: https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md#removed-custom-reporters
+  You are passing a Done channel to a test node to test asynchronous behavior.  This is deprecated in Ginkgo V2.  Your test will run synchronously and the timeout will be ignored.
+  Learn more at: https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md#removed-async-testing
+    /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:49
+
+To silence deprecations that can be silenced set the following environment variable:
+  ACK_GINKGO_DEPRECATIONS=1.16.4
+
+--- FAIL: TestAPIs (0.03s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/controllers	4.421s
+?   	sigs.k8s.io/cluster-api-provider-azure/exp	[no test files]
+=== RUN   TestFuzzyConversion
+=== RUN   TestFuzzyConversion/for_AzureMachinePool
+=== RUN   TestFuzzyConversion/for_AzureMachinePool/spoke-hub-spoke
+=== RUN   TestFuzzyConversion/for_AzureMachinePool/hub-spoke-hub
+=== RUN   TestFuzzyConversion/for_AzureManagedCluster
+=== RUN   TestFuzzyConversion/for_AzureManagedCluster/spoke-hub-spoke
+=== RUN   TestFuzzyConversion/for_AzureManagedCluster/hub-spoke-hub
+=== RUN   TestFuzzyConversion/for_AzureManagedControlPlane
+=== RUN   TestFuzzyConversion/for_AzureManagedControlPlane/spoke-hub-spoke
+=== RUN   TestFuzzyConversion/for_AzureManagedControlPlane/hub-spoke-hub
+=== RUN   TestFuzzyConversion/for_AzureManagedMachinePool
+=== RUN   TestFuzzyConversion/for_AzureManagedMachinePool/spoke-hub-spoke
+=== RUN   TestFuzzyConversion/for_AzureManagedMachinePool/hub-spoke-hub
+--- PASS: TestFuzzyConversion (16.43s)
+    --- PASS: TestFuzzyConversion/for_AzureMachinePool (6.03s)
+        --- PASS: TestFuzzyConversion/for_AzureMachinePool/spoke-hub-spoke (3.15s)
+        --- PASS: TestFuzzyConversion/for_AzureMachinePool/hub-spoke-hub (2.88s)
+    --- PASS: TestFuzzyConversion/for_AzureManagedCluster (2.76s)
+        --- PASS: TestFuzzyConversion/for_AzureManagedCluster/spoke-hub-spoke (1.38s)
+        --- PASS: TestFuzzyConversion/for_AzureManagedCluster/hub-spoke-hub (1.38s)
+    --- PASS: TestFuzzyConversion/for_AzureManagedControlPlane (4.66s)
+        --- PASS: TestFuzzyConversion/for_AzureManagedControlPlane/spoke-hub-spoke (2.00s)
+        --- PASS: TestFuzzyConversion/for_AzureManagedControlPlane/hub-spoke-hub (2.67s)
+    --- PASS: TestFuzzyConversion/for_AzureManagedMachinePool (2.97s)
+        --- PASS: TestFuzzyConversion/for_AzureManagedMachinePool/spoke-hub-spoke (1.44s)
+        --- PASS: TestFuzzyConversion/for_AzureManagedMachinePool/hub-spoke-hub (1.53s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/exp/api/v1alpha3	19.828s
+=== RUN   TestAzureMachinePool_SetDefaultSSHPublicKey
+--- PASS: TestAzureMachinePool_SetDefaultSSHPublicKey (0.06s)
+=== RUN   TestAzureMachinePool_SetIdentityDefaults
+--- PASS: TestAzureMachinePool_SetIdentityDefaults (0.00s)
+=== RUN   TestAzureMachinePool_ValidateCreate
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_marketplace_image_-_full
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_marketplace_image_-_missing_publisher
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_shared_gallery_image_-_full
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_marketplace_image_-_missing_subscription
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_image_by_-_with_id
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_image_by_-_without_id
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_valid_SSHPublicKey
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_invalid_SSHPublicKey
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_wrong_terminate_notification
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_system_assigned_identity
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_system_assigned_identity,_but_invalid_role
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_user_assigned_identity
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_user_assigned_identity,_but_without_any_provider_ids
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_invalid_MaxSurge_and_MaxUnavailable_rolling_upgrade_configuration
+=== RUN   TestAzureMachinePool_ValidateCreate/azuremachinepool_with_valid_MaxSurge_and_MaxUnavailable_rolling_upgrade_configuration
+--- PASS: TestAzureMachinePool_ValidateCreate (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_marketplace_image_-_full (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_marketplace_image_-_missing_publisher (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_shared_gallery_image_-_full (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_marketplace_image_-_missing_subscription (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_image_by_-_with_id (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_image_by_-_without_id (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_valid_SSHPublicKey (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_invalid_SSHPublicKey (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_wrong_terminate_notification (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_system_assigned_identity (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_system_assigned_identity,_but_invalid_role (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_user_assigned_identity (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_user_assigned_identity,_but_without_any_provider_ids (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_invalid_MaxSurge_and_MaxUnavailable_rolling_upgrade_configuration (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateCreate/azuremachinepool_with_valid_MaxSurge_and_MaxUnavailable_rolling_upgrade_configuration (0.00s)
+=== RUN   TestAzureMachinePool_ValidateUpdate
+=== RUN   TestAzureMachinePool_ValidateUpdate/azuremachinepool_with_valid_SSHPublicKey
+=== RUN   TestAzureMachinePool_ValidateUpdate/azuremachinepool_with_invalid_SSHPublicKey
+=== RUN   TestAzureMachinePool_ValidateUpdate/azuremachinepool_with_system-assigned_identity,_and_role_unchanged
+=== RUN   TestAzureMachinePool_ValidateUpdate/azuremachinepool_with_system-assigned_identity,_and_role_changed
+=== RUN   TestAzureMachinePool_ValidateUpdate/azuremachinepool_with_invalid_MaxSurge_and_MaxUnavailable_rolling_upgrade_configuration
+=== RUN   TestAzureMachinePool_ValidateUpdate/azuremachinepool_with_valid_MaxSurge_and_MaxUnavailable_rolling_upgrade_configuration
+--- PASS: TestAzureMachinePool_ValidateUpdate (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateUpdate/azuremachinepool_with_valid_SSHPublicKey (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateUpdate/azuremachinepool_with_invalid_SSHPublicKey (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateUpdate/azuremachinepool_with_system-assigned_identity,_and_role_unchanged (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateUpdate/azuremachinepool_with_system-assigned_identity,_and_role_changed (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateUpdate/azuremachinepool_with_invalid_MaxSurge_and_MaxUnavailable_rolling_upgrade_configuration (0.00s)
+    --- PASS: TestAzureMachinePool_ValidateUpdate/azuremachinepool_with_valid_MaxSurge_and_MaxUnavailable_rolling_upgrade_configuration (0.00s)
+=== RUN   TestAzureMachinePool_Default
+--- PASS: TestAzureMachinePool_Default (0.38s)
+=== RUN   TestAzureManagedControlPlane_SetDefaultSSHPublicKey
+--- PASS: TestAzureManagedControlPlane_SetDefaultSSHPublicKey (0.06s)
+=== RUN   TestDefaultingWebhook
+    azuremanagedcontrolplane_webhook_test.go:32: Testing amcp defaulting webhook with no baseline
+    azuremanagedcontrolplane_webhook_test.go:53: Testing amcp defaulting webhook with baseline
+--- PASS: TestDefaultingWebhook (0.60s)
+=== RUN   TestValidatingWebhook
+=== RUN   TestValidatingWebhook/Testing_valid_DNSServiceIP
+=== PAUSE TestValidatingWebhook/Testing_valid_DNSServiceIP
+=== RUN   TestValidatingWebhook/Testing_invalid_DNSServiceIP
+=== PAUSE TestValidatingWebhook/Testing_invalid_DNSServiceIP
+=== RUN   TestValidatingWebhook/Invalid_Version
+=== PAUSE TestValidatingWebhook/Invalid_Version
+=== RUN   TestValidatingWebhook/not_following_the_kuberntes_Version_pattern
+=== PAUSE TestValidatingWebhook/not_following_the_kuberntes_Version_pattern
+=== RUN   TestValidatingWebhook/Version_not_set
+=== PAUSE TestValidatingWebhook/Version_not_set
+=== RUN   TestValidatingWebhook/Valid_Version
+=== PAUSE TestValidatingWebhook/Valid_Version
+=== RUN   TestValidatingWebhook/Valid_Managed_AADProfile
+=== PAUSE TestValidatingWebhook/Valid_Managed_AADProfile
+=== RUN   TestValidatingWebhook/Valid_LoadBalancerProfile
+=== PAUSE TestValidatingWebhook/Valid_LoadBalancerProfile
+=== RUN   TestValidatingWebhook/Invalid_LoadBalancerProfile.ManagedOutboundIPs
+=== PAUSE TestValidatingWebhook/Invalid_LoadBalancerProfile.ManagedOutboundIPs
+=== RUN   TestValidatingWebhook/Invalid_LoadBalancerProfile.AllocatedOutboundPorts
+=== PAUSE TestValidatingWebhook/Invalid_LoadBalancerProfile.AllocatedOutboundPorts
+=== RUN   TestValidatingWebhook/Invalid_LoadBalancerProfile.IdleTimeoutInMinutes
+=== PAUSE TestValidatingWebhook/Invalid_LoadBalancerProfile.IdleTimeoutInMinutes
+=== RUN   TestValidatingWebhook/LoadBalancerProfile_must_specify_at_most_one_of_ManagedOutboundIPs,_OutboundIPPrefixes_and_OutboundIPs
+=== PAUSE TestValidatingWebhook/LoadBalancerProfile_must_specify_at_most_one_of_ManagedOutboundIPs,_OutboundIPPrefixes_and_OutboundIPs
+=== CONT  TestValidatingWebhook/Testing_valid_DNSServiceIP
+=== CONT  TestValidatingWebhook/Valid_Managed_AADProfile
+=== CONT  TestValidatingWebhook/not_following_the_kuberntes_Version_pattern
+=== CONT  TestValidatingWebhook/Invalid_Version
+=== CONT  TestValidatingWebhook/LoadBalancerProfile_must_specify_at_most_one_of_ManagedOutboundIPs,_OutboundIPPrefixes_and_OutboundIPs
+=== CONT  TestValidatingWebhook/Invalid_LoadBalancerProfile.AllocatedOutboundPorts
+=== CONT  TestValidatingWebhook/Valid_LoadBalancerProfile
+=== CONT  TestValidatingWebhook/Version_not_set
+=== CONT  TestValidatingWebhook/Invalid_LoadBalancerProfile.IdleTimeoutInMinutes
+=== CONT  TestValidatingWebhook/Testing_invalid_DNSServiceIP
+=== CONT  TestValidatingWebhook/Valid_Version
+=== CONT  TestValidatingWebhook/Invalid_LoadBalancerProfile.ManagedOutboundIPs
+--- PASS: TestValidatingWebhook (0.00s)
+    --- PASS: TestValidatingWebhook/Testing_valid_DNSServiceIP (0.00s)
+    --- PASS: TestValidatingWebhook/LoadBalancerProfile_must_specify_at_most_one_of_ManagedOutboundIPs,_OutboundIPPrefixes_and_OutboundIPs (0.00s)
+    --- PASS: TestValidatingWebhook/Valid_Managed_AADProfile (0.00s)
+    --- PASS: TestValidatingWebhook/Invalid_Version (0.00s)
+    --- PASS: TestValidatingWebhook/not_following_the_kuberntes_Version_pattern (0.00s)
+    --- PASS: TestValidatingWebhook/Valid_LoadBalancerProfile (0.00s)
+    --- PASS: TestValidatingWebhook/Version_not_set (0.00s)
+    --- PASS: TestValidatingWebhook/Testing_invalid_DNSServiceIP (0.00s)
+    --- PASS: TestValidatingWebhook/Invalid_LoadBalancerProfile.AllocatedOutboundPorts (0.00s)
+    --- PASS: TestValidatingWebhook/Valid_Version (0.00s)
+    --- PASS: TestValidatingWebhook/Invalid_LoadBalancerProfile.IdleTimeoutInMinutes (0.00s)
+    --- PASS: TestValidatingWebhook/Invalid_LoadBalancerProfile.ManagedOutboundIPs (0.00s)
+=== RUN   TestAzureManagedControlPlane_ValidateCreate
+=== RUN   TestAzureManagedControlPlane_ValidateCreate/all_valid
+=== RUN   TestAzureManagedControlPlane_ValidateCreate/invalid_DNSServiceIP
+=== RUN   TestAzureManagedControlPlane_ValidateCreate/invalid_sshKey
+=== RUN   TestAzureManagedControlPlane_ValidateCreate/invalid_sshKey_with_a_simple_text_and_invalid_DNSServiceIP
+=== RUN   TestAzureManagedControlPlane_ValidateCreate/invalid_version
+--- PASS: TestAzureManagedControlPlane_ValidateCreate (0.60s)
+    --- PASS: TestAzureManagedControlPlane_ValidateCreate/all_valid (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateCreate/invalid_DNSServiceIP (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateCreate/invalid_sshKey (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateCreate/invalid_sshKey_with_a_simple_text_and_invalid_DNSServiceIP (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateCreate/invalid_version (0.00s)
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_with_valid_SSHPublicKey
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_with_invalid_SSHPublicKey
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_with_invalid_serviceIP
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_with_invalid_version
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_SubscriptionID_is_immutable
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_ResourceGroupName_is_immutable
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_NodeResourceGroupName_is_immutable
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_Location_is_immutable
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_SSHPublicKey_is_immutable
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_DNSServiceIP_is_immutable
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_DNSServiceIP_is_immutable,_unsetting_is_not_allowed
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_NetworkPlugin_is_immutable
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_NetworkPlugin_is_immutable,_unsetting_is_not_allowed
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_NetworkPolicy_is_immutable
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_NetworkPolicy_is_immutable,_unsetting_is_not_allowed
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_LoadBalancerSKU_is_immutable
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_LoadBalancerSKU_is_immutable,_unsetting_is_not_allowed
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_ManagedAad_can_be_set_after_cluster_creation
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_ManagedAad_cannot_be_disabled
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_managed_field_cannot_set_to_false
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_adminGroupObjectIDs_cannot_set_to_empty
+=== RUN   TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_ManagedAad_cannot_be_disabled#01
+--- PASS: TestAzureManagedControlPlane_ValidateUpdate (1.21s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_with_valid_SSHPublicKey (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_with_invalid_SSHPublicKey (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_with_invalid_serviceIP (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_with_invalid_version (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_SubscriptionID_is_immutable (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_ResourceGroupName_is_immutable (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_NodeResourceGroupName_is_immutable (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_Location_is_immutable (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_SSHPublicKey_is_immutable (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_DNSServiceIP_is_immutable (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_DNSServiceIP_is_immutable,_unsetting_is_not_allowed (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_NetworkPlugin_is_immutable (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_NetworkPlugin_is_immutable,_unsetting_is_not_allowed (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_NetworkPolicy_is_immutable (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_NetworkPolicy_is_immutable,_unsetting_is_not_allowed (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_LoadBalancerSKU_is_immutable (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_LoadBalancerSKU_is_immutable,_unsetting_is_not_allowed (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_ManagedAad_can_be_set_after_cluster_creation (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_ManagedAad_cannot_be_disabled (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_managed_field_cannot_set_to_false (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_adminGroupObjectIDs_cannot_set_to_empty (0.00s)
+    --- PASS: TestAzureManagedControlPlane_ValidateUpdate/AzureManagedControlPlane_ManagedAad_cannot_be_disabled#01 (0.00s)
+=== RUN   TestAzureManagedMachinePoolDefaultingWebhook
+    azuremanagedmachinepool_webhook_test.go:31: Testing ammp defaulting webhook with mode system
+--- PASS: TestAzureManagedMachinePoolDefaultingWebhook (0.00s)
+=== RUN   TestAzureManagedMachinePoolUpdatingWebhook
+    azuremanagedmachinepool_webhook_test.go:53: Testing ammp updating webhook with mode system
+=== RUN   TestAzureManagedMachinePoolUpdatingWebhook/Cannot_change_SKU_of_the_agentpool
+=== RUN   TestAzureManagedMachinePoolUpdatingWebhook/Cannot_change_OSDiskSizeGB_of_the_agentpool
+--- PASS: TestAzureManagedMachinePoolUpdatingWebhook (0.00s)
+    --- PASS: TestAzureManagedMachinePoolUpdatingWebhook/Cannot_change_SKU_of_the_agentpool (0.00s)
+    --- PASS: TestAzureManagedMachinePoolUpdatingWebhook/Cannot_change_OSDiskSizeGB_of_the_agentpool (0.00s)
+=== RUN   TestAzureMachinePool_Validate
+=== RUN   TestAzureMachinePool_Validate/HasNoImage
+=== PAUSE TestAzureMachinePool_Validate/HasNoImage
+=== RUN   TestAzureMachinePool_Validate/HasValidImage
+=== PAUSE TestAzureMachinePool_Validate/HasValidImage
+=== RUN   TestAzureMachinePool_Validate/HasInvalidImage
+=== PAUSE TestAzureMachinePool_Validate/HasInvalidImage
+=== RUN   TestAzureMachinePool_Validate/HasValidTerminateNotificationTimeout
+=== PAUSE TestAzureMachinePool_Validate/HasValidTerminateNotificationTimeout
+=== RUN   TestAzureMachinePool_Validate/HasInvalidMaximumTerminateNotificationTimeout
+=== PAUSE TestAzureMachinePool_Validate/HasInvalidMaximumTerminateNotificationTimeout
+=== RUN   TestAzureMachinePool_Validate/HasInvalidMinimumTerminateNotificationTimeout
+=== PAUSE TestAzureMachinePool_Validate/HasInvalidMinimumTerminateNotificationTimeout
+=== CONT  TestAzureMachinePool_Validate/HasNoImage
+=== CONT  TestAzureMachinePool_Validate/HasValidTerminateNotificationTimeout
+=== CONT  TestAzureMachinePool_Validate/HasValidImage
+=== CONT  TestAzureMachinePool_Validate/HasInvalidMinimumTerminateNotificationTimeout
+=== CONT  TestAzureMachinePool_Validate/HasInvalidImage
+=== CONT  TestAzureMachinePool_Validate/HasInvalidMaximumTerminateNotificationTimeout
+--- PASS: TestAzureMachinePool_Validate (0.00s)
+    --- PASS: TestAzureMachinePool_Validate/HasNoImage (0.00s)
+    --- PASS: TestAzureMachinePool_Validate/HasValidImage (0.00s)
+    --- PASS: TestAzureMachinePool_Validate/HasValidTerminateNotificationTimeout (0.00s)
+    --- PASS: TestAzureMachinePool_Validate/HasInvalidMinimumTerminateNotificationTimeout (0.00s)
+    --- PASS: TestAzureMachinePool_Validate/HasInvalidImage (0.00s)
+    --- PASS: TestAzureMachinePool_Validate/HasInvalidMaximumTerminateNotificationTimeout (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/exp/api/v1alpha4	6.929s
+=== RUN   Test_newAzureMachinePoolService
+--- PASS: Test_newAzureMachinePoolService (0.00s)
+=== RUN   TestAzureMachinePoolMachineReconciler_Reconcile
+=== RUN   TestAzureMachinePoolMachineReconciler_Reconcile/should_successfully_reconcile
+I0923 20:39:13.611770   47332 azuremachinepoolmachine_controller.go:254]  "msg"="Reconciling AzureMachinePoolMachine" "AzureCluster"="azCluster1" "azureMachinePool"="amp1" "azureMachinePoolMachine"="ampm1" "cluster"="cluster1" "machinePool"="mp1" "namespace"="default" 
+=== RUN   TestAzureMachinePoolMachineReconciler_Reconcile/should_successfully_delete
+I0923 20:39:13.612581   47332 azuremachinepoolmachine_controller.go:311]  "msg"="Handling deleted AzureMachinePoolMachine" "AzureCluster"="azCluster1" "azureMachinePool"="amp1" "azureMachinePoolMachine"="ampm1" "cluster"="cluster1" "machinePool"="mp1" "namespace"="default" 
+--- PASS: TestAzureMachinePoolMachineReconciler_Reconcile (0.01s)
+    --- PASS: TestAzureMachinePoolMachineReconciler_Reconcile/should_successfully_reconcile (0.01s)
+    --- PASS: TestAzureMachinePoolMachineReconciler_Reconcile/should_successfully_delete (0.00s)
+=== RUN   TestIsAgentPoolVMSSNotFoundError
+=== RUN   TestIsAgentPoolVMSSNotFoundError/WithANotFoundError
+=== PAUSE TestIsAgentPoolVMSSNotFoundError/WithANotFoundError
+=== RUN   TestIsAgentPoolVMSSNotFoundError/WithAWrappedNotFoundError
+=== PAUSE TestIsAgentPoolVMSSNotFoundError/WithAWrappedNotFoundError
+=== RUN   TestIsAgentPoolVMSSNotFoundError/NotTheRightKindOfError
+=== PAUSE TestIsAgentPoolVMSSNotFoundError/NotTheRightKindOfError
+=== RUN   TestIsAgentPoolVMSSNotFoundError/NilError
+=== PAUSE TestIsAgentPoolVMSSNotFoundError/NilError
+=== CONT  TestIsAgentPoolVMSSNotFoundError/WithANotFoundError
+=== CONT  TestIsAgentPoolVMSSNotFoundError/NilError
+=== CONT  TestIsAgentPoolVMSSNotFoundError/NotTheRightKindOfError
+=== CONT  TestIsAgentPoolVMSSNotFoundError/WithAWrappedNotFoundError
+--- PASS: TestIsAgentPoolVMSSNotFoundError (0.00s)
+    --- PASS: TestIsAgentPoolVMSSNotFoundError/WithANotFoundError (0.00s)
+    --- PASS: TestIsAgentPoolVMSSNotFoundError/NilError (0.00s)
+    --- PASS: TestIsAgentPoolVMSSNotFoundError/NotTheRightKindOfError (0.00s)
+    --- PASS: TestIsAgentPoolVMSSNotFoundError/WithAWrappedNotFoundError (0.00s)
+=== RUN   TestAzureClusterToAzureMachinePoolsMapper
+--- PASS: TestAzureClusterToAzureMachinePoolsMapper (0.00s)
+=== RUN   TestAzureManagedClusterToAzureManagedMachinePoolsMapper
+--- PASS: TestAzureManagedClusterToAzureManagedMachinePoolsMapper (0.00s)
+=== RUN   TestAzureManagedControlPlaneToAzureManagedMachinePoolsMapper
+--- PASS: TestAzureManagedControlPlaneToAzureManagedMachinePoolsMapper (0.00s)
+=== RUN   TestMachinePoolToAzureManagedControlPlaneMapFuncSuccess
+--- PASS: TestMachinePoolToAzureManagedControlPlaneMapFuncSuccess (0.00s)
+=== RUN   TestMachinePoolToAzureManagedControlPlaneMapFuncFailure
+--- PASS: TestMachinePoolToAzureManagedControlPlaneMapFuncFailure (0.00s)
+=== RUN   TestAzureManagedClusterToAzureManagedControlPlaneMapper
+--- PASS: TestAzureManagedClusterToAzureManagedControlPlaneMapper (0.00s)
+=== RUN   TestAzureManagedControlPlaneToAzureManagedClusterMapper
+--- PASS: TestAzureManagedControlPlaneToAzureManagedClusterMapper (0.00s)
+=== RUN   Test_MachinePoolToInfrastructureMapFunc
+=== RUN   Test_MachinePoolToInfrastructureMapFunc/MachinePoolToAzureMachinePool
+=== RUN   Test_MachinePoolToInfrastructureMapFunc/MachinePoolWithoutMatchingInfraRef
+=== RUN   Test_MachinePoolToInfrastructureMapFunc/NotAMachinePool
+--- PASS: Test_MachinePoolToInfrastructureMapFunc (0.00s)
+    --- PASS: Test_MachinePoolToInfrastructureMapFunc/MachinePoolToAzureMachinePool (0.00s)
+    --- PASS: Test_MachinePoolToInfrastructureMapFunc/MachinePoolWithoutMatchingInfraRef (0.00s)
+    --- PASS: Test_MachinePoolToInfrastructureMapFunc/NotAMachinePool (0.00s)
+=== RUN   Test_ManagedMachinePoolToInfrastructureMapFunc
+=== RUN   Test_ManagedMachinePoolToInfrastructureMapFunc/MachinePoolToAzureManagedMachinePool
+=== RUN   Test_ManagedMachinePoolToInfrastructureMapFunc/MachinePoolWithoutMatchingInfraRef
+=== RUN   Test_ManagedMachinePoolToInfrastructureMapFunc/NotAMachinePool
+--- PASS: Test_ManagedMachinePoolToInfrastructureMapFunc (0.00s)
+    --- PASS: Test_ManagedMachinePoolToInfrastructureMapFunc/MachinePoolToAzureManagedMachinePool (0.00s)
+    --- PASS: Test_ManagedMachinePoolToInfrastructureMapFunc/MachinePoolWithoutMatchingInfraRef (0.00s)
+    --- PASS: Test_ManagedMachinePoolToInfrastructureMapFunc/NotAMachinePool (0.00s)
+=== RUN   Test_azureClusterToAzureMachinePoolsFunc
+=== RUN   Test_azureClusterToAzureMachinePoolsFunc/NotAnAzureCluster
+=== PAUSE Test_azureClusterToAzureMachinePoolsFunc/NotAnAzureCluster
+=== RUN   Test_azureClusterToAzureMachinePoolsFunc/AzureClusterDoesNotExist
+=== PAUSE Test_azureClusterToAzureMachinePoolsFunc/AzureClusterDoesNotExist
+=== RUN   Test_azureClusterToAzureMachinePoolsFunc/AzureClusterExistsButDoesNotHaveMachinePools
+=== PAUSE Test_azureClusterToAzureMachinePoolsFunc/AzureClusterExistsButDoesNotHaveMachinePools
+=== RUN   Test_azureClusterToAzureMachinePoolsFunc/AzureClusterExistsWithMachinePoolsButNoInfraRefs
+=== PAUSE Test_azureClusterToAzureMachinePoolsFunc/AzureClusterExistsWithMachinePoolsButNoInfraRefs
+=== RUN   Test_azureClusterToAzureMachinePoolsFunc/AzureClusterExistsWithMachinePoolsWithOneInfraRefs
+=== PAUSE Test_azureClusterToAzureMachinePoolsFunc/AzureClusterExistsWithMachinePoolsWithOneInfraRefs
+=== CONT  Test_azureClusterToAzureMachinePoolsFunc/NotAnAzureCluster
+=== CONT  Test_azureClusterToAzureMachinePoolsFunc/AzureClusterExistsWithMachinePoolsButNoInfraRefs
+=== CONT  Test_azureClusterToAzureMachinePoolsFunc/AzureClusterExistsButDoesNotHaveMachinePools
+=== CONT  Test_azureClusterToAzureMachinePoolsFunc/AzureClusterDoesNotExist
+=== CONT  Test_azureClusterToAzureMachinePoolsFunc/AzureClusterExistsWithMachinePoolsWithOneInfraRefs
+--- PASS: Test_azureClusterToAzureMachinePoolsFunc (0.00s)
+    --- PASS: Test_azureClusterToAzureMachinePoolsFunc/NotAnAzureCluster (0.00s)
+    --- PASS: Test_azureClusterToAzureMachinePoolsFunc/AzureClusterDoesNotExist (0.00s)
+    --- PASS: Test_azureClusterToAzureMachinePoolsFunc/AzureClusterExistsWithMachinePoolsButNoInfraRefs (0.00s)
+    --- PASS: Test_azureClusterToAzureMachinePoolsFunc/AzureClusterExistsButDoesNotHaveMachinePools (0.00s)
+    --- PASS: Test_azureClusterToAzureMachinePoolsFunc/AzureClusterExistsWithMachinePoolsWithOneInfraRefs (0.00s)
+=== RUN   TestAPIs
+Running Suite: Controller Suite
+===============================
+Random Seed: 1632409753
+Will run 2 of 2 specs
+
+STEP: bootstrapping test environment
+Panic [0.019 seconds]
+[BeforeSuite] BeforeSuite 
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/exp/controllers/suite_test.go:50
+
+  Test Panicked
+  unable to start control plane itself: failed to start the controlplane. retried 5 times: fork/exec /usr/local/kubebuilder/bin/etcd: no such file or directory
+  /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/internal/test/env/env.go:105
+
+  Full Stack Trace
+  sigs.k8s.io/cluster-api-provider-azure/internal/test/env.NewTestEnvironment()
+  	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/internal/test/env/env.go:105 +0x2d1
+  sigs.k8s.io/cluster-api-provider-azure/exp/controllers.glob..func3(0x0)
+  	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/exp/controllers/suite_test.go:52 +0x4e
+  reflect.Value.call({0x25b7980, 0x29e3f58, 0x13}, {0x28fb9b6, 0x4}, {0xc000092f70, 0x1, 0x1})
+  	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:543 +0x814
+  reflect.Value.Call({0x25b7980, 0x29e3f58, 0x0}, {0xc000163770, 0x1, 0x1})
+  	/usr/local/Cellar/go/1.17.1/libexec/src/reflect/value.go:339 +0xc5
+  github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1(0x0)
+  	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49 +0x14f
+  github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1()
+  	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86 +0x7a
+  created by github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync
+  	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:71 +0xd2
+------------------------------
+
+
+Ran 2 of 0 Specs in 0.019 seconds
+FAIL! -- 0 Passed | 2 Failed | 0 Pending | 0 Skipped
+You're using deprecated Ginkgo functionality:
+=============================================
+Ginkgo 2.0 is under active development and will introduce (a small number of) breaking changes.
+To learn more, view the migration guide at https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md
+To comment, chime in at https://github.com/onsi/ginkgo/issues/711
+
+  You are passing a Done channel to a test node to test asynchronous behavior.  This is deprecated in Ginkgo V2.  Your test will run synchronously and the timeout will be ignored.
+  Learn more at: https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md#removed-async-testing
+    /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/exp/controllers/suite_test.go:50
+  You are using a custom reporter.  Support for custom reporters will likely be removed in V2.  Most users were using them to generate junit or teamcity reports and this functionality will be merged into the core reporter.  In addition, Ginkgo 2.0 will support emitting a JSON-formatted report that users can then manipulate to generate custom reports.
+
+  If this change will be impactful to you please leave a comment on https://github.com/onsi/ginkgo/issues/711
+  Learn more at: https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md#removed-custom-reporters
+
+To silence deprecations that can be silenced set the following environment variable:
+  ACK_GINKGO_DEPRECATIONS=1.16.4
+
+--- FAIL: TestAPIs (0.02s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/exp/controllers	4.703s
+?   	sigs.k8s.io/cluster-api-provider-azure/exp/controllers/mocks	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/feature	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/hack/boilerplate/test	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/internal/test	[no test files]
+=== RUN   TestGetFilePathToCAPICRDs
+--- PASS: TestGetFilePathToCAPICRDs (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/internal/test/env	4.064s
+?   	sigs.k8s.io/cluster-api-provider-azure/internal/test/logentries	[no test files]
+=== RUN   TestLogContains
+=== RUN   TestLogContains/MatchesCompletely
+=== PAUSE TestLogContains/MatchesCompletely
+=== RUN   TestLogContains/MatchesWithoutSpecifyingLevel
+=== PAUSE TestLogContains/MatchesWithoutSpecifyingLevel
+=== RUN   TestLogContains/MatchesWithoutSpecifyingLogFunc
+=== PAUSE TestLogContains/MatchesWithoutSpecifyingLogFunc
+=== RUN   TestLogContains/MatchesWithoutSpecifyingAllValues
+=== PAUSE TestLogContains/MatchesWithoutSpecifyingAllValues
+=== CONT  TestLogContains/MatchesCompletely
+=== CONT  TestLogContains/MatchesWithoutSpecifyingLogFunc
+=== CONT  TestLogContains/MatchesWithoutSpecifyingAllValues
+=== CONT  TestLogContains/MatchesWithoutSpecifyingLevel
+--- PASS: TestLogContains (0.00s)
+    --- PASS: TestLogContains/MatchesWithoutSpecifyingLogFunc (0.00s)
+    --- PASS: TestLogContains/MatchesCompletely (0.00s)
+    --- PASS: TestLogContains/MatchesWithoutSpecifyingAllValues (0.00s)
+    --- PASS: TestLogContains/MatchesWithoutSpecifyingLevel (0.00s)
+=== RUN   TestLogContainsEntries
+--- PASS: TestLogContainsEntries (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/internal/test/matchers/gomega	3.767s
+?   	sigs.k8s.io/cluster-api-provider-azure/internal/test/matchers/gomock	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/internal/test/mock_log	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/internal/test/record	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/pkg/cloudtest	[no test files]
+=== RUN   TestCoalescingReconciler_Reconcile
+=== RUN   TestCoalescingReconciler_Reconcile/should_call_upstream_reconciler_if_key_does_not_exist_in_cache
+=== RUN   TestCoalescingReconciler_Reconcile/should_not_call_upstream_reconciler_if_key_does_exists_in_cache_and_is_not_expired
+=== RUN   TestCoalescingReconciler_Reconcile/should_call_upstream_reconciler_if_key_does_not_exist_in_cache_and_return_error
+--- PASS: TestCoalescingReconciler_Reconcile (0.00s)
+    --- PASS: TestCoalescingReconciler_Reconcile/should_call_upstream_reconciler_if_key_does_not_exist_in_cache (0.00s)
+    --- PASS: TestCoalescingReconciler_Reconcile/should_not_call_upstream_reconciler_if_key_does_exists_in_cache_and_is_not_expired (0.00s)
+    --- PASS: TestCoalescingReconciler_Reconcile/should_call_upstream_reconciler_if_key_does_not_exist_in_cache_and_return_error (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/pkg/coalescing	3.622s
+?   	sigs.k8s.io/cluster-api-provider-azure/pkg/coalescing/mocks	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/pkg/ot	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/pkg/record	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/test/e2e	[no test files]
+=== RUN   TestNew
+--- PASS: TestNew (0.00s)
+=== RUN   TestCache_Add
+--- PASS: TestCache_Add (0.00s)
+=== RUN   TestCache_Get
+=== RUN   TestCache_Get/NoItemsInCache
+=== RUN   TestCache_Get/ExistingItemNotExpired
+=== RUN   TestCache_Get/ExistingItemExpired
+=== RUN   TestCache_Get/ExistingItemGetAdvancesLastTouch
+=== RUN   TestCache_Get/ExistingItemIsNotTTLItem
+--- PASS: TestCache_Get (0.00s)
+    --- PASS: TestCache_Get/NoItemsInCache (0.00s)
+    --- PASS: TestCache_Get/ExistingItemNotExpired (0.00s)
+    --- PASS: TestCache_Get/ExistingItemExpired (0.00s)
+    --- PASS: TestCache_Get/ExistingItemGetAdvancesLastTouch (0.00s)
+    --- PASS: TestCache_Get/ExistingItemIsNotTTLItem (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/util/cache/ttllru	3.866s
+?   	sigs.k8s.io/cluster-api-provider-azure/util/cache/ttllru/mocks	[no test files]
+=== RUN   TestGet
+--- PASS: TestGet (0.00s)
+=== RUN   TestHas
+--- PASS: TestHas (0.00s)
+=== RUN   TestSet
+=== RUN   TestSet/Set_adds_a_future
+=== RUN   TestSet/Set_adds_more_futures
+=== RUN   TestSet/Set_does_not_duplicate_existing_future
+=== RUN   TestSet/Set_updates_an_existing_future
+--- PASS: TestSet (0.00s)
+    --- PASS: TestSet/Set_adds_a_future (0.00s)
+    --- PASS: TestSet/Set_adds_more_futures (0.00s)
+    --- PASS: TestSet/Set_does_not_duplicate_existing_future (0.00s)
+    --- PASS: TestSet/Set_updates_an_existing_future (0.00s)
+=== RUN   TestDelete
+=== RUN   TestDelete/Delete_removes_a_future
+=== RUN   TestDelete/Delete_does_nothing_if_the_future_does_not_exist
+--- PASS: TestDelete (0.00s)
+    --- PASS: TestDelete/Delete_removes_a_future (0.00s)
+    --- PASS: TestDelete/Delete_does_nothing_if_the_future_does_not_exist (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/util/futures	5.116s
+?   	sigs.k8s.io/cluster-api-provider-azure/util/generators	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/util/identity	[no test files]
+=== RUN   TestDefaultedTimeout
+=== RUN   TestDefaultedTimeout/WithZeroValueDefaults
+=== PAUSE TestDefaultedTimeout/WithZeroValueDefaults
+=== RUN   TestDefaultedTimeout/WithRealValue
+=== PAUSE TestDefaultedTimeout/WithRealValue
+=== RUN   TestDefaultedTimeout/WithNegativeValue
+=== PAUSE TestDefaultedTimeout/WithNegativeValue
+=== CONT  TestDefaultedTimeout/WithZeroValueDefaults
+=== CONT  TestDefaultedTimeout/WithNegativeValue
+=== CONT  TestDefaultedTimeout/WithRealValue
+--- PASS: TestDefaultedTimeout (0.00s)
+    --- PASS: TestDefaultedTimeout/WithZeroValueDefaults (0.00s)
+    --- PASS: TestDefaultedTimeout/WithNegativeValue (0.00s)
+    --- PASS: TestDefaultedTimeout/WithRealValue (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/util/reconciler	4.090s
+?   	sigs.k8s.io/cluster-api-provider-azure/util/slice	[no test files]
+=== RUN   TestGenerateSSHKey
+--- PASS: TestGenerateSSHKey (0.89s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/util/ssh	4.811s
+=== RUN   TestGetNamespace
+=== RUN   TestGetNamespace/env_var_set_to_custom_namespace
+=== RUN   TestGetNamespace/env_var_empty
+--- PASS: TestGetNamespace (0.00s)
+    --- PASS: TestGetNamespace/env_var_set_to_custom_namespace (0.00s)
+    --- PASS: TestGetNamespace/env_var_empty (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/util/system	4.830s
+?   	sigs.k8s.io/cluster-api-provider-azure/util/tele	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/util/webhook	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/version	[no test files]
+FAIL
+cluster-api-provider-azure $ 
+```
+
+TODO
+- Fix mock for GroupScope - since GroupScope interface has been update. Error to fix -
+
+```bash
+azure/services/groups/groups_test.go:115:5: cannot use scopeMock (type *mock_groups.MockGroupScope) as type GroupScope in field value:
+	*mock_groups.MockGroupScope does not implement GroupScope (missing AdditionalTags method)
+azure/services/groups/groups_test.go:249:5: cannot use scopeMock (type *mock_groups.MockGroupScope) as type GroupScope in field value:
+	*mock_groups.MockGroupScope does not implement GroupScope (missing AdditionalTags method)
+```
+
+- Tests for the change
+    - Existing tests - should I add mocks for the
+
+---
+
+```bash
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen -version
+v1.6.0
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen 
+mockgen has two modes of operation: source and reflect.
+
+Source mode generates mock interfaces from a source file.
+It is enabled by using the -source flag. Other flags that
+may be useful in this mode are -imports and -aux_files.
+Example:
+	mockgen -source=foo.go [other options]
+
+Reflect mode generates mock interfaces by building a program
+that uses reflection to understand interfaces. It is enabled
+by passing two non-flag arguments: an import path, and a
+comma-separated list of symbols.
+Example:
+	mockgen database/sql/driver Conn,Driver
+
+  -aux_files string
+    	(source mode) Comma-separated pkg=path pairs of auxiliary Go source files.
+  -build_flags string
+    	(reflect mode) Additional flags for go build.
+  -copyright_file string
+    	Copyright file used to add copyright header
+  -debug_parser
+    	Print out parser results only.
+  -destination string
+    	Output file; defaults to stdout.
+  -exec_only string
+    	(reflect mode) If set, execute this reflection program.
+  -imports string
+    	(source mode) Comma-separated name=path pairs of explicit imports to use.
+  -mock_names string
+    	Comma-separated interfaceName=mockName pairs of explicit mock names to use. Mock names default to 'Mock'+ interfaceName suffix.
+  -package string
+    	Package of the generated code; defaults to the package of the input with a 'mock_' prefix.
+  -prog_only
+    	(reflect mode) Only generate the reflection program; write it to stdout and exit.
+  -self_package string
+    	The full package import path for the generated code. The purpose of this flag is to prevent import cycles in the generated code by trying to include its own package. This can happen if the mock's package is set to one of its inputs (usually the main one) and the output is stdio so mockgen cannot detect the final output package. Setting this flag will then tell mockgen which import to exclude.
+  -source string
+    	(source mode) Input Go source file; enables source mode.
+  -version
+    	Print version.
+  -write_package_comment
+    	Writes package documentation comment (godoc) if true. (default true)
+2021/09/23 20:59:59 Expected exactly two arguments
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/groups/groups.go 
+2021/09/23 21:02:47 Loading input failed: azure/services/groups/groups.go:46:2: could not parse package github.com/go-logr/logr: go/build: go list github.com/go-logr/logr: exit status 2
+go: cannot find GOROOT directory: /usr/local/Cellar/go/1.17/libexec
+
+cluster-api-provider-azure $ go env GOROOT
+/usr/local/Cellar/go/1.17.1/libexec
+cluster-api-provider-azure $ source ~/.bash_profile 
+cluster-api-provider-azure $ go env GOROOT
+/usr/local/Cellar/go/1.17.1/libexec
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/groups/groups.go 
+2021/09/23 21:03:18 Loading input failed: azure/services/groups/groups.go:46:2: could not parse package github.com/go-logr/logr: go/build: go list github.com/go-logr/logr: exit status 2
+go: cannot find GOROOT directory: /usr/local/Cellar/go/1.17/libexec
+
+cluster-api-provider-azure $ go list github.com/go-logr/logr
+github.com/go-logr/logr
+cluster-api-provider-azure $ make hack/tools/bin/mockgen
+mockgen         mockgen-v1.6.0  
+cluster-api-provider-azure $ make hack/tools/bin/mockgen-v1.6.0 
+make: Nothing to be done for `hack/tools/bin/mockgen-v1.6.0'.
+cluster-api-provider-azure $ rm -rfv hack/tools/bin/mockgen-v1.6.0 
+hack/tools/bin/mockgen-v1.6.0
+cluster-api-provider-azure $ rm -rfv hack/tools/bin/mockgen
+hack/tools/bin/mockgen
+cluster-api-provider-azure $ make hack/tools/bin/mockgen-v1.6.0 
+make: *** No rule to make target `hack/tools/bin/mockgen-v1.6.0'.  Stop.
+cluster-api-provider-azure $ make hack/tools/bin/mockgen-v1.6.0 
+cluster-api-provider-azure $ pwd
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure
+cluster-api-provider-azure $ make /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin/mockgen-v1.6.0 
+GOBIN=/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin ./scripts/go_install.sh github.com/golang/mock/mockgen mockgen v1.6.0
+rm: /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin/mockgen*: No such file or directory
+go: creating new go.mod: module fake/mod
+go get: installing executables with 'go get' in module mode is deprecated.
+	To adjust and download dependencies of the current module, use 'go get -d'.
+	To install using requirements of the current module, use 'go install'.
+	To install ignoring the current module, use 'go install' with a version,
+	like 'go install example.com/cmd@latest'.
+	For more information, see https://golang.org/doc/go-get-install-deprecation
+	or run 'go help get' or 'go help install'.
+go get: added github.com/golang/mock v1.6.0
+go get: added golang.org/x/mod v0.4.2
+go get: added golang.org/x/sys v0.0.0-20210510120138-977fb7262007
+go get: added golang.org/x/tools v0.1.1
+go get: added golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen
+mockgen         mockgen-v1.6.0  
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/groups/groups.go 
+// Code generated by MockGen. DO NOT EDIT.
+// Source: azure/services/groups/groups.go
+
+// Package mock_groups is a generated GoMock package.
+package mock_groups
+
+import (
+	reflect "reflect"
+
+	autorest "github.com/Azure/go-autorest/autorest"
+	logr "github.com/go-logr/logr"
+	gomock "github.com/golang/mock/gomock"
+	v1alpha4 "sigs.k8s.io/cluster-api-provider-azure/api/v1alpha4"
+	azure "sigs.k8s.io/cluster-api-provider-azure/azure"
+	v1alpha40 "sigs.k8s.io/cluster-api/api/v1alpha4"
+)
+
+// MockGroupScope is a mock of GroupScope interface.
+type MockGroupScope struct {
+	ctrl     *gomock.Controller
+	recorder *MockGroupScopeMockRecorder
+}
+
+// MockGroupScopeMockRecorder is the mock recorder for MockGroupScope.
+type MockGroupScopeMockRecorder struct {
+	mock *MockGroupScope
+}
+
+// NewMockGroupScope creates a new mock instance.
+func NewMockGroupScope(ctrl *gomock.Controller) *MockGroupScope {
+	mock := &MockGroupScope{ctrl: ctrl}
+	mock.recorder = &MockGroupScopeMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockGroupScope) EXPECT() *MockGroupScopeMockRecorder {
+	return m.recorder
+}
+
+// AdditionalTags mocks base method.
+func (m *MockGroupScope) AdditionalTags() v1alpha4.Tags {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AdditionalTags")
+	ret0, _ := ret[0].(v1alpha4.Tags)
+	return ret0
+}
+
+// AdditionalTags indicates an expected call of AdditionalTags.
+func (mr *MockGroupScopeMockRecorder) AdditionalTags() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdditionalTags", reflect.TypeOf((*MockGroupScope)(nil).AdditionalTags))
+}
+
+// AnnotationJSON mocks base method.
+func (m *MockGroupScope) AnnotationJSON(arg0 string) (map[string]interface{}, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AnnotationJSON", arg0)
+	ret0, _ := ret[0].(map[string]interface{})
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AnnotationJSON indicates an expected call of AnnotationJSON.
+func (mr *MockGroupScopeMockRecorder) AnnotationJSON(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AnnotationJSON", reflect.TypeOf((*MockGroupScope)(nil).AnnotationJSON), arg0)
+}
+
+// Authorizer mocks base method.
+func (m *MockGroupScope) Authorizer() autorest.Authorizer {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Authorizer")
+	ret0, _ := ret[0].(autorest.Authorizer)
+	return ret0
+}
+
+// Authorizer indicates an expected call of Authorizer.
+func (mr *MockGroupScopeMockRecorder) Authorizer() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authorizer", reflect.TypeOf((*MockGroupScope)(nil).Authorizer))
+}
+
+// BaseURI mocks base method.
+func (m *MockGroupScope) BaseURI() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BaseURI")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// BaseURI indicates an expected call of BaseURI.
+func (mr *MockGroupScopeMockRecorder) BaseURI() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BaseURI", reflect.TypeOf((*MockGroupScope)(nil).BaseURI))
+}
+
+// ClientID mocks base method.
+func (m *MockGroupScope) ClientID() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ClientID")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// ClientID indicates an expected call of ClientID.
+func (mr *MockGroupScopeMockRecorder) ClientID() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClientID", reflect.TypeOf((*MockGroupScope)(nil).ClientID))
+}
+
+// ClientSecret mocks base method.
+func (m *MockGroupScope) ClientSecret() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ClientSecret")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// ClientSecret indicates an expected call of ClientSecret.
+func (mr *MockGroupScopeMockRecorder) ClientSecret() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClientSecret", reflect.TypeOf((*MockGroupScope)(nil).ClientSecret))
+}
+
+// CloudEnvironment mocks base method.
+func (m *MockGroupScope) CloudEnvironment() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CloudEnvironment")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// CloudEnvironment indicates an expected call of CloudEnvironment.
+func (mr *MockGroupScopeMockRecorder) CloudEnvironment() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CloudEnvironment", reflect.TypeOf((*MockGroupScope)(nil).CloudEnvironment))
+}
+
+// ClusterName mocks base method.
+func (m *MockGroupScope) ClusterName() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ClusterName")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// ClusterName indicates an expected call of ClusterName.
+func (mr *MockGroupScopeMockRecorder) ClusterName() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClusterName", reflect.TypeOf((*MockGroupScope)(nil).ClusterName))
+}
+
+// DeleteLongRunningOperationState mocks base method.
+func (m *MockGroupScope) DeleteLongRunningOperationState(arg0, arg1 string) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "DeleteLongRunningOperationState", arg0, arg1)
+}
+
+// DeleteLongRunningOperationState indicates an expected call of DeleteLongRunningOperationState.
+func (mr *MockGroupScopeMockRecorder) DeleteLongRunningOperationState(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLongRunningOperationState", reflect.TypeOf((*MockGroupScope)(nil).DeleteLongRunningOperationState), arg0, arg1)
+}
+
+// Enabled mocks base method.
+func (m *MockGroupScope) Enabled() bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Enabled")
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// Enabled indicates an expected call of Enabled.
+func (mr *MockGroupScopeMockRecorder) Enabled() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Enabled", reflect.TypeOf((*MockGroupScope)(nil).Enabled))
+}
+
+// Error mocks base method.
+func (m *MockGroupScope) Error(err error, msg string, keysAndValues ...interface{}) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{err, msg}
+	for _, a := range keysAndValues {
+		varargs = append(varargs, a)
+	}
+	m.ctrl.Call(m, "Error", varargs...)
+}
+
+// Error indicates an expected call of Error.
+func (mr *MockGroupScopeMockRecorder) Error(err, msg interface{}, keysAndValues ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{err, msg}, keysAndValues...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Error", reflect.TypeOf((*MockGroupScope)(nil).Error), varargs...)
+}
+
+// GetLongRunningOperationState mocks base method.
+func (m *MockGroupScope) GetLongRunningOperationState(arg0, arg1 string) *v1alpha4.Future {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLongRunningOperationState", arg0, arg1)
+	ret0, _ := ret[0].(*v1alpha4.Future)
+	return ret0
+}
+
+// GetLongRunningOperationState indicates an expected call of GetLongRunningOperationState.
+func (mr *MockGroupScopeMockRecorder) GetLongRunningOperationState(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLongRunningOperationState", reflect.TypeOf((*MockGroupScope)(nil).GetLongRunningOperationState), arg0, arg1)
+}
+
+// GroupSpec mocks base method.
+func (m *MockGroupScope) GroupSpec() azure.ResourceSpecGetter {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GroupSpec")
+	ret0, _ := ret[0].(azure.ResourceSpecGetter)
+	return ret0
+}
+
+// GroupSpec indicates an expected call of GroupSpec.
+func (mr *MockGroupScopeMockRecorder) GroupSpec() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GroupSpec", reflect.TypeOf((*MockGroupScope)(nil).GroupSpec))
+}
+
+// HashKey mocks base method.
+func (m *MockGroupScope) HashKey() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "HashKey")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// HashKey indicates an expected call of HashKey.
+func (mr *MockGroupScopeMockRecorder) HashKey() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HashKey", reflect.TypeOf((*MockGroupScope)(nil).HashKey))
+}
+
+// Info mocks base method.
+func (m *MockGroupScope) Info(msg string, keysAndValues ...interface{}) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{msg}
+	for _, a := range keysAndValues {
+		varargs = append(varargs, a)
+	}
+	m.ctrl.Call(m, "Info", varargs...)
+}
+
+// Info indicates an expected call of Info.
+func (mr *MockGroupScopeMockRecorder) Info(msg interface{}, keysAndValues ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{msg}, keysAndValues...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Info", reflect.TypeOf((*MockGroupScope)(nil).Info), varargs...)
+}
+
+// SetLongRunningOperationState mocks base method.
+func (m *MockGroupScope) SetLongRunningOperationState(arg0 *v1alpha4.Future) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetLongRunningOperationState", arg0)
+}
+
+// SetLongRunningOperationState indicates an expected call of SetLongRunningOperationState.
+func (mr *MockGroupScopeMockRecorder) SetLongRunningOperationState(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetLongRunningOperationState", reflect.TypeOf((*MockGroupScope)(nil).SetLongRunningOperationState), arg0)
+}
+
+// SubscriptionID mocks base method.
+func (m *MockGroupScope) SubscriptionID() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SubscriptionID")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// SubscriptionID indicates an expected call of SubscriptionID.
+func (mr *MockGroupScopeMockRecorder) SubscriptionID() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SubscriptionID", reflect.TypeOf((*MockGroupScope)(nil).SubscriptionID))
+}
+
+// TenantID mocks base method.
+func (m *MockGroupScope) TenantID() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TenantID")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// TenantID indicates an expected call of TenantID.
+func (mr *MockGroupScopeMockRecorder) TenantID() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TenantID", reflect.TypeOf((*MockGroupScope)(nil).TenantID))
+}
+
+// UpdateAnnotationJSON mocks base method.
+func (m *MockGroupScope) UpdateAnnotationJSON(arg0 string, arg1 map[string]interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateAnnotationJSON", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateAnnotationJSON indicates an expected call of UpdateAnnotationJSON.
+func (mr *MockGroupScopeMockRecorder) UpdateAnnotationJSON(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAnnotationJSON", reflect.TypeOf((*MockGroupScope)(nil).UpdateAnnotationJSON), arg0, arg1)
+}
+
+// UpdateDeleteStatus mocks base method.
+func (m *MockGroupScope) UpdateDeleteStatus(arg0 v1alpha40.ConditionType, arg1 string, arg2 error) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "UpdateDeleteStatus", arg0, arg1, arg2)
+}
+
+// UpdateDeleteStatus indicates an expected call of UpdateDeleteStatus.
+func (mr *MockGroupScopeMockRecorder) UpdateDeleteStatus(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDeleteStatus", reflect.TypeOf((*MockGroupScope)(nil).UpdateDeleteStatus), arg0, arg1, arg2)
+}
+
+// UpdatePatchStatus mocks base method.
+func (m *MockGroupScope) UpdatePatchStatus(arg0 v1alpha40.ConditionType, arg1 string, arg2 error) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "UpdatePatchStatus", arg0, arg1, arg2)
+}
+
+// UpdatePatchStatus indicates an expected call of UpdatePatchStatus.
+func (mr *MockGroupScopeMockRecorder) UpdatePatchStatus(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePatchStatus", reflect.TypeOf((*MockGroupScope)(nil).UpdatePatchStatus), arg0, arg1, arg2)
+}
+
+// UpdatePutStatus mocks base method.
+func (m *MockGroupScope) UpdatePutStatus(arg0 v1alpha40.ConditionType, arg1 string, arg2 error) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "UpdatePutStatus", arg0, arg1, arg2)
+}
+
+// UpdatePutStatus indicates an expected call of UpdatePutStatus.
+func (mr *MockGroupScopeMockRecorder) UpdatePutStatus(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePutStatus", reflect.TypeOf((*MockGroupScope)(nil).UpdatePutStatus), arg0, arg1, arg2)
+}
+
+// V mocks base method.
+func (m *MockGroupScope) V(level int) logr.Logger {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "V", level)
+	ret0, _ := ret[0].(logr.Logger)
+	return ret0
+}
+
+// V indicates an expected call of V.
+func (mr *MockGroupScopeMockRecorder) V(level interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "V", reflect.TypeOf((*MockGroupScope)(nil).V), level)
+}
+
+// WithName mocks base method.
+func (m *MockGroupScope) WithName(name string) logr.Logger {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "WithName", name)
+	ret0, _ := ret[0].(logr.Logger)
+	return ret0
+}
+
+// WithName indicates an expected call of WithName.
+func (mr *MockGroupScopeMockRecorder) WithName(name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WithName", reflect.TypeOf((*MockGroupScope)(nil).WithName), name)
+}
+
+// WithValues mocks base method.
+func (m *MockGroupScope) WithValues(keysAndValues ...interface{}) logr.Logger {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{}
+	for _, a := range keysAndValues {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "WithValues", varargs...)
+	ret0, _ := ret[0].(logr.Logger)
+	return ret0
+}
+
+// WithValues indicates an expected call of WithValues.
+func (mr *MockGroupScopeMockRecorder) WithValues(keysAndValues ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WithValues", reflect.TypeOf((*MockGroupScope)(nil).WithValues), keysAndValues...)
+}
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/groups/groups.go -w
+flag provided but not defined: -w
+mockgen has two modes of operation: source and reflect.
+
+Source mode generates mock interfaces from a source file.
+It is enabled by using the -source flag. Other flags that
+may be useful in this mode are -imports and -aux_files.
+Example:
+	mockgen -source=foo.go [other options]
+
+Reflect mode generates mock interfaces by building a program
+that uses reflection to understand interfaces. It is enabled
+by passing two non-flag arguments: an import path, and a
+comma-separated list of symbols.
+Example:
+	mockgen database/sql/driver Conn,Driver
+
+  -aux_files string
+    	(source mode) Comma-separated pkg=path pairs of auxiliary Go source files.
+  -build_flags string
+    	(reflect mode) Additional flags for go build.
+  -copyright_file string
+    	Copyright file used to add copyright header
+  -debug_parser
+    	Print out parser results only.
+  -destination string
+    	Output file; defaults to stdout.
+  -exec_only string
+    	(reflect mode) If set, execute this reflection program.
+  -imports string
+    	(source mode) Comma-separated name=path pairs of explicit imports to use.
+  -mock_names string
+    	Comma-separated interfaceName=mockName pairs of explicit mock names to use. Mock names default to 'Mock'+ interfaceName suffix.
+  -package string
+    	Package of the generated code; defaults to the package of the input with a 'mock_' prefix.
+  -prog_only
+    	(reflect mode) Only generate the reflection program; write it to stdout and exit.
+  -self_package string
+    	The full package import path for the generated code. The purpose of this flag is to prevent import cycles in the generated code by trying to include its own package. This can happen if the mock's package is set to one of its inputs (usually the main one) and the output is stdio so mockgen cannot detect the final output package. Setting this flag will then tell mockgen which import to exclude.
+  -source string
+    	(source mode) Input Go source file; enables source mode.
+  -version
+    	Print version.
+  -write_package_comment
+    	Writes package documentation comment (godoc) if true. (default true)
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/groups/groups.go | pbcopy
+cluster-api-provider-azure $ 
+```
+
+---
+
+```bash
+cluster-api-provider-azure $ gst
+On branch fix-1696
+Your branch is up to date with 'origin/fix-1696'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   azure/services/groups/mock_groups/groups_mock.go
+
+cluster-api-provider-azure $ go test -v sigs.k8s.io/cluster-api-provider-azure/azure/services/groups
+=== RUN   TestReconcileGroups
+=== RUN   TestReconcileGroups/create_group_succeeds
+=== PAUSE TestReconcileGroups/create_group_succeeds
+=== RUN   TestReconcileGroups/create_resource_group_fails
+=== PAUSE TestReconcileGroups/create_resource_group_fails
+=== CONT  TestReconcileGroups/create_group_succeeds
+=== CONT  TestReconcileGroups/create_resource_group_fails
+I0923 21:08:41.830358   54047 async.go:76]  "msg"="creating resource"  "resource"="test-group" "resourceGroup"="test-group" "service"="group"
+I0923 21:08:41.830358   54047 async.go:76]  "msg"="creating resource"  "resource"="test-group" "resourceGroup"="test-group" "service"="group"
+I0923 21:08:41.830597   54047 async.go:91]  "msg"="successfully created resource"  "resource"="test-group" "resourceGroup"="test-group" "service"="group"
+=== CONT  TestReconcileGroups/create_group_succeeds
+    groups.go:165: Unexpected call to *mock_groups.MockGroupScope.GroupSpec([]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/groups/groups.go:165 because: 
+        expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/groups/groups_test.go:82 has already been called the max number of times
+--- FAIL: TestReconcileGroups (0.00s)
+    --- PASS: TestReconcileGroups/create_resource_group_fails (0.00s)
+    --- FAIL: TestReconcileGroups/create_group_succeeds (0.00s)
+=== RUN   TestDeleteGroups
+=== RUN   TestDeleteGroups/long_running_delete_operation_is_done
+=== PAUSE TestDeleteGroups/long_running_delete_operation_is_done
+=== RUN   TestDeleteGroups/long_running_delete_operation_is_not_done
+=== PAUSE TestDeleteGroups/long_running_delete_operation_is_not_done
+=== RUN   TestDeleteGroups/resource_group_is_not_managed_by_capz
+=== PAUSE TestDeleteGroups/resource_group_is_not_managed_by_capz
+=== RUN   TestDeleteGroups/fail_to_check_if_resource_group_is_managed
+=== PAUSE TestDeleteGroups/fail_to_check_if_resource_group_is_managed
+=== RUN   TestDeleteGroups/resource_group_doesn't_exist
+=== PAUSE TestDeleteGroups/resource_group_doesn't_exist
+=== RUN   TestDeleteGroups/error_occurs_when_deleting_resource_group
+=== PAUSE TestDeleteGroups/error_occurs_when_deleting_resource_group
+=== RUN   TestDeleteGroups/context_deadline_exceeded_while_deleting_resource_group
+=== PAUSE TestDeleteGroups/context_deadline_exceeded_while_deleting_resource_group
+=== RUN   TestDeleteGroups/delete_the_resource_group_successfully
+=== PAUSE TestDeleteGroups/delete_the_resource_group_successfully
+=== CONT  TestDeleteGroups/long_running_delete_operation_is_done
+=== CONT  TestDeleteGroups/resource_group_doesn't_exist
+=== CONT  TestDeleteGroups/resource_group_is_not_managed_by_capz
+=== CONT  TestDeleteGroups/fail_to_check_if_resource_group_is_managed
+=== CONT  TestDeleteGroups/long_running_delete_operation_is_not_done
+=== CONT  TestDeleteGroups/error_occurs_when_deleting_resource_group
+=== CONT  TestDeleteGroups/context_deadline_exceeded_while_deleting_resource_group
+I0923 21:08:41.831017   54047 groups.go:150]  "msg"="Should not delete resource group in unmanaged mode"  
+=== CONT  TestDeleteGroups/delete_the_resource_group_successfully
+I0923 21:08:41.831095   54047 async.go:59]  "msg"="long running operation has completed"  "resource"="test-group" "service"="group"
+I0923 21:08:41.831098   54047 async.go:107]  "msg"="deleting resource"  "resource"="test-group" "resourceGroup"="test-group" "service"="group"
+I0923 21:08:41.831101   54047 async.go:107]  "msg"="deleting resource"  "resource"="test-group" "resourceGroup"="test-group" "service"="group"
+I0923 21:08:41.831155   54047 async.go:54]  "msg"="long running operation is still ongoing"  "resource"="test-group" "service"="group"
+I0923 21:08:41.831246   54047 async.go:107]  "msg"="deleting resource"  "resource"="test-group" "resourceGroup"="test-group" "service"="group"
+I0923 21:08:41.831272   54047 async.go:125]  "msg"="successfully deleted resource"  "resource"="test-group" "resourceGroup"="test-group" "service"="group"
+--- PASS: TestDeleteGroups (0.00s)
+    --- PASS: TestDeleteGroups/resource_group_doesn't_exist (0.00s)
+    --- PASS: TestDeleteGroups/fail_to_check_if_resource_group_is_managed (0.00s)
+    --- PASS: TestDeleteGroups/resource_group_is_not_managed_by_capz (0.00s)
+    --- PASS: TestDeleteGroups/long_running_delete_operation_is_done (0.00s)
+    --- PASS: TestDeleteGroups/error_occurs_when_deleting_resource_group (0.00s)
+    --- PASS: TestDeleteGroups/context_deadline_exceeded_while_deleting_resource_group (0.00s)
+    --- PASS: TestDeleteGroups/long_running_delete_operation_is_not_done (0.00s)
+    --- PASS: TestDeleteGroups/delete_the_resource_group_successfully (0.00s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/groups	0.512s
+FAIL
+cluster-api-provider-azure $ 
+```
+
+
