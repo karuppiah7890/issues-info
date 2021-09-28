@@ -2,7 +2,7 @@ https://github.com/kubernetes-sigs/cluster-api-provider-azure/issues/1696
 
 TODO
 
-- Setup dev environment
+- Setup dev environment [DONE]
 - Check how to run tests
 - Check how to run particular tests related to resource groups alone
 - Write a failing test for the issue - existing managed azure resource group and then update resource group tags should update tags
@@ -6275,22 +6275,22 @@ export AZURE_CLUSTER_IDENTITY_SECRET_NAMESPACE="default"
 cluster-api-provider-azure $ stern -n capz-system capz-controller-manager -t 5 | rg -i "error|fail"
 + capz-controller-manager-76c696b6cc-nh9wv › manager
 + capz-controller-manager-76c696b6cc-nh9wv › kube-rbac-proxy
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:15.879299900+05:30 E0923 14:12:15.879037       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:22.875988800+05:30 E0923 14:12:22.875670       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:30.511118500+05:30 E0923 14:12:30.510614       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:37.673116200+05:30 E0923 14:12:37.672558       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:44.692072300+05:30 E0923 14:12:44.691776       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:51.633400300+05:30 E0923 14:12:51.632155       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:59.081522100+05:30 E0923 14:12:59.081169       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:05.986649000+05:30 E0923 14:13:05.986304       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:13.002784500+05:30 E0923 14:13:13.002484       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:19.449834800+05:30 E0923 14:13:19.449587       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:25.840993300+05:30 E0923 14:13:25.840549       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:33.024922300+05:30 E0923 14:13:33.024651       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:39.324008500+05:30 E0923 14:13:39.323707       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
-capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:49.901566400+05:30 E0923 14:13:49.901164       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine" 
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:15.879299900+05:30 E0923 14:12:15.879037       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:22.875988800+05:30 E0923 14:12:22.875670       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:30.511118500+05:30 E0923 14:12:30.510614       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:37.673116200+05:30 E0923 14:12:37.672558       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:44.692072300+05:30 E0923 14:12:44.691776       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:51.633400300+05:30 E0923 14:12:51.632155       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:42:59.081522100+05:30 E0923 14:12:59.081169       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:05.986649000+05:30 E0923 14:13:05.986304       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:13.002784500+05:30 E0923 14:13:13.002484       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:19.449834800+05:30 E0923 14:13:19.449587       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:25.840993300+05:30 E0923 14:13:25.840549       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:33.024922300+05:30 E0923 14:13:33.024651       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:39.324008500+05:30 E0923 14:13:39.323707       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
+capz-controller-manager-76c696b6cc-nh9wv manager 2021-09-23T19:43:49.901566400+05:30 E0923 14:13:49.901164       9 controller.go:304] controller-runtime/manager/controller/azuremachine "msg"="Reconciler error" "error"="failed to reconcile AzureMachine: failed to create virtual machine: failed to create VM capz-cluster-control-plane-94hhq in resource group capz-cluster: compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code=\"PlatformImageNotFound\" Message=\"The platform image 'cncf-upstream:capi:k8s-1dot22dot2-ubuntu-2004:latest' is not available. Verify that all fields in the storage profile are correct. For more details about storage profile information, please refer to https://aka.ms/storageprofile\" Target=\"imageReference\"" "name"="capz-cluster-control-plane-94hhq" "namespace"="default" "reconciler group"="infrastructure.cluster.x-k8s.io" "reconciler kind"="AzureMachine"
 ^C
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
 ---
@@ -6335,28 +6335,28 @@ NAMESPACE   NAME                               STATUS     ROLES                 
             capz-cluster-md-0-j7q7z            Ready      <none>                 35s     v1.22.1
             capz-cluster-md-0-j7q7z            Ready      <none>                 45s     v1.22.1
             capz-cluster-md-0-j7q7z            Ready      <none>                 60s     v1.22.1
-^Ccluster-api-provider-azure $ 
+^Ccluster-api-provider-azure $
 
 cluster-api-provider-azure $ k get azuremachines
 NAME                               READY   STATE
-capz-cluster-control-plane-g8pzr           
-capz-cluster-md-0-j7q7z                    
+capz-cluster-control-plane-g8pzr
+capz-cluster-md-0-j7q7z
 cluster-api-provider-azure $ k get azuremachines -w
 NAME                               READY   STATE
-capz-cluster-control-plane-g8pzr           
-capz-cluster-md-0-j7q7z                    
+capz-cluster-control-plane-g8pzr
+capz-cluster-md-0-j7q7z
 
 
-capz-cluster-control-plane-g8pzr           
-capz-cluster-control-plane-g8pzr   true    
-capz-cluster-control-plane-g8pzr   true    
-capz-cluster-control-plane-g8pzr   true    
+capz-cluster-control-plane-g8pzr
+capz-cluster-control-plane-g8pzr   true
+capz-cluster-control-plane-g8pzr   true
+capz-cluster-control-plane-g8pzr   true
 capz-cluster-control-plane-g8pzr   false   Updating
 capz-cluster-control-plane-g8pzr   false   Updating
 capz-cluster-control-plane-g8pzr   true    Succeeded
 ^Ccluster-api-provider-azure k get azurecluster
 NAME           CLUSTER        READY   REASON
-capz-cluster   capz-cluster   True    
+capz-cluster   capz-cluster   True
 cluster-api-provider-azure $ k get cluster
 NAME           PHASE
 capz-cluster   Provisioned
@@ -6366,17 +6366,17 @@ capz-cluster   Provisioned
 cluster-api-provider-azure $ k get azuremachines -w
 NAME                               READY   STATE
 capz-cluster-control-plane-g8pzr   true    Succeeded
-capz-cluster-md-0-j7q7z                    
+capz-cluster-md-0-j7q7z
 
 
-capz-cluster-md-0-j7q7z                    
-capz-cluster-md-0-j7q7z            true    
-capz-cluster-md-0-j7q7z            true    
-capz-cluster-md-0-j7q7z            true    
+capz-cluster-md-0-j7q7z
+capz-cluster-md-0-j7q7z            true
+capz-cluster-md-0-j7q7z            true
+capz-cluster-md-0-j7q7z            true
 capz-cluster-md-0-j7q7z            false   Updating
 capz-cluster-md-0-j7q7z            false   Updating
 capz-cluster-md-0-j7q7z            true    Succeeded
-^Ccluster-api-provider-azure $ 
+^Ccluster-api-provider-azure $
 
 Last login: Thu Sep 23 19:40:12 on ttys002
 cluster-api-provider-azure $ k get machines -w
@@ -6409,7 +6409,7 @@ capz-cluster-md-0-598fdf57-rwbkr                                                
 capz-cluster-md-0-598fdf57-rwbkr   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-md-0-j7q7z            Provisioning   v1.22.1
 capz-cluster-md-0-598fdf57-rwbkr   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-md-0-j7q7z            Running        v1.22.1
 capz-cluster-md-0-598fdf57-rwbkr   azure:///subscriptions/abcdef-abcd-abcdef/resourceGroups/capz-cluster/providers/Microsoft.Compute/virtualMachines/capz-cluster-md-0-j7q7z            Running        v1.22.1
-^Ccluster-api-provider-azure $ 
+^Ccluster-api-provider-azure $
 ```
 
 ---
@@ -8184,7 +8184,7 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/managedclusters	5.484
 === CONT  TestReconcileNatGateways/fail_to_create_a_nat_gateway
 === CONT  TestReconcileNatGateways/nat_gateway_create_successfully
 === CONT  TestReconcileNatGateways/nat_gateway_is_not_updated_if_it's_up_to_date
-I0923 20:39:02.320021   47101 natgateways.go:62]  "msg"="Skipping nat gateways reconcile in custom vnet mode"  
+I0923 20:39:02.320021   47101 natgateways.go:62]  "msg"="Skipping nat gateways reconcile in custom vnet mode"
 I0923 20:39:02.320219   47101 natgateways.go:74]  "msg"="nat gateway already exists"  "nat gateway"="my-node-natgateway"
 I0923 20:39:02.320281   47101 natgateways.go:79]  "msg"="Nat Gateway exists with expected values, skipping update"  "nat gateway"="my-node-natgateway"
 I0923 20:39:02.320080   47101 natgateways.go:74]  "msg"="nat gateway already exists"  "nat gateway"="my-node-natgateway"
@@ -8213,7 +8213,7 @@ I0923 20:39:02.320392   47101 natgateways.go:106]  "msg"="successfully created n
 === CONT  TestDeleteNatGateway/nat_gateway_deletion_fails
 === CONT  TestDeleteNatGateway/nat_gateway_deleted_successfully
 === CONT  TestDeleteNatGateway/nat_gateway_already_deleted
-I0923 20:39:02.321100   47101 natgateways.go:156]  "msg"="Skipping nat gateway deletion in custom vnet mode"  
+I0923 20:39:02.321100   47101 natgateways.go:156]  "msg"="Skipping nat gateway deletion in custom vnet mode"
 I0923 20:39:02.321128   47101 natgateways.go:160]  "msg"="deleting nat gateway"  "nat gateway"="my-node-natgateway"
 I0923 20:39:02.321138   47101 natgateways.go:160]  "msg"="deleting nat gateway"  "nat gateway"="my-node-natgateway"
 I0923 20:39:02.321150   47101 natgateways.go:160]  "msg"="deleting nat gateway"  "nat gateway"="my-node-natgateway"
@@ -8527,7 +8527,7 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/roleassignments	5.935
 === CONT  TestReconcileRouteTables/do_not_create_route_table_if_already_exists
 === CONT  TestReconcileRouteTables/route_table_create_successfully
 === CONT  TestReconcileRouteTables/fail_to_create_a_route_table
-I0923 20:39:05.528672   47128 routetables.go:60]  "msg"="Skipping route tables reconcile in custom vnet mode"  
+I0923 20:39:05.528672   47128 routetables.go:60]  "msg"="Skipping route tables reconcile in custom vnet mode"
 I0923 20:39:05.528772   47128 routetables.go:80]  "msg"="creating Route Table"  "route table"="my-cp-routetable"
 I0923 20:39:05.528781   47128 routetables.go:80]  "msg"="creating Route Table"  "route table"="my-cp-routetable"
 I0923 20:39:05.528923   47128 routetables.go:93]  "msg"="successfully created route table"  "route table"="my-cp-routetable"
@@ -8552,7 +8552,7 @@ I0923 20:39:05.528977   47128 routetables.go:93]  "msg"="successfully created ro
 === CONT  TestDeleteRouteTable/route_table_already_deleted
 === CONT  TestDeleteRouteTable/route_table_deleted_successfully
 === CONT  TestDeleteRouteTable/route_table_deletion_fails
-I0923 20:39:05.529242   47128 routetables.go:104]  "msg"="Skipping route table deletion in custom vnet mode"  
+I0923 20:39:05.529242   47128 routetables.go:104]  "msg"="Skipping route table deletion in custom vnet mode"
 I0923 20:39:05.529307   47128 routetables.go:108]  "msg"="deleting route table"  "route table"="my-cp-routetable"
 I0923 20:39:05.529308   47128 routetables.go:108]  "msg"="deleting route table"  "route table"="my-cp-routetable"
 I0923 20:39:05.529323   47128 routetables.go:108]  "msg"="deleting route table"  "route table"="my-cp-routetable"
@@ -8720,7 +8720,7 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/scalesetvms	6.348s
 === CONT  TestReconcileSecurityGroups/security_groups_do_not_exist
 === CONT  TestReconcileSecurityGroups/skipping_network_security_group_reconcile_in_custom_VNet_mode
 === CONT  TestReconcileSecurityGroups/security_group_exists
-I0923 20:39:07.197990   47136 securitygroups.go:61]  "msg"="Skipping network security group reconcile in custom VNet mode"  
+I0923 20:39:07.197990   47136 securitygroups.go:61]  "msg"="Skipping network security group reconcile in custom VNet mode"
 I0923 20:39:07.198121   47136 securitygroups.go:93]  "msg"="creating security group"  "security group"="nsg-one"
 I0923 20:39:07.198380   47136 securitygroups.go:110]  "msg"="successfully created or updated security group"  "security group"="nsg-one"
 I0923 20:39:07.198430   47136 securitygroups.go:89]  "msg"="security group exists and no default rules are missing, skipping update"  "security group"="nsg-two"
@@ -8741,7 +8741,7 @@ I0923 20:39:07.198577   47136 securitygroups.go:110]  "msg"="successfully create
 === CONT  TestDeleteSecurityGroups/security_groups_exist
 === CONT  TestDeleteSecurityGroups/skipping_network_security_group_delete_in_custom_VNet_mode
 === CONT  TestDeleteSecurityGroups/security_group_already_deleted
-I0923 20:39:07.198867   47136 securitygroups.go:144]  "msg"="Skipping network security group delete in custom VNet mode"  
+I0923 20:39:07.198867   47136 securitygroups.go:144]  "msg"="Skipping network security group delete in custom VNet mode"
 I0923 20:39:07.198953   47136 securitygroups.go:149]  "msg"="deleting security group"  "security group"="nsg-one"
 I0923 20:39:07.198957   47136 securitygroups.go:149]  "msg"="deleting security group"  "security group"="nsg-one"
 I0923 20:39:07.198981   47136 securitygroups.go:159]  "msg"="successfully deleted security group"  "security group"="nsg-one"
@@ -8815,7 +8815,7 @@ I0923 20:39:07.793273   47138 subnets.go:117]  "msg"="successfully created subne
 === CONT  TestDeleteSubnets/fail_delete_subnet
 === CONT  TestDeleteSubnets/node_subnet_already_deleted_and_controlplane_subnet_deleted_successfully
 === CONT  TestDeleteSubnets/subnet_already_deleted
-I0923 20:39:07.794029   47138 subnets.go:130]  "msg"="Skipping subnets deletion in custom vnet mode"  
+I0923 20:39:07.794029   47138 subnets.go:130]  "msg"="Skipping subnets deletion in custom vnet mode"
 I0923 20:39:07.794032   47138 subnets.go:133]  "msg"="deleting subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
 I0923 20:39:07.794068   47138 subnets.go:143]  "msg"="successfully deleted subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
 I0923 20:39:07.794069   47138 subnets.go:133]  "msg"="deleting subnet in vnet"  "subnet"="my-subnet" "vnet"="my-vnet"
@@ -8847,12 +8847,12 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/subnets	7.093s
 === CONT  TestReconcileTags/error_updating_tags
 === CONT  TestReconcileTags/error_getting_existing_tags
 === CONT  TestReconcileTags/tags_unchanged
-I0923 20:39:08.259740   47141 tags.go:66]  "msg"="Updating tags"  
-I0923 20:39:08.259740   47141 tags.go:66]  "msg"="Updating tags"  
-I0923 20:39:08.259747   47141 tags.go:66]  "msg"="Updating tags"  
-I0923 20:39:08.260041   47141 tags.go:91]  "msg"="successfully updated tags"  
-I0923 20:39:08.260053   47141 tags.go:66]  "msg"="Updating tags"  
-I0923 20:39:08.260071   47141 tags.go:91]  "msg"="successfully updated tags"  
+I0923 20:39:08.259740   47141 tags.go:66]  "msg"="Updating tags"
+I0923 20:39:08.259740   47141 tags.go:66]  "msg"="Updating tags"
+I0923 20:39:08.259747   47141 tags.go:66]  "msg"="Updating tags"
+I0923 20:39:08.260041   47141 tags.go:91]  "msg"="successfully updated tags"
+I0923 20:39:08.260053   47141 tags.go:66]  "msg"="Updating tags"
+I0923 20:39:08.260071   47141 tags.go:91]  "msg"="successfully updated tags"
 --- PASS: TestReconcileTags (0.00s)
     --- PASS: TestReconcileTags/tags_unchanged (0.00s)
     --- PASS: TestReconcileTags/error_getting_existing_tags (0.00s)
@@ -9079,7 +9079,7 @@ I0923 20:39:09.195272   47145 virtualnetworks.go:104]  "msg"="successfully creat
 === CONT  TestDeleteVnet/unmanaged_vnet
 === CONT  TestDeleteVnet/fail_to_delete_vnet
 === CONT  TestDeleteVnet/managed_vnet_already_deleted
-I0923 20:39:09.195464   47145 virtualnetworks.go:123]  "msg"="Skipping VNet deletion in custom vnet mode"  
+I0923 20:39:09.195464   47145 virtualnetworks.go:123]  "msg"="Skipping VNet deletion in custom vnet mode"
 I0923 20:39:09.195468   47145 virtualnetworks.go:127]  "msg"="deleting VNet"  "VNet"="vnet-exists"
 I0923 20:39:09.195481   47145 virtualnetworks.go:138]  "msg"="successfully deleted VNet"  "VNet"="vnet-exists"
 I0923 20:39:09.195484   47145 virtualnetworks.go:127]  "msg"="deleting VNet"  "VNet"="vnet-exists"
@@ -9181,31 +9181,31 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmssextensions	5.665s
 === RUN   TestAzureJSONMachineReconciler
 === RUN   TestAzureJSONMachineReconciler/should_reconcile_normally
 === RUN   TestAzureJSONMachineReconciler/missing_azure_cluster_should_return_error
-E0923 20:39:13.111064   47329 azurejson_machine_controller.go:160]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachine"="my-machine" "cluster"="my-cluster" "namespace"="" 
+E0923 20:39:13.111064   47329 azurejson_machine_controller.go:160]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachine"="my-machine" "cluster"="my-cluster" "namespace"=""
 --- PASS: TestAzureJSONMachineReconciler (0.01s)
     --- PASS: TestAzureJSONMachineReconciler/should_reconcile_normally (0.00s)
     --- PASS: TestAzureJSONMachineReconciler/missing_azure_cluster_should_return_error (0.00s)
 === RUN   TestAzureJSONPoolReconciler
 === RUN   TestAzureJSONPoolReconciler/should_reconcile_normally
 === RUN   TestAzureJSONPoolReconciler/missing_azure_cluster_should_return_error
-E0923 20:39:13.115052   47329 azurejson_machinepool_controller.go:127]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachinePool"="my-azure-machine-pool" "cluster"="my-cluster" "machinePool"="my-machine-pool" "namespace"="" 
+E0923 20:39:13.115052   47329 azurejson_machinepool_controller.go:127]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachinePool"="my-azure-machine-pool" "cluster"="my-cluster" "machinePool"="my-machine-pool" "namespace"=""
 --- PASS: TestAzureJSONPoolReconciler (0.00s)
     --- PASS: TestAzureJSONPoolReconciler/should_reconcile_normally (0.00s)
     --- PASS: TestAzureJSONPoolReconciler/missing_azure_cluster_should_return_error (0.00s)
 === RUN   TestAzureJSONTemplateReconciler
 === RUN   TestAzureJSONTemplateReconciler/should_reconcile_normally
 === RUN   TestAzureJSONTemplateReconciler/missing_azure_cluster_should_return_error
-E0923 20:39:13.117285   47329 azurejson_machinetemplate_controller.go:123]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachineTemplate"="my-json-template" "cluster"="my-cluster" "namespace"="" 
+E0923 20:39:13.117285   47329 azurejson_machinetemplate_controller.go:123]  "msg"="failed to fetch AzureCluster" "error"="azureclusters.infrastructure.cluster.x-k8s.io \"my-azure-cluster\" not found" "azureMachineTemplate"="my-json-template" "cluster"="my-cluster" "namespace"=""
 --- PASS: TestAzureJSONTemplateReconciler (0.00s)
     --- PASS: TestAzureJSONTemplateReconciler/should_reconcile_normally (0.00s)
     --- PASS: TestAzureJSONTemplateReconciler/missing_azure_cluster_should_return_error (0.00s)
 === RUN   TestConditions
 === RUN   TestConditions/cluster_infrastructure_is_not_ready_yet
-I0923 20:39:13.118997   47329 azuremachine_controller.go:250]  "msg"="Reconciling AzureMachine"  
-I0923 20:39:13.119253   47329 azuremachine_controller.go:265]  "msg"="Cluster infrastructure is not ready yet"  
+I0923 20:39:13.118997   47329 azuremachine_controller.go:250]  "msg"="Reconciling AzureMachine"
+I0923 20:39:13.119253   47329 azuremachine_controller.go:265]  "msg"="Cluster infrastructure is not ready yet"
 === RUN   TestConditions/bootstrap_data_secret_reference_is_not_yet_available
-I0923 20:39:13.119380   47329 azuremachine_controller.go:250]  "msg"="Reconciling AzureMachine"  
-I0923 20:39:13.119568   47329 azuremachine_controller.go:272]  "msg"="Bootstrap data secret reference is not yet available"  
+I0923 20:39:13.119380   47329 azuremachine_controller.go:250]  "msg"="Reconciling AzureMachine"
+I0923 20:39:13.119568   47329 azuremachine_controller.go:272]  "msg"="Bootstrap data secret reference is not yet available"
 --- PASS: TestConditions (0.00s)
     --- PASS: TestConditions/cluster_infrastructure_is_not_ready_yet (0.00s)
     --- PASS: TestConditions/bootstrap_data_secret_reference_is_not_yet_available (0.00s)
@@ -9328,7 +9328,7 @@ github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1
 	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86
 STEP: bootstrapping test environment
 Panic [0.025 seconds]
-[BeforeSuite] BeforeSuite 
+[BeforeSuite] BeforeSuite
 /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:49
 
   Test Panicked
@@ -9612,9 +9612,9 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/exp/api/v1alpha4	6.929s
 --- PASS: Test_newAzureMachinePoolService (0.00s)
 === RUN   TestAzureMachinePoolMachineReconciler_Reconcile
 === RUN   TestAzureMachinePoolMachineReconciler_Reconcile/should_successfully_reconcile
-I0923 20:39:13.611770   47332 azuremachinepoolmachine_controller.go:254]  "msg"="Reconciling AzureMachinePoolMachine" "AzureCluster"="azCluster1" "azureMachinePool"="amp1" "azureMachinePoolMachine"="ampm1" "cluster"="cluster1" "machinePool"="mp1" "namespace"="default" 
+I0923 20:39:13.611770   47332 azuremachinepoolmachine_controller.go:254]  "msg"="Reconciling AzureMachinePoolMachine" "AzureCluster"="azCluster1" "azureMachinePool"="amp1" "azureMachinePoolMachine"="ampm1" "cluster"="cluster1" "machinePool"="mp1" "namespace"="default"
 === RUN   TestAzureMachinePoolMachineReconciler_Reconcile/should_successfully_delete
-I0923 20:39:13.612581   47332 azuremachinepoolmachine_controller.go:311]  "msg"="Handling deleted AzureMachinePoolMachine" "AzureCluster"="azCluster1" "azureMachinePool"="amp1" "azureMachinePoolMachine"="ampm1" "cluster"="cluster1" "machinePool"="mp1" "namespace"="default" 
+I0923 20:39:13.612581   47332 azuremachinepoolmachine_controller.go:311]  "msg"="Handling deleted AzureMachinePoolMachine" "AzureCluster"="azCluster1" "azureMachinePool"="amp1" "azureMachinePoolMachine"="ampm1" "cluster"="cluster1" "machinePool"="mp1" "namespace"="default"
 --- PASS: TestAzureMachinePoolMachineReconciler_Reconcile (0.01s)
     --- PASS: TestAzureMachinePoolMachineReconciler_Reconcile/should_successfully_reconcile (0.01s)
     --- PASS: TestAzureMachinePoolMachineReconciler_Reconcile/should_successfully_delete (0.00s)
@@ -9696,7 +9696,7 @@ Will run 2 of 2 specs
 
 STEP: bootstrapping test environment
 Panic [0.019 seconds]
-[BeforeSuite] BeforeSuite 
+[BeforeSuite] BeforeSuite
 /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/exp/controllers/suite_test.go:50
 
   Test Panicked
@@ -9868,10 +9868,11 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/util/system	4.830s
 ?   	sigs.k8s.io/cluster-api-provider-azure/util/webhook	[no test files]
 ?   	sigs.k8s.io/cluster-api-provider-azure/version	[no test files]
 FAIL
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
 TODO
+
 - Fix mock for GroupScope - since GroupScope interface has been update. Error to fix -
 
 ```bash
@@ -9882,14 +9883,14 @@ azure/services/groups/groups_test.go:249:5: cannot use scopeMock (type *mock_gro
 ```
 
 - Tests for the change
-    - Existing tests - should I add mocks for the
+  - Existing tests - should I add mocks for the
 
 ---
 
 ```bash
 cluster-api-provider-azure $ ./hack/tools/bin/mockgen -version
 v1.6.0
-cluster-api-provider-azure $ ./hack/tools/bin/mockgen 
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen
 mockgen has two modes of operation: source and reflect.
 
 Source mode generates mock interfaces from a source file.
@@ -9934,35 +9935,35 @@ Example:
   -write_package_comment
     	Writes package documentation comment (godoc) if true. (default true)
 2021/09/23 20:59:59 Expected exactly two arguments
-cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/groups/groups.go 
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/groups/groups.go
 2021/09/23 21:02:47 Loading input failed: azure/services/groups/groups.go:46:2: could not parse package github.com/go-logr/logr: go/build: go list github.com/go-logr/logr: exit status 2
 go: cannot find GOROOT directory: /usr/local/Cellar/go/1.17/libexec
 
 cluster-api-provider-azure $ go env GOROOT
 /usr/local/Cellar/go/1.17.1/libexec
-cluster-api-provider-azure $ source ~/.bash_profile 
+cluster-api-provider-azure $ source ~/.bash_profile
 cluster-api-provider-azure $ go env GOROOT
 /usr/local/Cellar/go/1.17.1/libexec
-cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/groups/groups.go 
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/groups/groups.go
 2021/09/23 21:03:18 Loading input failed: azure/services/groups/groups.go:46:2: could not parse package github.com/go-logr/logr: go/build: go list github.com/go-logr/logr: exit status 2
 go: cannot find GOROOT directory: /usr/local/Cellar/go/1.17/libexec
 
 cluster-api-provider-azure $ go list github.com/go-logr/logr
 github.com/go-logr/logr
 cluster-api-provider-azure $ make hack/tools/bin/mockgen
-mockgen         mockgen-v1.6.0  
-cluster-api-provider-azure $ make hack/tools/bin/mockgen-v1.6.0 
+mockgen         mockgen-v1.6.0
+cluster-api-provider-azure $ make hack/tools/bin/mockgen-v1.6.0
 make: Nothing to be done for `hack/tools/bin/mockgen-v1.6.0'.
-cluster-api-provider-azure $ rm -rfv hack/tools/bin/mockgen-v1.6.0 
+cluster-api-provider-azure $ rm -rfv hack/tools/bin/mockgen-v1.6.0
 hack/tools/bin/mockgen-v1.6.0
 cluster-api-provider-azure $ rm -rfv hack/tools/bin/mockgen
 hack/tools/bin/mockgen
-cluster-api-provider-azure $ make hack/tools/bin/mockgen-v1.6.0 
+cluster-api-provider-azure $ make hack/tools/bin/mockgen-v1.6.0
 make: *** No rule to make target `hack/tools/bin/mockgen-v1.6.0'.  Stop.
-cluster-api-provider-azure $ make hack/tools/bin/mockgen-v1.6.0 
+cluster-api-provider-azure $ make hack/tools/bin/mockgen-v1.6.0
 cluster-api-provider-azure $ pwd
 /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure
-cluster-api-provider-azure $ make /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin/mockgen-v1.6.0 
+cluster-api-provider-azure $ make /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin/mockgen-v1.6.0
 GOBIN=/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin ./scripts/go_install.sh github.com/golang/mock/mockgen mockgen v1.6.0
 rm: /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin/mockgen*: No such file or directory
 go: creating new go.mod: module fake/mod
@@ -9979,9 +9980,9 @@ go get: added golang.org/x/sys v0.0.0-20210510120138-977fb7262007
 go get: added golang.org/x/tools v0.1.1
 go get: added golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 cluster-api-provider-azure $ ./hack/tools/bin/mockgen
-mockgen         mockgen-v1.6.0  
+mockgen         mockgen-v1.6.0
 cluster-api-provider-azure $ ./hack/tools/bin/mockgen
-cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/groups/groups.go 
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/groups/groups.go
 // Code generated by MockGen. DO NOT EDIT.
 // Source: azure/services/groups/groups.go
 
@@ -10418,7 +10419,7 @@ Example:
   -write_package_comment
     	Writes package documentation comment (godoc) if true. (default true)
 cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/groups/groups.go | pbcopy
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
 ---
@@ -10444,7 +10445,7 @@ I0923 21:08:41.830358   54047 async.go:76]  "msg"="creating resource"  "resource
 I0923 21:08:41.830358   54047 async.go:76]  "msg"="creating resource"  "resource"="test-group" "resourceGroup"="test-group" "service"="group"
 I0923 21:08:41.830597   54047 async.go:91]  "msg"="successfully created resource"  "resource"="test-group" "resourceGroup"="test-group" "service"="group"
 === CONT  TestReconcileGroups/create_group_succeeds
-    groups.go:165: Unexpected call to *mock_groups.MockGroupScope.GroupSpec([]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/groups/groups.go:165 because: 
+    groups.go:165: Unexpected call to *mock_groups.MockGroupScope.GroupSpec([]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/groups/groups.go:165 because:
         expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/groups/groups_test.go:82 has already been called the max number of times
 --- FAIL: TestReconcileGroups (0.00s)
     --- PASS: TestReconcileGroups/create_resource_group_fails (0.00s)
@@ -10473,7 +10474,7 @@ I0923 21:08:41.830597   54047 async.go:91]  "msg"="successfully created resource
 === CONT  TestDeleteGroups/long_running_delete_operation_is_not_done
 === CONT  TestDeleteGroups/error_occurs_when_deleting_resource_group
 === CONT  TestDeleteGroups/context_deadline_exceeded_while_deleting_resource_group
-I0923 21:08:41.831017   54047 groups.go:150]  "msg"="Should not delete resource group in unmanaged mode"  
+I0923 21:08:41.831017   54047 groups.go:150]  "msg"="Should not delete resource group in unmanaged mode"
 === CONT  TestDeleteGroups/delete_the_resource_group_successfully
 I0923 21:08:41.831095   54047 async.go:59]  "msg"="long running operation has completed"  "resource"="test-group" "service"="group"
 I0923 21:08:41.831098   54047 async.go:107]  "msg"="deleting resource"  "resource"="test-group" "resourceGroup"="test-group" "service"="group"
@@ -10493,7 +10494,601 @@ I0923 21:08:41.831272   54047 async.go:125]  "msg"="successfully deleted resourc
 FAIL
 FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/groups	0.512s
 FAIL
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
+---
 
+Requirements
+
+- [Critical-Requirement] Apart from CAPZ, there might be other systems working with tags of resources for various reasons. CAPZ should only manage the tags that it owns and nothing more and nothing less. No overwriting of data written by others unless the data is managed by CAPZ
+- In this PR we are considering changes for managing tags of Resource Groups alone, but in the future we will be managing the tags of other resources too and it should be easy to do so
+- We want only managed / owned resources to be manipulated as part of updating tags
+
+---
+
+[TODO]
+
+- Try the Tags API with dummy resource group to understand complete behavior of the API - the create or update API vs the update at scope API [DONE]
+- Use get-at-scope tags API in tags.go service to check if resource is owned or not! [DONE]
+- Convert the tags.go service to use a update-at-scope API instead of a GET and create-or-update API to update tags to prevent race condition. It can use get for checking managed / not-managed alone. We also need to use delete tags too using update-at-scope API for deletions! This assumes that no one changed or removed the owned tag value after the GET and just before our updates
+- Discuss about how delete can be done by comparing desired tags vs last applied tags. And how update can be done by comparing desired tags vs current tags from get-at-scope
+- Rename `created` to `createdOrUpdated` in code, test code `expectedCreatedOrUpdated` etc? Too verbose name, so leave it for now [DONE]
+
+---
+
+Test cases for tag service
+
+- Managed resource? Yes, No - wrote the test now
+- Tags changed? Yes, No
+
+  - Yes Tags changed cases
+    - Tags Created - already test was written
+    - Tags Updated - already test was written - with error cases, no happy path
+    - Tags Deleted - wrote the test now
+    - Tags Updated and Deleted - no test
+    - Tags Created and Deleted - no test
+    - Tags Created and Updated - no test
+    - Tags Created, Updated and Deleted - no test
+  - No Tags changed - already test was written
+
+- Errors
+  - Error while getting current resource tags from Azure - already test was written
+  - Error while getting k8s annotation JSON - no test
+  - Error while creating-or-updating resource tags to Azure - already test was written
+  - Error while updating k8s annotation JSON - no test
+
+---
+
+```bash
+Running tool: /usr/local/bin/go test -timeout 30s -tags e2e -run ^TestReconcileTags$ sigs.k8s.io/cluster-api-provider-azure/azure/services/tags
+
+I0928 11:37:51.308712   29159 tags.go:81]  "msg"="Updating tags"
+I0928 11:37:51.308866   29159 tags.go:98]  "msg"="successfully updated tags"
+I0928 11:37:51.308899   29159 tags.go:81]  "msg"="Updating tags"
+I0928 11:37:51.309096   29159 tags.go:71]  "msg"="Skipping tags reconcile for not managed resource"
+I0928 11:37:51.309315   29159 tags.go:81]  "msg"="Updating tags"
+--- FAIL: TestReconcileTags (0.00s)
+    --- FAIL: TestReconcileTags/create_tags_for_managed_resources (0.00s)
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90: Unexpected call to *mock_tags.Mockclient.CreateOrUpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/other/scope {{<nil>} <nil> <nil> <nil> 0xc000482188}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90 because:
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87 doesn't match the argument at index 2.
+            Got: {{<nil>} <nil> <nil> <nil> 0xc000482188}
+            Want: is equal to {{<nil>} <nil> <nil> <nil> 0xc000482100}
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:75 doesn't match the argument at index 1.
+            Got: /sub/123/other/scope
+            Want: is equal to /sub/123/fake/scope
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/other/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc000482100}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation-2, is equal to map[sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned tag1:value1]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:95
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: aborting test due to missing call(s)
+    --- FAIL: TestReconcileTags/error_updating_tags (0.00s)
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90: Unexpected call to *mock_tags.Mockclient.CreateOrUpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/fake/scope {{<nil>} <nil> <nil> <nil> 0xc000482300}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90 because:
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:157 doesn't match the argument at index 2.
+            Got: {{<nil>} <nil> <nil> <nil> 0xc000482300}
+            Want: is equal to {{<nil>} <nil> <nil> <nil> 0xc0004822d0}
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/fake/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc0004822d0}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:157
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: aborting test due to missing call(s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	0.262s
+FAIL
+```
+
+```bash
+Running tool: /usr/local/bin/go test -timeout 30s -tags e2e -run ^TestReconcileTags$ sigs.k8s.io/cluster-api-provider-azure/azure/services/tags
+
+--- FAIL: TestReconcileTags (0.00s)
+    --- FAIL: TestReconcileTags/create_tags_for_managed_resources (0.00s)
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:54: wrong type of argument 0 to Return for *mock_tags.MockTagScope.TagsSpecs: [2]azure.TagsSpec is not assignable to []azure.TagsSpec [/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:54]
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.TagsSpecs() /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:54
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: aborting test due to missing call(s)
+    --- FAIL: TestReconcileTags/do_not_create_tags_for_unmanaged_resources (0.00s)
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:105: wrong type of argument 0 to Return for *mock_tags.MockTagScope.TagsSpecs: [1]azure.TagsSpec is not assignable to []azure.TagsSpec [/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:105]
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.TagsSpecs() /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:105
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: aborting test due to missing call(s)
+    --- FAIL: TestReconcileTags/error_getting_existing_tags (0.00s)
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:125: wrong type of argument 0 to Return for *mock_tags.MockTagScope.TagsSpecs: [1]azure.TagsSpec is not assignable to []azure.TagsSpec [/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:125]
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.TagsSpecs() /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:125
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: aborting test due to missing call(s)
+    --- FAIL: TestReconcileTags/error_updating_tags (0.00s)
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:145: wrong type of argument 0 to Return for *mock_tags.MockTagScope.TagsSpecs: [1]azure.TagsSpec is not assignable to []azure.TagsSpec [/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:145]
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.TagsSpecs() /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:145
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: aborting test due to missing call(s)
+    --- FAIL: TestReconcileTags/tags_unchanged (0.00s)
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:173: wrong type of argument 0 to Return for *mock_tags.MockTagScope.TagsSpecs: [1]azure.TagsSpec is not assignable to []azure.TagsSpec [/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:173]
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.TagsSpecs() /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:173
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: aborting test due to missing call(s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	0.269s
+FAIL
+```
+
+```bash
+cluster-api-provider-azure $ go test -timeout 30s -run ^TestReconcileTags$ sigs.k8s.io/cluster-api-provider-azure/azure/services/tags
+I0928 11:43:55.330223   31802 tags.go:81]  "msg"="Updating tags"
+I0928 11:43:55.330431   31802 tags.go:98]  "msg"="successfully updated tags"
+I0928 11:43:55.330451   31802 tags.go:81]  "msg"="Updating tags"
+I0928 11:43:55.330709   31802 tags.go:71]  "msg"="Skipping tags reconcile for not managed resource"
+I0928 11:43:55.330867   31802 tags.go:81]  "msg"="Updating tags"
+--- FAIL: TestReconcileTags (0.00s)
+    --- FAIL: TestReconcileTags/create_tags_for_managed_resources (0.00s)
+        tags.go:90: Unexpected call to *mock_tags.Mockclient.CreateOrUpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/other/scope {{<nil>} <nil> <nil> <nil> 0xc000702218}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90 because:
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87 doesn't match the argument at index 2.
+            Got: {{<nil>} <nil> <nil> <nil> 0xc000702218}
+            Want: is equal to {{<nil>} <nil> <nil> <nil> 0xc000702178}
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:75 doesn't match the argument at index 1.
+            Got: /sub/123/other/scope
+            Want: is equal to /sub/123/fake/scope
+        controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/other/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc000702178}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87
+        controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation-2, is equal to map[sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned tag1:value1]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:95
+        controller.go:266: aborting test due to missing call(s)
+    --- FAIL: TestReconcileTags/error_updating_tags (0.00s)
+        tags.go:90: Unexpected call to *mock_tags.Mockclient.CreateOrUpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/fake/scope {{<nil>} <nil> <nil> <nil> 0xc0007023d0}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90 because:
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:157 doesn't match the argument at index 2.
+            Got: {{<nil>} <nil> <nil> <nil> 0xc0007023d0}
+            Want: is equal to {{<nil>} <nil> <nil> <nil> 0xc0007023a0}
+        controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/fake/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc0007023a0}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:157
+        controller.go:266: aborting test due to missing call(s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	0.496s
+FAIL
+cluster-api-provider-azure $
+```
+
+```bash
+cluster-api-provider-azure $ go test -v -timeout 30s -run ^TestReconcileTags$ sigs.k8s.io/cluster-api-provider-azure/azure/services/tags
+=== RUN   TestReconcileTags
+=== RUN   TestReconcileTags/create_tags_for_managed_resources
+I0928 11:44:04.137335   31840 tags.go:81]  "msg"="Updating tags"
+I0928 11:44:04.137530   31840 tags.go:98]  "msg"="successfully updated tags"
+I0928 11:44:04.137553   31840 tags.go:81]  "msg"="Updating tags"
+    tags.go:90: Unexpected call to *mock_tags.Mockclient.CreateOrUpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/other/scope {{<nil>} <nil> <nil> <nil> 0xc000434168}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90 because:
+        expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87 doesn't match the argument at index 2.
+        Got: {{<nil>} <nil> <nil> <nil> 0xc000434168}
+        Want: is equal to {{<nil>} <nil> <nil> <nil> 0xc0004340e0}
+        expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:75 doesn't match the argument at index 1.
+        Got: /sub/123/other/scope
+        Want: is equal to /sub/123/fake/scope
+    controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/other/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc0004340e0}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87
+    controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation-2, is equal to map[sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned tag1:value1]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:95
+    controller.go:266: aborting test due to missing call(s)
+=== RUN   TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+I0928 11:44:04.137780   31840 tags.go:71]  "msg"="Skipping tags reconcile for not managed resource"
+=== RUN   TestReconcileTags/error_getting_existing_tags
+=== RUN   TestReconcileTags/error_updating_tags
+I0928 11:44:04.137925   31840 tags.go:81]  "msg"="Updating tags"
+    tags.go:90: Unexpected call to *mock_tags.Mockclient.CreateOrUpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/fake/scope {{<nil>} <nil> <nil> <nil> 0xc000434420}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90 because:
+        expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:157 doesn't match the argument at index 2.
+        Got: {{<nil>} <nil> <nil> <nil> 0xc000434420}
+        Want: is equal to {{<nil>} <nil> <nil> <nil> 0xc0004343e8}
+    controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/fake/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc0004343e8}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:157
+    controller.go:266: aborting test due to missing call(s)
+=== RUN   TestReconcileTags/tags_unchanged
+--- FAIL: TestReconcileTags (0.00s)
+    --- FAIL: TestReconcileTags/create_tags_for_managed_resources (0.00s)
+    --- PASS: TestReconcileTags/do_not_create_tags_for_unmanaged_resources (0.00s)
+    --- PASS: TestReconcileTags/error_getting_existing_tags (0.00s)
+    --- FAIL: TestReconcileTags/error_updating_tags (0.00s)
+    --- PASS: TestReconcileTags/tags_unchanged (0.00s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	0.310s
+FAIL
+cluster-api-provider-azure $
+```
+
+```bash
+Running tool: /usr/local/bin/go test -timeout 30s -run ^TestReconcileTags$ sigs.k8s.io/cluster-api-provider-azure/azure/services/tags
+
+I0928 11:44:49.703539   31962 tags.go:81]  "msg"="Updating tags"
+I0928 11:44:49.703538   31962 tags.go:71]  "msg"="Skipping tags reconcile for not managed resource"
+I0928 11:44:49.703539   31962 tags.go:81]  "msg"="Updating tags"
+--- FAIL: TestReconcileTags (0.00s)
+    --- FAIL: TestReconcileTags/create_tags_for_managed_resources (0.00s)
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90: Unexpected call to *mock_tags.Mockclient.CreateOrUpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/fake/scope {{<nil>} <nil> <nil> <nil> 0xc00012c088}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90 because:
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:75 doesn't match the argument at index 2.
+            Got: {{<nil>} <nil> <nil> <nil> 0xc00012c088}
+            Want: is equal to {{<nil>} <nil> <nil> <nil> 0xc0002061b8}
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87 doesn't match the argument at index 1.
+            Got: /sub/123/fake/scope
+            Want: is equal to /sub/123/other/scope
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.Mockclient.GetAtScope(expected a context.Context, but got <nil>, is equal to /sub/123/other/scope) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:85
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.AnnotationJSON(is equal to my-annotation-2) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:86
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/fake/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc0002061b8}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:75
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/other/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc0002061f0}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation, is equal to map[foo:bar sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned thing:stuff]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:84
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation-2, is equal to map[sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned tag1:value1]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:95
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: aborting test due to missing call(s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	0.596s
+FAIL
+```
+
+```bash
+Running tool: /usr/local/bin/go test -timeout 30s -run ^TestReconcileTags$ sigs.k8s.io/cluster-api-provider-azure/azure/services/tags
+
+I0928 11:50:45.523833   34437 tags.go:71]  "msg"="Skipping tags reconcile for not managed resource"
+I0928 11:50:45.523834   34437 tags.go:81]  "msg"="Updating tags"
+I0928 11:50:45.523833   34437 tags.go:81]  "msg"="Updating tags"
+--- FAIL: TestReconcileTags (0.00s)
+    --- FAIL: TestReconcileTags/create_tags_for_managed_resources (0.00s)
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90: Unexpected call to *mock_tags.Mockclient.CreateOrUpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/fake/scope {{<nil>} <nil> <nil> <nil> 0xc000122138}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90 because:
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:75 doesn't match the argument at index 2.
+            Got: {{<nil>} <nil> <nil> <nil> 0xc000122138}
+            Want: is equal to {{<nil>} <nil> <nil> <nil> 0xc0004ac0a8}
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87 doesn't match the argument at index 1.
+            Got: /sub/123/fake/scope
+            Want: is equal to /sub/123/other/scope
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.Mockclient.GetAtScope(expected a context.Context, but got <nil>, is equal to /sub/123/other/scope) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:85
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.AnnotationJSON(is equal to my-annotation-2) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:86
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/fake/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc0004ac0a8}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:75
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/other/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc0004ac128}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation, is equal to map[foo:bar sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned thing:stuff]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:84
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation-2, is equal to map[sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned tag1:value1]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:95
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: aborting test due to missing call(s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	0.607s
+FAIL
+```
+
+```bash
+Running tool: /usr/local/bin/go test -timeout 30s -run ^TestReconcileTags$ sigs.k8s.io/cluster-api-provider-azure/azure/services/tags
+
+I0928 12:01:18.965034   38738 tags.go:82]  "msg"="Updating tags"
+I0928 12:01:18.965034   38738 tags.go:82]  "msg"="Updating tags"
+I0928 12:01:18.965045   38738 tags.go:71]  "msg"="[Remove]"  "scope"="/sub/123/fake2/scope" "tags"={}
+I0928 12:01:18.965332   38738 tags.go:99]  "msg"="successfully updated tags"
+I0928 12:01:18.965341   38738 tags.go:72]  "msg"="Skipping tags reconcile for not managed resource"
+I0928 12:01:18.965353   38738 tags.go:82]  "msg"="Updating tags"
+--- FAIL: TestReconcileTags (0.00s)
+    --- FAIL: TestReconcileTags/error_updating_tags (0.00s)
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:91: Unexpected call to *mock_tags.Mockclient.CreateOrUpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/fake4/scope {{<nil>} <nil> <nil> <nil> 0xc0005920e0}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:91 because:
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:160 doesn't match the argument at index 2.
+            Got: {{<nil>} <nil> <nil> <nil> 0xc0005920e0}
+            Want: is equal to {{<nil>} <nil> <nil> <nil> 0xc00019a088}
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/fake4/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc00019a088}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:160
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: aborting test due to missing call(s)
+    --- FAIL: TestReconcileTags/create_tags_for_managed_resources (0.00s)
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:91: Unexpected call to *mock_tags.Mockclient.CreateOrUpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/other/scope {{<nil>} <nil> <nil> <nil> 0xc0001161a0}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:91 because:
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87 doesn't match the argument at index 2.
+            Got: {{<nil>} <nil> <nil> <nil> 0xc0001161a0}
+            Want: is equal to {{<nil>} <nil> <nil> <nil> 0xc000116110}
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:75 doesn't match the argument at index 1.
+            Got: /sub/123/other/scope
+            Want: is equal to /sub/123/fake/scope
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/other/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc000116110}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation-2, is equal to map[sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned tag1:value1]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:95
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: aborting test due to missing call(s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	0.605s
+FAIL
+```
+
+```bash
+Running tool: /usr/local/bin/go test -timeout 30s -run ^TestReconcileTags$ sigs.k8s.io/cluster-api-provider-azure/azure/services/tags
+
+I0928 12:02:01.567703   38861 tags.go:81]  "msg"="Updating tags"
+I0928 12:02:01.567703   38861 tags.go:81]  "msg"="Updating tags"
+I0928 12:02:01.567716   38861 tags.go:71]  "msg"="Skipping tags reconcile for not managed resource"  "scope"="/sub/123/fake2/scope" "tags"={}
+--- FAIL: TestReconcileTags (0.00s)
+    --- FAIL: TestReconcileTags/create_tags_for_managed_resources (0.00s)
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90: Unexpected call to *mock_tags.Mockclient.CreateOrUpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/fake/scope {{<nil>} <nil> <nil> <nil> 0xc0001160a8}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90 because:
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:75 doesn't match the argument at index 2.
+            Got: {{<nil>} <nil> <nil> <nil> 0xc0001160a8}
+            Want: is equal to {{<nil>} <nil> <nil> <nil> 0xc00069a0a0}
+            expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87 doesn't match the argument at index 1.
+            Got: /sub/123/fake/scope
+            Want: is equal to /sub/123/other/scope
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.Mockclient.GetAtScope(expected a context.Context, but got <nil>, is equal to /sub/123/other/scope) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:85
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.AnnotationJSON(is equal to my-annotation-2) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:86
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/fake/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc00069a0a0}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:75
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/other/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc00069a0d8}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:87
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation, is equal to map[foo:bar sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned thing:stuff]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:84
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation-2, is equal to map[sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned tag1:value1]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:95
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/controller.go:266: aborting test due to missing call(s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	0.530s
+FAIL
+```
+
+```bash
+cluster-api-provider-azure $ go test -v -timeout 30s -run ^TestReconcileTags$ sigs.k8s.io/cluster-api-provider-azure/azure/services/tags
+=== RUN   TestReconcileTags
+=== RUN   TestReconcileTags/create_tags_for_managed_resources
+=== PAUSE TestReconcileTags/create_tags_for_managed_resources
+=== RUN   TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== PAUSE TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== RUN   TestReconcileTags/error_getting_existing_tags
+=== PAUSE TestReconcileTags/error_getting_existing_tags
+=== RUN   TestReconcileTags/error_updating_tags
+=== PAUSE TestReconcileTags/error_updating_tags
+=== RUN   TestReconcileTags/tags_unchanged
+=== PAUSE TestReconcileTags/tags_unchanged
+=== CONT  TestReconcileTags/create_tags_for_managed_resources
+=== CONT  TestReconcileTags/error_updating_tags
+=== CONT  TestReconcileTags/tags_unchanged
+=== CONT  TestReconcileTags/error_getting_existing_tags
+=== CONT  TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+I0928 12:33:28.033204   46299 tags.go:81]  "msg"="Updating tags"
+I0928 12:33:28.033423   46299 tags.go:98]  "msg"="successfully updated tags"
+I0928 12:33:28.033204   46299 tags.go:81]  "msg"="Updating tags"
+I0928 12:33:28.033441   46299 tags.go:81]  "msg"="Updating tags"
+I0928 12:33:28.033227   46299 tags.go:71]  "msg"="Skipping tags reconcile for not managed resource"
+I0928 12:33:28.033463   46299 tags.go:98]  "msg"="successfully updated tags"
+--- PASS: TestReconcileTags (0.00s)
+    --- PASS: TestReconcileTags/tags_unchanged (0.00s)
+    --- PASS: TestReconcileTags/error_getting_existing_tags (0.00s)
+    --- PASS: TestReconcileTags/error_updating_tags (0.00s)
+    --- PASS: TestReconcileTags/create_tags_for_managed_resources (0.00s)
+    --- PASS: TestReconcileTags/do_not_create_tags_for_unmanaged_resources (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	(cached)
+cluster-api-provider-azure $
+```
+
+---
+
+```bash
+cluster-api-provider-azure $ go test -v -timeout 30s -run ^TestReconcileTags$ sigs.k8s.io/cluster-api-provider-azure/azure/services/tags
+=== RUN   TestReconcileTags
+=== RUN   TestReconcileTags/create_tags_for_managed_resources
+=== PAUSE TestReconcileTags/create_tags_for_managed_resources
+=== RUN   TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== PAUSE TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== RUN   TestReconcileTags/delete_removed_tags
+=== PAUSE TestReconcileTags/delete_removed_tags
+=== RUN   TestReconcileTags/error_getting_existing_tags
+=== PAUSE TestReconcileTags/error_getting_existing_tags
+=== RUN   TestReconcileTags/error_updating_tags
+=== PAUSE TestReconcileTags/error_updating_tags
+=== RUN   TestReconcileTags/tags_unchanged
+=== PAUSE TestReconcileTags/tags_unchanged
+=== CONT  TestReconcileTags/create_tags_for_managed_resources
+=== CONT  TestReconcileTags/error_getting_existing_tags
+=== CONT  TestReconcileTags/delete_removed_tags
+=== CONT  TestReconcileTags/error_updating_tags
+=== CONT  TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== CONT  TestReconcileTags/tags_unchanged
+I0928 13:59:16.679474   68059 tags.go:81]  "msg"="Updating tags"
+I0928 13:59:16.679474   68059 tags.go:81]  "msg"="Updating tags"
+I0928 13:59:16.679474   68059 tags.go:81]  "msg"="Updating tags"
+I0928 13:59:16.679476   68059 tags.go:71]  "msg"="Skipping tags reconcile for not managed resource"
+=== CONT  TestReconcileTags/delete_removed_tags
+    tags.go:90: Unexpected call to *mock_tags.Mockclient.CreateOrUpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/fake/scope {{<nil>} <nil> <nil> <nil> 0xc000708188}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90 because: there are no expected calls of the method "CreateOrUpdateAtScope" for that receiver
+    controller.go:266: missing call(s) to *mock_tags.Mockclient.UpdateAtScope(expected a context.Context, but got <nil>, is equal to /sub/123/fake/scope, is equal to {Delete 0xc000708128}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:149
+=== CONT  TestReconcileTags/create_tags_for_managed_resources
+    tags.go:90: Unexpected call to *mock_tags.Mockclient.CreateOrUpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/fake/scope {{<nil>} <nil> <nil> <nil> 0xc000010090}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:90 because: there are no expected calls of the method "CreateOrUpdateAtScope" for that receiver
+=== CONT  TestReconcileTags/delete_removed_tags
+    controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation, is equal to map[foo:bar sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:158
+    controller.go:266: aborting test due to missing call(s)
+=== CONT  TestReconcileTags/create_tags_for_managed_resources
+    controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation, is equal to map[foo:bar sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned thing:stuff]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:84
+    controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation-2, is equal to map[sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned tag1:value1]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:100
+    controller.go:266: missing call(s) to *mock_tags.Mockclient.GetAtScope(expected a context.Context, but got <nil>, is equal to /sub/123/other/scope) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:85
+    controller.go:266: missing call(s) to *mock_tags.MockTagScope.AnnotationJSON(is equal to my-annotation-2) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:90
+    controller.go:266: missing call(s) to *mock_tags.Mockclient.UpdateAtScope(expected a context.Context, but got <nil>, is equal to /sub/123/fake/scope, is equal to {Merge 0xc0001100c0}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:74
+    controller.go:266: missing call(s) to *mock_tags.Mockclient.UpdateAtScope(expected a context.Context, but got <nil>, is equal to /sub/123/other/scope, is equal to {Merge 0xc000110108}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:91
+    controller.go:266: aborting test due to missing call(s)
+--- FAIL: TestReconcileTags (0.00s)
+    --- PASS: TestReconcileTags/error_getting_existing_tags (0.00s)
+    --- PASS: TestReconcileTags/tags_unchanged (0.00s)
+    --- PASS: TestReconcileTags/error_updating_tags (0.00s)
+    --- PASS: TestReconcileTags/do_not_create_tags_for_unmanaged_resources (0.00s)
+    --- FAIL: TestReconcileTags/delete_removed_tags (0.00s)
+    --- FAIL: TestReconcileTags/create_tags_for_managed_resources (0.00s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	0.540s
+FAIL
+cluster-api-provider-azure $
+```
+
+---
+
+```bash
+cluster-api-provider-azure $ go test -v -timeout 30s -run ^TestReconcileTags$ sigs.k8s.io/cluster-api-provider-azure/azure/services/tags
+=== RUN   TestReconcileTags
+=== RUN   TestReconcileTags/create_tags_for_managed_resources
+=== PAUSE TestReconcileTags/create_tags_for_managed_resources
+=== RUN   TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== PAUSE TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== RUN   TestReconcileTags/delete_removed_tags
+=== PAUSE TestReconcileTags/delete_removed_tags
+=== RUN   TestReconcileTags/error_getting_existing_tags
+=== PAUSE TestReconcileTags/error_getting_existing_tags
+=== RUN   TestReconcileTags/error_updating_tags
+=== PAUSE TestReconcileTags/error_updating_tags
+=== RUN   TestReconcileTags/tags_unchanged
+=== PAUSE TestReconcileTags/tags_unchanged
+=== CONT  TestReconcileTags/error_updating_tags
+=== CONT  TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== CONT  TestReconcileTags/tags_unchanged
+=== CONT  TestReconcileTags/create_tags_for_managed_resources
+=== CONT  TestReconcileTags/error_getting_existing_tags
+=== CONT  TestReconcileTags/delete_removed_tags
+I0928 14:04:24.403293   69905 tags.go:71]  "msg"="Skipping tags reconcile for not managed resource"
+I0928 14:04:24.403294   69905 tags.go:81]  "msg"="Updating tags"
+I0928 14:04:24.403382   69905 tags.go:81]  "msg"="Updating tags"
+I0928 14:04:24.403476   69905 tags.go:81]  "msg"="Updating tags"
+=== CONT  TestReconcileTags/error_updating_tags
+    tags.go:87: Unexpected call to *mock_tags.Mockclient.UpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/fake/scope { 0xc00037a128}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:87 because: there are no expected calls of the method "UpdateAtScope" for that receiver
+=== CONT  TestReconcileTags/delete_removed_tags
+    tags.go:87: Unexpected call to *mock_tags.Mockclient.UpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/fake/scope { 0xc00069a108}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:87 because:
+        expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:149 doesn't match the argument at index 2.
+        Got: { 0xc00069a108}
+        Want: is equal to {Delete 0xc00037a0a0}
+=== CONT  TestReconcileTags/create_tags_for_managed_resources
+    tags.go:87: Unexpected call to *mock_tags.Mockclient.UpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/fake/scope { 0xc000120080}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:87 because:
+        expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:74 doesn't match the argument at index 2.
+        Got: { 0xc000120080}
+        Want: is equal to {Merge 0xc000192080}
+        expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:91 doesn't match the argument at index 1.
+        Got: /sub/123/fake/scope
+        Want: is equal to /sub/123/other/scope
+=== CONT  TestReconcileTags/delete_removed_tags
+    controller.go:266: missing call(s) to *mock_tags.Mockclient.UpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/fake/scope, is equal to {Delete 0xc00037a0a0}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:149
+=== CONT  TestReconcileTags/error_updating_tags
+    controller.go:266: missing call(s) to *mock_tags.Mockclient.CreateOrUpdateAtScope(expected a context.Context, but got <nil>, is equal to /sub/123/fake/scope, is equal to {{<nil>} <nil> <nil> <nil> 0xc0000100c0}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:204
+    controller.go:266: aborting test due to missing call(s)
+=== CONT  TestReconcileTags/delete_removed_tags
+    controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation, is equal to map[foo:bar sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:158
+    controller.go:266: aborting test due to missing call(s)
+=== CONT  TestReconcileTags/create_tags_for_managed_resources
+    controller.go:266: missing call(s) to *mock_tags.Mockclient.GetAtScope(expected a context.Context, but got <nil>, is equal to /sub/123/other/scope) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:85
+    controller.go:266: missing call(s) to *mock_tags.MockTagScope.AnnotationJSON(is equal to my-annotation-2) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:90
+    controller.go:266: missing call(s) to *mock_tags.Mockclient.UpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/fake/scope, is equal to {Merge 0xc000192080}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:74
+    controller.go:266: missing call(s) to *mock_tags.Mockclient.UpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/other/scope, is equal to {Merge 0xc0001920c0}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:91
+    controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation, is equal to map[foo:bar sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned thing:stuff]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:84
+    controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation-2, is equal to map[sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned tag1:value1]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:100
+    controller.go:266: aborting test due to missing call(s)
+--- FAIL: TestReconcileTags (0.00s)
+    --- PASS: TestReconcileTags/tags_unchanged (0.00s)
+    --- PASS: TestReconcileTags/error_getting_existing_tags (0.00s)
+    --- PASS: TestReconcileTags/do_not_create_tags_for_unmanaged_resources (0.00s)
+    --- FAIL: TestReconcileTags/error_updating_tags (0.00s)
+    --- FAIL: TestReconcileTags/delete_removed_tags (0.00s)
+    --- FAIL: TestReconcileTags/create_tags_for_managed_resources (0.00s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	0.530s
+FAIL
+cluster-api-provider-azure $
+```
+
+```bash
+cluster-api-provider-azure $ go test -v -timeout 30s -run ^TestReconcileTags$ sigs.k8s.io/cluster-api-provider-azure/azure/services/tags
+=== RUN   TestReconcileTags
+=== RUN   TestReconcileTags/create_tags_for_managed_resources
+=== PAUSE TestReconcileTags/create_tags_for_managed_resources
+=== RUN   TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== PAUSE TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== RUN   TestReconcileTags/delete_removed_tags
+=== PAUSE TestReconcileTags/delete_removed_tags
+=== RUN   TestReconcileTags/error_getting_existing_tags
+=== PAUSE TestReconcileTags/error_getting_existing_tags
+=== RUN   TestReconcileTags/error_updating_tags
+=== PAUSE TestReconcileTags/error_updating_tags
+=== RUN   TestReconcileTags/tags_unchanged
+=== PAUSE TestReconcileTags/tags_unchanged
+=== CONT  TestReconcileTags/create_tags_for_managed_resources
+=== CONT  TestReconcileTags/error_getting_existing_tags
+=== CONT  TestReconcileTags/delete_removed_tags
+=== CONT  TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== CONT  TestReconcileTags/tags_unchanged
+=== CONT  TestReconcileTags/error_updating_tags
+I0928 14:09:47.409788   70815 tags.go:71]  "msg"="Skipping tags reconcile for not managed resource"
+I0928 14:09:47.409789   70815 tags.go:81]  "msg"="Updating tags"
+I0928 14:09:47.409799   70815 tags.go:81]  "msg"="Updating tags"
+I0928 14:09:47.409919   70815 tags.go:81]  "msg"="Updating tags"
+I0928 14:09:47.410080   70815 tags.go:95]  "msg"="successfully updated tags"
+=== CONT  TestReconcileTags/delete_removed_tags
+    tags.go:87: Unexpected call to *mock_tags.Mockclient.UpdateAtScope([context.TODO.WithValue(type tele.CorrIDKey, val <not Stringer>).WithValue(type trace.traceContextKeyType, val <not Stringer>) /sub/123/fake/scope {Merge 0xc00030a0d8}]) at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags.go:87 because:
+        expected call at /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:149 doesn't match the argument at index 2.
+        Got: {Merge 0xc00030a0d8}
+        Want: is equal to {Delete 0xc0001140b8}
+I0928 14:09:47.410118   70815 tags.go:81]  "msg"="Updating tags"
+I0928 14:09:47.410138   70815 tags.go:95]  "msg"="successfully updated tags"
+    controller.go:266: missing call(s) to *mock_tags.Mockclient.UpdateAtScope(expected a context.Context, but got *context.valueCtx, is equal to /sub/123/fake/scope, is equal to {Delete 0xc0001140b8}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:149
+    controller.go:266: missing call(s) to *mock_tags.MockTagScope.UpdateAnnotationJSON(is equal to my-annotation, is equal to map[foo:bar sigs.k8s.io_cluster-api-provider-azure_cluster_test-cluster:owned]) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/tags/tags_test.go:158
+    controller.go:266: aborting test due to missing call(s)
+--- FAIL: TestReconcileTags (0.00s)
+    --- PASS: TestReconcileTags/error_getting_existing_tags (0.00s)
+    --- PASS: TestReconcileTags/tags_unchanged (0.00s)
+    --- PASS: TestReconcileTags/do_not_create_tags_for_unmanaged_resources (0.00s)
+    --- PASS: TestReconcileTags/error_updating_tags (0.00s)
+    --- PASS: TestReconcileTags/create_tags_for_managed_resources (0.00s)
+    --- FAIL: TestReconcileTags/delete_removed_tags (0.00s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	0.689s
+FAIL
+cluster-api-provider-azure $
+```
+
+```bash
+cluster-api-provider-azure $ go test -v -timeout 30s -run ^TestReconcileTags$ sigs.k8s.io/cluster-api-provider-azure/azure/services/tags
+=== RUN   TestReconcileTags
+=== RUN   TestReconcileTags/create_tags_for_managed_resources
+=== PAUSE TestReconcileTags/create_tags_for_managed_resources
+=== RUN   TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== PAUSE TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== RUN   TestReconcileTags/delete_removed_tags
+=== PAUSE TestReconcileTags/delete_removed_tags
+=== RUN   TestReconcileTags/error_getting_existing_tags
+=== PAUSE TestReconcileTags/error_getting_existing_tags
+=== RUN   TestReconcileTags/error_updating_tags
+=== PAUSE TestReconcileTags/error_updating_tags
+=== RUN   TestReconcileTags/tags_unchanged
+=== PAUSE TestReconcileTags/tags_unchanged
+=== CONT  TestReconcileTags/create_tags_for_managed_resources
+=== CONT  TestReconcileTags/error_getting_existing_tags
+=== CONT  TestReconcileTags/delete_removed_tags
+=== CONT  TestReconcileTags/do_not_create_tags_for_unmanaged_resources
+=== CONT  TestReconcileTags/tags_unchanged
+=== CONT  TestReconcileTags/error_updating_tags
+I0928 14:13:13.474938   71600 tags.go:81]  "msg"="Updating tags"
+I0928 14:13:13.475231   71600 tags.go:108]  "msg"="successfully updated tags"
+I0928 14:13:13.474942   71600 tags.go:71]  "msg"="Skipping tags reconcile for not managed resource"
+I0928 14:13:13.474948   71600 tags.go:81]  "msg"="Updating tags"
+I0928 14:13:13.475043   71600 tags.go:81]  "msg"="Updating tags"
+I0928 14:13:13.475297   71600 tags.go:108]  "msg"="successfully updated tags"
+I0928 14:13:13.475320   71600 tags.go:81]  "msg"="Updating tags"
+I0928 14:13:13.475340   71600 tags.go:108]  "msg"="successfully updated tags"
+--- PASS: TestReconcileTags (0.00s)
+    --- PASS: TestReconcileTags/error_getting_existing_tags (0.00s)
+    --- PASS: TestReconcileTags/tags_unchanged (0.00s)
+    --- PASS: TestReconcileTags/delete_removed_tags (0.00s)
+    --- PASS: TestReconcileTags/do_not_create_tags_for_unmanaged_resources (0.00s)
+    --- PASS: TestReconcileTags/error_updating_tags (0.00s)
+    --- PASS: TestReconcileTags/create_tags_for_managed_resources (0.00s)
+PASS
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	0.479s
+cluster-api-provider-azure $
+```
+
+---
+
+I have some questions and thoughts -
+
+Questions -
+
+- Do we want to handle both Azure Cluster and Azure Managed Control Plane Resource Groups in this PR? I made the changes for both, but if we want to separate it out, I could do that too
+- Should we write some tests for the Azure Cluster and Azure Managed Control Plane reconciler? Currently I noticed there are no tests. There's not much processing being done as part of this PR with regards to the reconciler and the Cluster scope and Managed Control Plane Scope, it's more of passing around data. Only in `AnnotationJSON` and `UpdateAnnotationJSON` - there's some JSON serialization and JSON parsing code. I haven't added any tests at these levels, as it was mostly just data passing and less processing but let me know what you folks think
+- Should we name `created` in tags service to something like `createdOrUpdated`? Currently it's clear only in one place, where it says
+
+```go
+// Tracking for created/updated
+created := map[string]string{}
+```
+
+everywhere else we use `created` though it includes `updated` tags too, where tag value is updated. Or we could just rename it as `updated` which can encompass a newly created tag too
+- Currently as part of this PR's implementation, we do GET resource tags request to check if the resources are managed based on the owned tag value. In the case of managed resource, here we assume that the owned tag still remains while we do diff processing and then call APIs for updates based on diffs. I think this is a somewhat fair assumption. But yeah it's totally possible for an external entity to remove the owned tag value just after our GET request and just before our update API call. What do you folks think about this scenario?
+
+Thoughts -
+
+- Currently we do a diff using tag spec tags (desired tags) vs last applied tags which is present in the annotation. And then we do appropriate patch API calls (merge / delete) for the diff. There's one downside to this approach, it's possible that an external entity changed the CAPZ managed tags of the resource, and we would miss out to take care of that while reconciling. For example, with the current implementation in this PR -
+
+Initial Azure Resource Tags: `{ c: c1, d: d1 }`
+Tag Spec: `{ a: a1, b: b1 }`
+Last Applied Tags from K8s Annotation: `{ a: a1, b: b1 }`
+No diff, no calls to Azure API to make changes
+Final Azure Resource Tags: `{ c: c1, d: d1 }`
+
+In the above case, ideally, Azure Resource Tags should have been patched (merged) with `{ a: a1, b: b1 }` to finally get `{ a: a1, b: b1, c: c1, d: d1 }`. Why? As it looks like someone meddled with the tags that are managed by CAPZ and CAPZ has to reconcile it. Another example is below
+
+Initial Azure Resource Tags: `{ c: c1, d: d1 }`
+Tag Spec: `{ a: a1, b: b1 }`
+Last Applied Tags from K8s Annotation: `{ a: a1 }`
+There is diff, one patch (merge) call with `{ b: b1 }` to Azure API to make changes
+Final Azure Resource Tags: `{ b: b1, c: c1, d: d1 }`
+
+In the above case, ideally, Azure Resource Tags should have been patched (merged) with `{ a: a1, b: b1 }` to finally get `{ a: a1, b: b1, c: c1, d: d1 }`.
+
+I didn't write test cases for such scenarios though, though I could have. I wanted to discuss it first without code / test code. Let me know if you want to look at test cases for the above examples in case the examples are not very clear or just to help with discussions, I could write the test cases
+
+I think the diff should be done something like this -
+
+For finding deletions, we can look at last applied tags from annotation and then compare it with the desired tag spec
+
+For finding updated / created, we can look at current Azure resource tags from Azure API and then compare it with the desired tag spec
+
+How does that sound?
+
+- `tagsChanged` function returns `map[string]string` for created-or-update and deleted, which we later have to convert to `map[string]*string` for doing the update-at-scope API call for both created-or-updated and deleted. I was wondering if that's okay or if we should we just return `map[string]*string` from `tagsChanged`. Though it's sole responsibility is to help with finding with the tags changed, it could also help more by providing data of appropriate data type for it's only caller which is the tags service
+
+
+Let me know what you folks think about the code, tests and the above questions and thoughts! Thanks!
