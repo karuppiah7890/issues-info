@@ -88,7 +88,7 @@ Removing `main_test.go` from the list we get -
 
 ---
 
-`types: migrate TestCacheKey to testify (#28386)`
+`planner/core: migrate TestCacheKey to testify (#28386)`
 
 ```bash
 { make failpoint-enable; go test -v -run ^TestCacheKey$ github.com/pingcap/tidb/planner/core; make failpoint-disable; }
