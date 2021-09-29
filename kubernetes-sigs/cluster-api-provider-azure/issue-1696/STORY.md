@@ -11092,3 +11092,31 @@ How does that sound?
 
 
 Let me know what you folks think about the code, tests and the above questions and thoughts! Thanks!
+
+---
+
+Thanks to you too @CecileRobertMichon for helping review this PR promptly with lot of help through comments here and in the issue
+
+> Perhaps let's add the tag svc to https://github.com/kubernetes-sigs/cluster-api-provider-azure/blob/341acbedc9074e179802bcf30c083768cba839e6/controllers/azurecluster_reconciler_test.go.
+
+I was going to do that. The Azure cluster reconciler tests passed regardless (with no nil pointer exceptions) and when I checked it out, I noticed we don't have tests for the `Reconcile` method and we only have tests for Azure cluster `Delete` method
+
+> we shouldn't allow for external actors to also manage them
+
+Ah okay. Based on the discussion in the issue #1696 , I was under the impression that CAPZ has it's own set of tags that it can manage and shouldn't be interfering (by overwriting) with the tags that are added and managed by users / other systems for other purposes, for example to help with billing? This is based on the comments from @devigned - https://github.com/kubernetes-sigs/cluster-api-provider-azure/issues/1696#issuecomment-925060775 , https://github.com/kubernetes-sigs/cluster-api-provider-azure/issues/1696#issuecomment-925078929 , https://github.com/kubernetes-sigs/cluster-api-provider-azure/issues/1696#issuecomment-925130687 .
+
+> Otherwise, we introduce an ambiguous source of truth and it becomes difficult to reconcile changes when they happen in both as you pointed out.
+
+True, the thing is I have noticed this kind of feature/behavior with Kubernetes too where changes can happen outside the managed fields. I remember reading `kubectl apply` helps manage resources using YAML but also retains some external modifications by users which are not part of the YAML. I think [this doc](https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/#kubectl-apply) talks a bit about it, I think the term popularly used is the "three way diff" or "three way merge". So if we think about a similar narrative here - it's more like there are CAPZ managed tags, and then there could be tags managed and owned by other systems or users which they can modify. We track what we manage using the last-applied-tags annotation in the case of tags service, similar to Kubernetes last-applied annotation
+
+> That being said, GETs are cheap and I think it's totally fair to do a GET on each loop to determine if anything has changed. If we're already doing the GET for create/update, we can use the same data for deleted tags too and the annotation becomes sort of useless.
+
+Makes sense. If we are not looking to let other external systems / users manage their own separate set of tags which are different from CAPZ managed tags, then yeah, it's not needed to use the annotation and we can just use GET for current resource tags and compare it with the desired resource tags in the tag spec. Currently the implementation in `main` branch the annotation is already being used, and I believe it is exactly to support other external entities to manage their own separate tags. It does GET to get all resource tags - CAPZ managed and probably other tags managed by other external entities, and then does a diff between last-applied annotation tags and desired resource tags in the tag spec to get the diff only for tags managed by CAPZ. The only tricky thing is, with the implementation in `main` we might overwrite the data of other systems as mentioned in [this comment](https://github.com/kubernetes-sigs/cluster-api-provider-azure/issues/1696#issuecomment-925060775) and it also has the downsides of the implementation in this PR, which is, it's possible that the annotation and desired don't have diff but the desired tags are not in current resource, maybe because some external entity removed it
+
+> For the issue of the race condition where someone updates the tag after we do the GET and before the PUT, does the tag CreateOrUpdateAtScope API have etags supported? if so, we can use those to make changes only if the etag hasn't changed. If not, I think it's not a huge problem to assume the owned tag doesn't get deleted in between.
+
+What do you mean by `someone`? You mentioned we expect only CAPZ to manage the tags and no external entities, so is it another instance of CAPZ? and `CreateOrUpdateAtScope` API does not support etags from what I see in the API docs [here](https://docs.microsoft.com/en-us/rest/api/resources/tags/create-or-update-at-scope)
+
+Also, in this PR, I have replaced the `CreateOrUpdateAtScope` with two [`UpdateAtScope`](https://docs.microsoft.com/en-us/rest/api/resources/tags/update-at-scope) API calls - one for create or update using `Merge` [patch operation](https://docs.microsoft.com/en-us/rest/api/resources/tags/update-at-scope#tagspatchoperation) and another for delete using `Delete` [patch operation](https://docs.microsoft.com/en-us/rest/api/resources/tags/update-at-scope#tagspatchoperation). This is based on the [comment here](https://github.com/kubernetes-sigs/cluster-api-provider-azure/issues/1696#issuecomment-925013265) from @devigned . This will help prevent us from race conditions [mentoned here](https://github.com/kubernetes-sigs/cluster-api-provider-azure/issues/1696#issuecomment-925078929) I think - where we overwrite data of external systems by mistake. But I'm not sure if you were talking about external entities
+
+So the big question is - when we say a resource is managed by CAPZ (using the `owned` tag value), should **all** the tags on the resource be managed by CAPZ? Or is it okay for some tags to be added and managed and owned by external entities? Assuming these tags by external entities are totally different (different tag keys) from what CAPZ manages, because if there's conflict / clash there, then CAPZ and external entities are going to have a hard time updating the tags unnecessarily
