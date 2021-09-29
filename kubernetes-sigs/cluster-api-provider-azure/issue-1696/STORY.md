@@ -4252,11 +4252,11 @@ kubeadmcontrolplane.controlplane.cluster.x-k8s.io/capz-cluster-control-plane con
 machinedeployment.cluster.x-k8s.io/capz-cluster-md-0 unchanged
 kubeadmconfigtemplate.bootstrap.cluster.x-k8s.io/capz-cluster-md-0 unchanged
 Error from server (Invalid): error when applying patch:
-{"metadata":{"annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"infrastructure.cluster.x-k8s.io/v1alpha4\",\"kind\":\"AzureCluster\",\"metadata\":{\"annotations\":{},\"name\":\"capz-cluster\",\"namespace\":\"default\"},\"spec\":{\"identityRef\":{\"apiVersion\":\"infrastructure.cluster.x-k8s.io/v1alpha4\",\"kind\":\"AzureClusterIdentity\",\"name\":null},\"location\":\"southcentralus\",\"networkSpec\":{\"vnet\":{\"name\":\"capz-cluster-vnet\"}},\"resourceGroup\":\"capz-cluster\",\"subscriptionID\":\"87fbb054-796e-47cc-a777-c7a052901de1\"}}\n"}},"spec":{"subscriptionID":"87fbb054-796e-47cc-a777-c7a052901de1"}}
+{"metadata":{"annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"infrastructure.cluster.x-k8s.io/v1alpha4\",\"kind\":\"AzureCluster\",\"metadata\":{\"annotations\":{},\"name\":\"capz-cluster\",\"namespace\":\"default\"},\"spec\":{\"identityRef\":{\"apiVersion\":\"infrastructure.cluster.x-k8s.io/v1alpha4\",\"kind\":\"AzureClusterIdentity\",\"name\":null},\"location\":\"southcentralus\",\"networkSpec\":{\"vnet\":{\"name\":\"capz-cluster-vnet\"}},\"resourceGroup\":\"capz-cluster\",\"subscriptionID\":\"dummy-subscription-id\"}}\n"}},"spec":{"subscriptionID":"dummy-subscription-id"}}
 to:
 Resource: "infrastructure.cluster.x-k8s.io/v1alpha4, Resource=azureclusters", GroupVersionKind: "infrastructure.cluster.x-k8s.io/v1alpha4, Kind=AzureCluster"
 Name: "capz-cluster", Namespace: "default"
-for: "STDIN": admission webhook "validation.azurecluster.infrastructure.cluster.x-k8s.io" denied the request: AzureCluster.infrastructure.cluster.x-k8s.io "capz-cluster" is invalid: spec.SubscriptionID: Invalid value: "87fbb054-796e-47cc-a777-c7a052901de1": field is immutable
+for: "STDIN": admission webhook "validation.azurecluster.infrastructure.cluster.x-k8s.io" denied the request: AzureCluster.infrastructure.cluster.x-k8s.io "capz-cluster" is invalid: spec.SubscriptionID: Invalid value: "dummy-subscription-id": field is immutable
 Error from server (Invalid): error when applying patch:
 {"metadata":{"annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"infrastructure.cluster.x-k8s.io/v1alpha4\",\"kind\":\"AzureMachineTemplate\",\"metadata\":{\"annotations\":{},\"name\":\"capz-cluster-control-plane\",\"namespace\":\"default\"},\"spec\":{\"template\":{\"spec\":{\"dataDisks\":[{\"diskSizeGB\":256,\"lun\":0,\"nameSuffix\":\"etcddisk\"}],\"osDisk\":{\"diskSizeGB\":128,\"osType\":\"Linux\"},\"sshPublicKey\":\"c3NoLXJzYSBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFCQVFDMnRRUDV5ZTFnL0FnTEVrWFZ5MWJVMXFwbUxxZjF0dmVCSU80VTNRRUJISkMvT3RIa0czbzNhZVlzTU9VblZLMldMTHZURWF6Q1JVWk9aZVB1QkRWbERvazhFL2tnNmlVTEtlSVc2ZkpURXZCUVQ2UE56UWwvYUZ2YXc2cHcxZ2JtdFlWZTNWRmxsRzYrWkRQbzlkbWZUeFFLZDIwRG9JaGdobkdTMlNvQmlPVGVlUmV3djRhVXdLUWxFR1BHMlJXZnhDckx0UjB2WDRWUUZ0MHBnVnRualgrR2RxRXNqMHhYMFpEeUJWSFdXR3dIRFJsRGhhczA3VDNTNWxsY1NtOS9PdU5VQk5PY0pvc2hUOXAwN2Vrc05Kd3NndmtjMTcxeHNScklyN3U1MUtFamd3MFlGYVB0N1BWOHVyYXgyTGl2UDAydXNrRENmVmtJZGo0SWE3WnQga2FydXBwaWFobkBrYXJ1cHBpYWhuLWEwMS52bXdhcmUuY29tCg==\",\"vmSize\":\"Standard_D2s_v3\"}}}}\n"}},"spec":{"template":{"spec":{"dataDisks":[{"diskSizeGB":256,"lun":0,"nameSuffix":"etcddisk"}],"sshPublicKey":"c3NoLXJzYSBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFCQVFDMnRRUDV5ZTFnL0FnTEVrWFZ5MWJVMXFwbUxxZjF0dmVCSU80VTNRRUJISkMvT3RIa0czbzNhZVlzTU9VblZLMldMTHZURWF6Q1JVWk9aZVB1QkRWbERvazhFL2tnNmlVTEtlSVc2ZkpURXZCUVQ2UE56UWwvYUZ2YXc2cHcxZ2JtdFlWZTNWRmxsRzYrWkRQbzlkbWZUeFFLZDIwRG9JaGdobkdTMlNvQmlPVGVlUmV3djRhVXdLUWxFR1BHMlJXZnhDckx0UjB2WDRWUUZ0MHBnVnRualgrR2RxRXNqMHhYMFpEeUJWSFdXR3dIRFJsRGhhczA3VDNTNWxsY1NtOS9PdU5VQk5PY0pvc2hUOXAwN2Vrc05Kd3NndmtjMTcxeHNScklyN3U1MUtFamd3MFlGYVB0N1BWOHVyYXgyTGl2UDAydXNrRENmVmtJZGo0SWE3WnQga2FydXBwaWFobkBrYXJ1cHBpYWhuLWEwMS52bXdhcmUuY29tCg=="}}}}
 to:
@@ -11056,6 +11056,7 @@ created := map[string]string{}
 ```
 
 everywhere else we use `created` though it includes `updated` tags too, where tag value is updated. Or we could just rename it as `updated` which can encompass a newly created tag too
+
 - Currently as part of this PR's implementation, we do GET resource tags request to check if the resources are managed based on the owned tag value. In the case of managed resource, here we assume that the owned tag still remains while we do diff processing and then call APIs for updates based on diffs. I think this is a somewhat fair assumption. But yeah it's totally possible for an external entity to remove the owned tag value just after our GET request and just before our update API call. What do you folks think about this scenario?
 
 Thoughts -
@@ -11089,7 +11090,6 @@ For finding updated / created, we can look at current Azure resource tags from A
 How does that sound?
 
 - `tagsChanged` function returns `map[string]string` for created-or-update and deleted, which we later have to convert to `map[string]*string` for doing the update-at-scope API call for both created-or-updated and deleted. I was wondering if that's okay or if we should we just return `map[string]*string` from `tagsChanged`. Though it's sole responsibility is to help with finding with the tags changed, it could also help more by providing data of appropriate data type for it's only caller which is the tags service
-
 
 Let me know what you folks think about the code, tests and the above questions and thoughts! Thanks!
 
