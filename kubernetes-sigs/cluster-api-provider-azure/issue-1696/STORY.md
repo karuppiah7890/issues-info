@@ -11120,3 +11120,8 @@ What do you mean by `someone`? You mentioned we expect only CAPZ to manage the t
 Also, in this PR, I have replaced the `CreateOrUpdateAtScope` with two [`UpdateAtScope`](https://docs.microsoft.com/en-us/rest/api/resources/tags/update-at-scope) API calls - one for create or update using `Merge` [patch operation](https://docs.microsoft.com/en-us/rest/api/resources/tags/update-at-scope#tagspatchoperation) and another for delete using `Delete` [patch operation](https://docs.microsoft.com/en-us/rest/api/resources/tags/update-at-scope#tagspatchoperation). This is based on the [comment here](https://github.com/kubernetes-sigs/cluster-api-provider-azure/issues/1696#issuecomment-925013265) from @devigned . This will help prevent us from race conditions [mentoned here](https://github.com/kubernetes-sigs/cluster-api-provider-azure/issues/1696#issuecomment-925078929) I think - where we overwrite data of external systems by mistake. But I'm not sure if you were talking about external entities
 
 So the big question is - when we say a resource is managed by CAPZ (using the `owned` tag value), should **all** the tags on the resource be managed by CAPZ? Or is it okay for some tags to be added and managed and owned by external entities? Assuming these tags by external entities are totally different (different tag keys) from what CAPZ manages, because if there's conflict / clash there, then CAPZ and external entities are going to have a hard time updating the tags unnecessarily
+
+---
+
+TODO
+If #1740 gets merged, might have to do rebase as it has some major changes.
