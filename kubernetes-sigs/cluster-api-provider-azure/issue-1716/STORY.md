@@ -344,3 +344,212 @@ TODO
     - Add tests before, or maybe later, as we need mocks and different test cases, which we will get to know only based on some small implementation details
 
 Unlike many other resources, Public IPs resource has multiple Public IP specs in the form of a list. We have to create each of those Public IPs. But as a whole, we consider the whole list of Public IPs to be created as an async operation. Or we can create each Public IP in an async manner. Why? Because for resource name for the async operation, we need one name, and there's no name for all the Public IPs list put together. But there is a name for each Public IP! Also, since each `async.CreateResource` handles only one future, we can only create one Public IP per `async.CreateResource` call, because for creating multiple Public IPs, we would have to store multiple futures and process them under a given resource name, and that's not possible with one `async.CreateResource` call
+
+---
+
+Low Level TODOs
+- Write tests for publicips reconcile - with async flow
+  - Write mocks
+- Implement async methods with no code in it to fix the tests
+
+What about tests for publicips client.go? Hmm. There's not much processing in it, but still, there's some processing, hmm
+
+We might have to write just one test for publcips client.go for reconcile - as part of creation
+
+---
+
+```go
+s.Scope.V(2).Info("creating public IP", "public ip", ip.Name)
+
+// only set DNS properties if there is a DNS name specified
+addressVersion := network.IPVersionIPv4
+if ip.IsIPv6 {
+  addressVersion = network.IPVersionIPv6
+}
+
+// only set DNS properties if there is a DNS name specified
+var dnsSettings *network.PublicIPAddressDNSSettings
+if ip.DNSName != "" {
+  dnsSettings = &network.PublicIPAddressDNSSettings{
+    DomainNameLabel: to.StringPtr(strings.Split(ip.DNSName, ".")[0]),
+    Fqdn:            to.StringPtr(ip.DNSName),
+  }
+}
+
+err := s.Client.CreateOrUpdate(
+  ctx,
+  s.Scope.ResourceGroup(),
+  ip.Name,
+  network.PublicIPAddress{
+    Tags: converters.TagsToMap(infrav1.Build(infrav1.BuildParams{
+      ClusterName: s.Scope.ClusterName(),
+      Lifecycle:   infrav1.ResourceLifecycleOwned,
+      Name:        to.StringPtr(ip.Name),
+      Additional:  s.Scope.AdditionalTags(),
+    })),
+    Sku:      &network.PublicIPAddressSku{Name: network.PublicIPAddressSkuNameStandard},
+    Name:     to.StringPtr(ip.Name),
+    Location: to.StringPtr(s.Scope.Location()),
+    PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
+      PublicIPAddressVersion:   addressVersion,
+      PublicIPAllocationMethod: network.IPAllocationMethodStatic,
+      DNSSettings:              dnsSettings,
+    },
+  },
+)
+
+if err != nil {
+  return errors.Wrap(err, "cannot create public IP")
+}
+
+s.Scope.V(2).Info("successfully created public IP", "public ip", ip.Name)
+```
+
+```go
+s.ResourceGroup().AnyTimes().Return("my-rg")
+s.ClusterName().AnyTimes().Return("my-cluster")
+s.AdditionalTags().AnyTimes().Return(infrav1.Tags{})
+s.Location().AnyTimes().Return("testlocation")
+```
+
+```go
+ipSpec1 := azure.PublicIPSpec{
+  Name:    "my-publicip",
+  DNSName: "fakedns.mydomain.io",
+}
+ipSpec2 := azure.PublicIPSpec{
+  Name:    "my-publicip-2",
+  DNSName: "fakedns2-52959.uksouth.cloudapp.azure.com",
+}
+ipSpec3 := azure.PublicIPSpec{
+  Name: "my-publicip-3",
+}
+ipSpec4 := azure.PublicIPSpec{
+  Name:    "my-publicip-ipv6",
+  IsIPv6:  true,
+  DNSName: "fakename.mydomain.io",
+}
+```
+
+```go
+m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip", gomockinternal.DiffEq(network.PublicIPAddress{
+  Name:     to.StringPtr("my-publicip"),
+  Sku:      &network.PublicIPAddressSku{Name: network.PublicIPAddressSkuNameStandard},
+  Location: to.StringPtr("testlocation"),
+  Tags: map[string]*string{
+    "Name": to.StringPtr("my-publicip"),
+    "sigs.k8s.io_cluster-api-provider-azure_cluster_my-cluster": to.StringPtr("owned"),
+  },
+  PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
+    PublicIPAddressVersion:   network.IPVersionIPv4,
+    PublicIPAllocationMethod: network.IPAllocationMethodStatic,
+    DNSSettings: &network.PublicIPAddressDNSSettings{
+      DomainNameLabel: to.StringPtr("fakedns"),
+      Fqdn:            to.StringPtr("fakedns.mydomain.io"),
+    },
+  },
+})).Times(1),
+m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip-2", gomockinternal.DiffEq(network.PublicIPAddress{
+  Name:     to.StringPtr("my-publicip-2"),
+  Sku:      &network.PublicIPAddressSku{Name: network.PublicIPAddressSkuNameStandard},
+  Location: to.StringPtr("testlocation"),
+  Tags: map[string]*string{
+    "Name": to.StringPtr("my-publicip-2"),
+    "sigs.k8s.io_cluster-api-provider-azure_cluster_my-cluster": to.StringPtr("owned"),
+  },
+  PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
+    PublicIPAddressVersion:   network.IPVersionIPv4,
+    PublicIPAllocationMethod: network.IPAllocationMethodStatic,
+    DNSSettings: &network.PublicIPAddressDNSSettings{
+      DomainNameLabel: to.StringPtr("fakedns2-52959"),
+      Fqdn:            to.StringPtr("fakedns2-52959.uksouth.cloudapp.azure.com"),
+    },
+  },
+})).Times(1),
+m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip-3", gomockinternal.DiffEq(network.PublicIPAddress{
+  Name:     to.StringPtr("my-publicip-3"),
+  Sku:      &network.PublicIPAddressSku{Name: network.PublicIPAddressSkuNameStandard},
+  Location: to.StringPtr("testlocation"),
+  Tags: map[string]*string{
+    "Name": to.StringPtr("my-publicip-3"),
+    "sigs.k8s.io_cluster-api-provider-azure_cluster_my-cluster": to.StringPtr("owned"),
+  },
+  PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
+    PublicIPAddressVersion:   network.IPVersionIPv4,
+    PublicIPAllocationMethod: network.IPAllocationMethodStatic,
+  },
+})).Times(1),
+m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip-ipv6", gomockinternal.DiffEq(network.PublicIPAddress{
+  Name:     to.StringPtr("my-publicip-ipv6"),
+  Sku:      &network.PublicIPAddressSku{Name: network.PublicIPAddressSkuNameStandard},
+  Location: to.StringPtr("testlocation"),
+  Tags: map[string]*string{
+    "Name": to.StringPtr("my-publicip-ipv6"),
+    "sigs.k8s.io_cluster-api-provider-azure_cluster_my-cluster": to.StringPtr("owned"),
+  },
+  PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
+    PublicIPAddressVersion:   network.IPVersionIPv6,
+    PublicIPAllocationMethod: network.IPAllocationMethodStatic,
+    DNSSettings: &network.PublicIPAddressDNSSettings{
+      DomainNameLabel: to.StringPtr("fakename"),
+      Fqdn:            to.StringPtr("fakename.mydomain.io"),
+    },
+  },
+})).Times(1),
+```
+
+```go
+"cannot create public IP: #: Internal Server Error: StatusCode=500"
+```
+
+```go
+s.PublicIPSpecs().Return([]azure.PublicIPSpec{
+  {
+    Name:    "my-publicip",
+    DNSName: "fakedns.mydomain.io",
+  },
+})
+s.ResourceGroup().AnyTimes().Return("my-rg")
+s.ClusterName().AnyTimes().Return("my-cluster")
+s.AdditionalTags().AnyTimes().Return(infrav1.Tags{})
+s.Location().AnyTimes().Return("testlocation")
+m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip", gomock.AssignableToTypeOf(network.PublicIPAddress{})).Return(autorest.NewErrorWithResponse("", "", &http.Response{StatusCode: 500}, "Internal Server Error"))
+```
+
+---
+
+Low level [TODO]
+- Check how other resources manage status for multiple resources / specs similar to public IPs? For example Network Security Groups has multiple specs in a reconcile - https://github.com/kubernetes-sigs/cluster-api-provider-azure/pull/1684/files `azure/services/securitygroups/securitygroups.go` - DONE
+
+---
+
+```bash
+Running tool: /usr/local/bin/go test -timeout 30s -run ^TestReconcilePublicIP$ sigs.k8s.io/cluster-api-provider-azure/azure/services/publicips
+
+I0930 18:20:35.653883    2663 async.go:76]  "msg"="creating resource"  "resource"="my-publicip" "resourceGroup"="test-group" "service"="publicips"
+I0930 18:20:35.654112    2663 async.go:91]  "msg"="successfully created resource"  "resource"="my-publicip" "resourceGroup"="test-group" "service"="publicips"
+I0930 18:20:35.654130    2663 async.go:76]  "msg"="creating resource"  "resource"="my-publicip-ipv6" "resourceGroup"="test-group" "service"="publicips"
+I0930 18:20:35.654146    2663 async.go:91]  "msg"="successfully created resource"  "resource"="my-publicip-ipv6" "resourceGroup"="test-group" "service"="publicips"
+--- FAIL: TestReconcilePublicIP (0.00s)
+    --- FAIL: TestReconcilePublicIP/first_public_IP_creation_fails (0.00s)
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/publicips/publicips_test.go:98: wrong type of argument 0 to Return for *mock_publicips.MockClient.CreateOrUpdateAsync: *errors.errorString is not assignable to azure.FutureAPI [/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/publicips/publicips_test.go:98]
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/publicips/controller.go:266: missing call(s) to *mock_publicips.MockPublicIPScope.PublicIPSpecs() /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/publicips/publicips_test.go:92
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/publicips/controller.go:266: missing call(s) to *mock_publicips.MockPublicIPScope.GetLongRunningOperationState(is equal to my-publicip, is equal to publicips) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/publicips/publicips_test.go:97
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/publicips/controller.go:266: missing call(s) to *mock_publicips.MockClient.CreateOrUpdateAsync(expected a context.Context, but got <nil>, is equal to {my-publicip fakedns.mydomain.io false test-group}) /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/publicips/publicips_test.go:98
+        /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/azure/services/publicips/controller.go:266: aborting test due to missing call(s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/publicips	0.541s
+FAIL
+```
+
+---
+
+[TODO]
+- Write tests for `azure/services/publicips/client.go` as all the code from `azure/services/publicips/publicips.go` moved to `azure/services/publicips/client.go`. Use Azure API Client mock to get help with the testing. Test file - `azure/services/publicips/client_test.go`. The test would look similar to the old tests of `azure/services/publicips/publicips_test.go` testing some of the old features of `azure/services/publicips/publicips.go` which are gonna be in `azure/services/publicips/client.go`
+- Implement the `CreateOrUpdateAsync` in `azure/services/publicips/client.go` - don't handle updates. Put a TODO for now. 
+- Implement the `IsDone` in `azure/services/publicips/client.go`
+- Implement the `Parameters` in `azure/publicip_spec.go` - leave out returning any value when existing value is there
+- Discuss about how and what kind of updates we would do when public IP specs change. I mean, there are only a few fields in the public IP spec that are possibly mutable - name and resource group are immutable, so remaining is DNS Name and isIPv6. I doubt if we can change an IPv4 public IP to IPv6 - I mean, even if the Azure API allows, that's still a big change, like major, huge! And a breaking change too I think. So, I doubt if that's okay and allowed. Gotta check the webhooks and the validation fields to see if the mutation is allowed based on how the boolean is set
+- Add test for `PublicIPSpecs` implemented in `azure/scope/cluster.go`, in `azure/scope/cluster_test.go`. There are no tests for it as of now and it has too much logic!
+- Check if the tests `TestDeletePublicIP` and `TestReconcilePublicIP` can run in parallel. I can see their sub tests can run in parallel among the respective subtests. Wondering if we need to put a `t.Parallel` at the top level too so that the top level tests are also triggered simultaneously. Gotta check more on it if there are downsides to not putting `t.Parallel` at the top level / upsides to putting `t.Parallel` at the top level
+
