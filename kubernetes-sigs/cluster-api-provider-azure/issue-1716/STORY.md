@@ -569,3 +569,14 @@ FAIL
 - Discuss about how and what kind of updates we would do when public IP specs change. I mean, there are only a few fields in the public IP spec that are possibly mutable - name and resource group are immutable, so remaining is DNS Name and isIPv6. I doubt if we can change an IPv4 public IP to IPv6 - I mean, even if the Azure API allows, that's still a big change, like major, huge! And a breaking change too I think. So, I doubt if that's okay and allowed. Gotta check the webhooks and the validation fields to see if the mutation is allowed based on how the boolean is set
 - Add test for `PublicIPSpecs` implemented in `azure/scope/cluster.go`, in `azure/scope/cluster_test.go`. There are no tests for it as of now and it has too much logic!
 - Check if the tests `TestDeletePublicIP` and `TestReconcilePublicIP` can run in parallel. I can see their sub tests can run in parallel among the respective subtests. Wondering if we need to put a `t.Parallel` at the top level too so that the top level tests are also triggered simultaneously. Gotta check more on it if there are downsides to not putting `t.Parallel` at the top level / upsides to putting `t.Parallel` at the top level
+
+- Fix test errors in `azure/services/bastionhosts/bastionhosts_test.go` - it's due to renaming of publicips client `CreateOrUpdate` method to `CreateOrUpdateAsync` method. Not sure where the old method was getting called as part of `azure/services/bastionhosts/bastionhosts.go`'s `Reconcile` method. Gotta dig in. In `main` also there's no create or update calls in the actual code, just in test. In `main`, commenting out the expectation done using mock method calls still passes the tests. It's weird. Some of them have to fail and fail with proper error. It's weird, gotta dig in and understand what's going on. Branch `remove-unnecessary-method-call-expectations-from-bastion-host-test`
+
+---
+
+Maybe just write one test in `azure/services/publicips/client_test.go` which checks if the wiring up is all good
+
+Write many tests in `spec_test.go` for `Parameters` method as that's where a lot of logic would go in! The tests from `azure/services/publicips/publicips_test.go` for different small logic should go in there, for configuring public ip spec to a azure resource
+
+---
+
