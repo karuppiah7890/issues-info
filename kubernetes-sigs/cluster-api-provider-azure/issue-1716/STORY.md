@@ -10,7 +10,7 @@ Public IP Related bug - https://github.com/kubernetes-sigs/cluster-api-provider-
 
 `azure/services/publicips/client.go`
 
-TODO
+stuff
 
 - Check existing tests for public IPs reconcile and delete
 - Check existing code for public IPs reconcile and delete
@@ -289,6 +289,7 @@ response body with 404 Not Found
 ---
 
 publicips `Reconcile` and `Delete` methods are being used in
+
 - `controllers/azurecluster_reconciler.go`
 - `controllers/azuremachine_reconciler.go`
 
@@ -337,17 +338,17 @@ I guess it's fast but maybe not too fast. Not sure though
 
 ---
 
-TODO
 - Convert Public IPs `Reconcile` method to use async package. Add tests
-    - Add tests before, or maybe later, as we need mocks and different test cases, which we will get to know only based on some small implementation details
+  - Add tests before, or maybe later, as we need mocks and different test cases, which we will get to know only based on some small implementation details
 - Convert Public IPs `Delete` method to use async package. Add tests
-    - Add tests before, or maybe later, as we need mocks and different test cases, which we will get to know only based on some small implementation details
+  - Add tests before, or maybe later, as we need mocks and different test cases, which we will get to know only based on some small implementation details
 
 Unlike many other resources, Public IPs resource has multiple Public IP specs in the form of a list. We have to create each of those Public IPs. But as a whole, we consider the whole list of Public IPs to be created as an async operation. Or we can create each Public IP in an async manner. Why? Because for resource name for the async operation, we need one name, and there's no name for all the Public IPs list put together. But there is a name for each Public IP! Also, since each `async.CreateResource` handles only one future, we can only create one Public IP per `async.CreateResource` call, because for creating multiple Public IPs, we would have to store multiple futures and process them under a given resource name, and that's not possible with one `async.CreateResource` call
 
 ---
 
-Low Level TODOs
+Low Level stuff
+
 - Write tests for publicips reconcile - with async flow
   - Write mocks
 - Implement async methods with no code in it to fix the tests
@@ -518,8 +519,9 @@ m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip", gomock.Assig
 
 ---
 
-Low level [TODO]
-- Check how other resources manage status for multiple resources / specs similar to public IPs? For example Network Security Groups has multiple specs in a reconcile - https://github.com/kubernetes-sigs/cluster-api-provider-azure/pull/1684/files `azure/services/securitygroups/securitygroups.go` - DONE
+Low level stuff
+
+- Check how other resources manage status for multiple resources / specs similar to public IPs? For example Network Security Groups has multiple specs in a reconcile - https://github.com/kubernetes-sigs/cluster-api-provider-azure/pull/1684/files `azure/services/securitygroups/securitygroups.go` - [DONE]
 
 ---
 
@@ -545,11 +547,25 @@ FAIL
 ---
 
 [TODO]
+
+- Check existing tests for public IPs reconcile and delete
+- Check existing code for public IPs reconcile and delete
+- Check how existing async implementations have been done - for both reconcile and delete
+
+- Convert Public IPs `Reconcile` method to use async package. Add tests
+  - Add tests before, or maybe later, as we need mocks and different test cases, which we will get to know only based on some small implementation details
+- Convert Public IPs `Delete` method to use async package. Add tests
+
+  - Add tests before, or maybe later, as we need mocks and different test cases, which we will get to know only based on some small implementation details
+
+- Write tests for publicips reconcile - with async flow
+  - Write mocks
+- Implement async methods with no code in it to fix the tests
+
 - Write tests for `azure/services/publicips/client.go` as all the code from `azure/services/publicips/publicips.go` moved to `azure/services/publicips/client.go`. Use Azure API Client mock to get help with the testing. Test file - `azure/services/publicips/client_test.go`. The test would look similar to the old tests of `azure/services/publicips/publicips_test.go` testing some of the old features of `azure/services/publicips/publicips.go` which are gonna be in `azure/services/publicips/client.go`
-- Implement the `CreateOrUpdateAsync` in `azure/services/publicips/client.go` - don't handle updates. Put a TODO for now. 
+- Implement the `CreateOrUpdateAsync` in `azure/services/publicips/client.go` - don't handle updates. Put a TODO for now.
 - Implement the `IsDone` in `azure/services/publicips/client.go`
 - Implement the `Parameters` in `azure/publicip_spec.go` - leave out returning any value when existing value is there
 - Discuss about how and what kind of updates we would do when public IP specs change. I mean, there are only a few fields in the public IP spec that are possibly mutable - name and resource group are immutable, so remaining is DNS Name and isIPv6. I doubt if we can change an IPv4 public IP to IPv6 - I mean, even if the Azure API allows, that's still a big change, like major, huge! And a breaking change too I think. So, I doubt if that's okay and allowed. Gotta check the webhooks and the validation fields to see if the mutation is allowed based on how the boolean is set
 - Add test for `PublicIPSpecs` implemented in `azure/scope/cluster.go`, in `azure/scope/cluster_test.go`. There are no tests for it as of now and it has too much logic!
 - Check if the tests `TestDeletePublicIP` and `TestReconcilePublicIP` can run in parallel. I can see their sub tests can run in parallel among the respective subtests. Wondering if we need to put a `t.Parallel` at the top level too so that the top level tests are also triggered simultaneously. Gotta check more on it if there are downsides to not putting `t.Parallel` at the top level / upsides to putting `t.Parallel` at the top level
-
