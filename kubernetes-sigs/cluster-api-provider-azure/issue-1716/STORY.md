@@ -636,3 +636,225 @@ https://pkg.go.dev/github.com/onsi/gomega/gstruct
 https://duckduckgo.com/?t=ffab&q=azure+bastion&ia=web
 
 https://azure.microsoft.com/en-us/services/azure-bastion/
+
+---
+
+[TODO] Make `Delete` async
+
+- Add a time out in the publicips `Delete` method. [DONE]
+
+```go
+ctx, cancel := context.WithTimeout(ctx, reconciler.DefaultAzureServiceReconcileTimeout)
+defer cancel()
+```
+
+- Write tests for `Delete` method in `azure/services/publicips/publicips_test.go` and write the code in `azure/services/publicips/publicips.go` `Delete` method
+
+
+---
+
+It's interesting to see how an Azure cluster is deleted in the Azure cluster reconciler - it's the same way how I have tried to cleanup clusters in test automation scripts - simply delete the Azure resource group containing all the resources of the cluster. The only tricky thing is - if the resource group is not managed, then we will have to delete each cluster resource one by one - why? Because the resource group may have extra resources which are not managed by capz and are used by other entities (humans, other systems) and if capz deletes the unmanaged resource group, then it will delete everything - the capz managed cluster and everything in the resource group. So that's why we need to delete every cluster resource one by one when resource group is not managed
+
+Best thing - deleting a resource group automatically deletes all the resources in it - Azure takes care of it. Kubernetes also does this - When a Kubernetes namespace is deleted, all the resources in it are also deleted ! :D
+
+---
+
+```go
+// Delete deletes the public IP with the provided scope.
+func (s *Service) Delete(ctx context.Context) error {
+	ctx, _, done := tele.StartSpanWithLogger(ctx, "publicips.Service.Delete")
+	defer done()
+
+	ctx, cancel := context.WithTimeout(ctx, reconciler.DefaultAzureServiceReconcileTimeout)
+	defer cancel()
+
+	for _, ip := range s.Scope.PublicIPSpecs() {
+		managed, err := s.isIPManaged(ctx, ip.Name)
+		if err != nil && !azure.ResourceNotFound(err) {
+			return errors.Wrap(err, "could not get public IP management state")
+		}
+
+		if !managed {
+			s.Scope.V(2).Info("Skipping IP deletion for unmanaged public IP", "public ip", ip.Name)
+			continue
+		}
+
+		s.Scope.V(2).Info("deleting public IP", "public ip", ip.Name)
+		err = s.Client.Delete(ctx, s.Scope.ResourceGroup(), ip.Name)
+		if err != nil && azure.ResourceNotFound(err) {
+			// already deleted
+			continue
+		}
+		if err != nil {
+			return errors.Wrapf(err, "failed to delete public IP %s in resource group %s", ip.Name, s.Scope.ResourceGroup())
+		}
+
+		s.Scope.V(2).Info("deleted public IP", "public ip", ip.Name)
+	}
+	return nil
+}
+```
+
+```go
+func TestDeletePublicIP(t *testing.T) {
+	testcases := []struct {
+		name          string
+		expectedError string
+		expect        func(s *mock_publicips.MockPublicIPScopeMockRecorder, m *mock_publicips.MockClientMockRecorder)
+	}{
+		{
+			name:          "successfully delete two existing public IP",
+			expectedError: "",
+			expect: func(s *mock_publicips.MockPublicIPScopeMockRecorder, m *mock_publicips.MockClientMockRecorder) {
+				s.V(gomock.AssignableToTypeOf(2)).AnyTimes().Return(klogr.New())
+				s.PublicIPSpecs().Return([]publicips.PublicIPSpec{
+					{
+						Name: "my-publicip",
+					},
+					{
+						Name: "my-publicip-2",
+					},
+				})
+				s.ResourceGroup().AnyTimes().Return("my-rg")
+				s.ClusterName().AnyTimes().Return("my-cluster")
+				m.Get(gomockinternal.AContext(), "my-rg", "my-publicip").Return(network.PublicIPAddress{
+					Name: to.StringPtr("my-publicip"),
+					Tags: map[string]*string{
+						"sigs.k8s.io_cluster-api-provider-azure_cluster_my-cluster": to.StringPtr("owned"),
+						"foo": to.StringPtr("bar"),
+					},
+				}, nil)
+				m.Delete(gomockinternal.AContext(), "my-rg", "my-publicip")
+				m.Get(gomockinternal.AContext(), "my-rg", "my-publicip-2").Return(network.PublicIPAddress{
+					Name: to.StringPtr("my-publicip-2"),
+					Tags: map[string]*string{
+						"sigs.k8s.io_cluster-api-provider-azure_cluster_my-cluster": to.StringPtr("owned"),
+						"foo": to.StringPtr("buzz"),
+					},
+				}, nil)
+				m.Delete(gomockinternal.AContext(), "my-rg", "my-publicip-2")
+			},
+		},
+		{
+			name:          "public ip already deleted",
+			expectedError: "",
+			expect: func(s *mock_publicips.MockPublicIPScopeMockRecorder, m *mock_publicips.MockClientMockRecorder) {
+				s.V(gomock.AssignableToTypeOf(2)).AnyTimes().Return(klogr.New())
+				s.PublicIPSpecs().Return([]publicips.PublicIPSpec{
+					{
+						Name: "my-publicip",
+					},
+					{
+						Name: "my-publicip-2",
+					},
+				})
+				s.ResourceGroup().AnyTimes().Return("my-rg")
+				s.ClusterName().AnyTimes().Return("my-cluster")
+				m.Get(gomockinternal.AContext(), "my-rg", "my-publicip").Return(network.PublicIPAddress{}, autorest.NewErrorWithResponse("", "", &http.Response{StatusCode: 404}, "Not found"))
+				m.Get(gomockinternal.AContext(), "my-rg", "my-publicip-2").Return(network.PublicIPAddress{
+					Name: to.StringPtr("my-public-ip-2"),
+					Tags: map[string]*string{
+						"sigs.k8s.io_cluster-api-provider-azure_cluster_my-cluster": to.StringPtr("owned"),
+						"foo": to.StringPtr("buzz"),
+					},
+				}, nil)
+				m.Delete(gomockinternal.AContext(), "my-rg", "my-publicip-2")
+			},
+		},
+		{
+			name:          "public ip deletion fails",
+			expectedError: "failed to delete public IP my-publicip in resource group my-rg: #: Internal Server Error: StatusCode=500",
+			expect: func(s *mock_publicips.MockPublicIPScopeMockRecorder, m *mock_publicips.MockClientMockRecorder) {
+				s.V(gomock.AssignableToTypeOf(2)).AnyTimes().Return(klogr.New())
+				s.PublicIPSpecs().Return([]publicips.PublicIPSpec{
+					{
+						Name: "my-publicip",
+					},
+				})
+				s.ResourceGroup().AnyTimes().Return("my-rg")
+				s.ClusterName().AnyTimes().Return("my-cluster")
+				m.Get(gomockinternal.AContext(), "my-rg", "my-publicip").Return(network.PublicIPAddress{
+					Name: to.StringPtr("my-publicip"),
+					Tags: map[string]*string{
+						"sigs.k8s.io_cluster-api-provider-azure_cluster_my-cluster": to.StringPtr("owned"),
+						"foo": to.StringPtr("bar"),
+					},
+				}, nil)
+				m.Delete(gomockinternal.AContext(), "my-rg", "my-publicip").
+					Return(autorest.NewErrorWithResponse("", "", &http.Response{StatusCode: 500}, "Internal Server Error"))
+			},
+		},
+		{
+			name:          "skip unmanaged public ip deletion",
+			expectedError: "",
+			expect: func(s *mock_publicips.MockPublicIPScopeMockRecorder, m *mock_publicips.MockClientMockRecorder) {
+				s.V(gomock.AssignableToTypeOf(2)).AnyTimes().Return(klogr.New())
+				s.PublicIPSpecs().Return([]publicips.PublicIPSpec{
+					{
+						Name: "my-publicip",
+					},
+					{
+						Name: "my-publicip-2",
+					},
+				})
+				s.ResourceGroup().AnyTimes().Return("my-rg")
+				s.ClusterName().AnyTimes().Return("my-cluster")
+				m.Get(gomockinternal.AContext(), "my-rg", "my-publicip").Return(network.PublicIPAddress{
+					Name: to.StringPtr("my-public-ip"),
+					Tags: map[string]*string{
+						"foo": to.StringPtr("bar"),
+					},
+				}, nil)
+				m.Get(gomockinternal.AContext(), "my-rg", "my-publicip-2").Return(network.PublicIPAddress{
+					Name: to.StringPtr("my-publicip-2"),
+					Tags: map[string]*string{
+						"sigs.k8s.io_cluster-api-provider-azure_cluster_my-cluster": to.StringPtr("owned"),
+						"foo": to.StringPtr("buzz"),
+					},
+				}, nil)
+				m.Delete(gomockinternal.AContext(), "my-rg", "my-publicip-2")
+			},
+		},
+	}
+
+	for _, tc := range testcases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			g := NewWithT(t)
+
+			t.Parallel()
+			mockCtrl := gomock.NewController(t)
+			defer mockCtrl.Finish()
+			scopeMock := mock_publicips.NewMockPublicIPScope(mockCtrl)
+			clientMock := mock_publicips.NewMockClient(mockCtrl)
+
+			tc.expect(scopeMock.EXPECT(), clientMock.EXPECT())
+
+			s := &publicips.Service{
+				Scope:  scopeMock,
+				Client: clientMock,
+			}
+
+			err := s.Delete(context.TODO())
+			if tc.expectedError != "" {
+				g.Expect(err).To(HaveOccurred())
+				g.Expect(err).To(MatchError(tc.expectedError))
+			} else {
+				g.Expect(err).NotTo(HaveOccurred())
+			}
+		})
+	}
+}
+```
+
+---
+
+Different error scenarios for `Delete` in public ips service, within it's computation
+- Error while getting management state of the public ip
+  - resource not found error [DONE]
+  - some error, but not resource-not-found [DONE]
+- Error while deleting the public ip - some error, but NOT operation-not-done error / deletion-in-progress error
+  - what if multiple of these errors occur?
+- Other scenarios
+  - Deletion of public ip in progress, which also comes up as an error
+- Mix of non operation-not-done and operation-not-done errors occur
