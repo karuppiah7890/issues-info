@@ -396,6 +396,7 @@ err := s.Client.CreateOrUpdate(
       PublicIPAllocationMethod: network.IPAllocationMethodStatic,
       DNSSettings:              dnsSettings,
     },
+    Zones: to.StringSlicePtr(s.Scope.FailureDomains()),
   },
 )
 
@@ -411,6 +412,7 @@ s.ResourceGroup().AnyTimes().Return("my-rg")
 s.ClusterName().AnyTimes().Return("my-cluster")
 s.AdditionalTags().AnyTimes().Return(infrav1.Tags{})
 s.Location().AnyTimes().Return("testlocation")
+s.FailureDomains().AnyTimes().Return([]string{"1,2,3"})
 ```
 
 ```go
@@ -433,6 +435,7 @@ ipSpec4 := azure.PublicIPSpec{
 ```
 
 ```go
+gomock.InOrder(
 m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip", gomockinternal.DiffEq(network.PublicIPAddress{
   Name:     to.StringPtr("my-publicip"),
   Sku:      &network.PublicIPAddressSku{Name: network.PublicIPAddressSkuNameStandard},
@@ -449,6 +452,7 @@ m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip", gomockintern
       Fqdn:            to.StringPtr("fakedns.mydomain.io"),
     },
   },
+  Zones: to.StringSlicePtr([]string{"1,2,3"}),
 })).Times(1),
 m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip-2", gomockinternal.DiffEq(network.PublicIPAddress{
   Name:     to.StringPtr("my-publicip-2"),
@@ -466,6 +470,7 @@ m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip-2", gomockinte
       Fqdn:            to.StringPtr("fakedns2-52959.uksouth.cloudapp.azure.com"),
     },
   },
+  Zones: to.StringSlicePtr([]string{"1,2,3"}),
 })).Times(1),
 m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip-3", gomockinternal.DiffEq(network.PublicIPAddress{
   Name:     to.StringPtr("my-publicip-3"),
@@ -479,6 +484,7 @@ m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip-3", gomockinte
     PublicIPAddressVersion:   network.IPVersionIPv4,
     PublicIPAllocationMethod: network.IPAllocationMethodStatic,
   },
+  Zones: to.StringSlicePtr([]string{"1,2,3"}),
 })).Times(1),
 m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip-ipv6", gomockinternal.DiffEq(network.PublicIPAddress{
   Name:     to.StringPtr("my-publicip-ipv6"),
@@ -496,6 +502,7 @@ m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip-ipv6", gomocki
       Fqdn:            to.StringPtr("fakename.mydomain.io"),
     },
   },
+  Zones: to.StringSlicePtr([]string{"1,2,3"}),
 })).Times(1),
 ```
 
@@ -514,6 +521,7 @@ s.ResourceGroup().AnyTimes().Return("my-rg")
 s.ClusterName().AnyTimes().Return("my-cluster")
 s.AdditionalTags().AnyTimes().Return(infrav1.Tags{})
 s.Location().AnyTimes().Return("testlocation")
+s.FailureDomains().Times(1)
 m.CreateOrUpdate(gomockinternal.AContext(), "my-rg", "my-publicip", gomock.AssignableToTypeOf(network.PublicIPAddress{})).Return(autorest.NewErrorWithResponse("", "", &http.Response{StatusCode: 500}, "Internal Server Error"))
 ```
 
@@ -548,35 +556,83 @@ FAIL
 
 [TODO]
 
+Level 1
+
 - Check existing tests for public IPs reconcile and delete
 - Check existing code for public IPs reconcile and delete
 - Check how existing async implementations have been done - for both reconcile and delete
+- Make public IPs reconcile / delete async
+
+Level 2
 
 - Convert Public IPs `Reconcile` method to use async package. Add tests
   - Add tests before, or maybe later, as we need mocks and different test cases, which we will get to know only based on some small implementation details
 - Convert Public IPs `Delete` method to use async package. Add tests
-
   - Add tests before, or maybe later, as we need mocks and different test cases, which we will get to know only based on some small implementation details
 
-- Write tests for publicips reconcile - with async flow
-  - Write mocks
-- Implement async methods with no code in it to fix the tests
+Level 3
 
-- Write tests for `azure/services/publicips/client.go` as all the code from `azure/services/publicips/publicips.go` moved to `azure/services/publicips/client.go`. Use Azure API Client mock to get help with the testing. Test file - `azure/services/publicips/client_test.go`. The test would look similar to the old tests of `azure/services/publicips/publicips_test.go` testing some of the old features of `azure/services/publicips/publicips.go` which are gonna be in `azure/services/publicips/client.go`
-- Implement the `CreateOrUpdateAsync` in `azure/services/publicips/client.go` - don't handle updates. Put a TODO for now.
-- Implement the `IsDone` in `azure/services/publicips/client.go`
-- Implement the `Parameters` in `azure/publicip_spec.go` - leave out returning any value when existing value is there
+- Write tests for publicips reconcile - with async flow [DONE]
+  - Write mocks [DONE]
+- Implement async methods with no code in it to fix the tests [DONE]
+
+Level 4
+
+- Write tests for `azure/services/publicips/client.go` as all the code from `azure/services/publicips/publicips.go` moved to `azure/services/publicips/client.go`. Use Azure API Client mock to get help with the testing. Test file - `azure/services/publicips/client_test.go`. The test would look similar to the old tests of `azure/services/publicips/publicips_test.go` testing some of the old features of `azure/services/publicips/publicips.go` which are gonna be in `azure/services/publicips/client.go`. Couldn't write the test with mocks. So leaving this out. [DONE] Could have used some sort of library to capture HTTP client requests using actual server or just mocking libraries like gock https://github.com/h2non/gock . But not doing that for now. Not sure how many API calls the code would make, have to mock them all or at least ignore them even if captured. Will check it out later! [DONE]
+- Implement the `CreateOrUpdateAsync` in `azure/services/publicips/client.go` - don't handle updates. Put a TODO for now. [DONE]
+- Implement the `IsDone` in `azure/services/publicips/client.go` [DONE]
+- Implement the `Parameters` in `azure/publicip_spec.go` - leave out returning a value when existing value is there [DONE]
+- Add test for `PublicIPSpecs` implemented in `azure/scope/cluster.go`, in `azure/scope/cluster_test.go`. There are no tests for it as of now and it has too much logic! [DONE]
+
 - Discuss about how and what kind of updates we would do when public IP specs change. I mean, there are only a few fields in the public IP spec that are possibly mutable - name and resource group are immutable, so remaining is DNS Name and isIPv6. I doubt if we can change an IPv4 public IP to IPv6 - I mean, even if the Azure API allows, that's still a big change, like major, huge! And a breaking change too I think. So, I doubt if that's okay and allowed. Gotta check the webhooks and the validation fields to see if the mutation is allowed based on how the boolean is set
-- Add test for `PublicIPSpecs` implemented in `azure/scope/cluster.go`, in `azure/scope/cluster_test.go`. There are no tests for it as of now and it has too much logic!
 - Check if the tests `TestDeletePublicIP` and `TestReconcilePublicIP` can run in parallel. I can see their sub tests can run in parallel among the respective subtests. Wondering if we need to put a `t.Parallel` at the top level too so that the top level tests are also triggered simultaneously. Gotta check more on it if there are downsides to not putting `t.Parallel` at the top level / upsides to putting `t.Parallel` at the top level
+
+Level 5
 
 - Fix test errors in `azure/services/bastionhosts/bastionhosts_test.go` - it's due to renaming of publicips client `CreateOrUpdate` method to `CreateOrUpdateAsync` method. Not sure where the old method was getting called as part of `azure/services/bastionhosts/bastionhosts.go`'s `Reconcile` method. Gotta dig in. In `main` also there's no create or update calls in the actual code, just in test. In `main`, commenting out the expectation done using mock method calls still passes the tests. It's weird. Some of them have to fail and fail with proper error. It's weird, gotta dig in and understand what's going on. Branch `remove-unnecessary-method-call-expectations-from-bastion-host-test`
 
----
+Level 6
 
-Maybe just write one test in `azure/services/publicips/client_test.go` which checks if the wiring up is all good
-
-Write many tests in `spec_test.go` for `Parameters` method as that's where a lot of logic would go in! The tests from `azure/services/publicips/publicips_test.go` for different small logic should go in there, for configuring public ip spec to a azure resource
+- Fix the `TODO(karuppiah7890)` todos wherever and whenever possible. Prioritize though
 
 ---
 
+Maybe just write one test in `azure/services/publicips/client_test.go` which checks if the wiring up is all good - Couldn't do this
+
+Write many tests in `spec_test.go` for `Parameters` method as that's where a lot of logic would go in! The tests from `azure/services/publicips/publicips_test.go` for different small logic should go in there, for configuring public ip spec to a azure resource [DONE]
+
+---
+
+https://duckduckgo.com/?t=ffab&q=http+mock+golang&ia=web
+
+https://github.com/jarcoal/httpmock
+
+https://github.com/search?utf8=%E2%9C%93&q=http%20mock%20golang
+
+https://duckduckgo.com/?t=ffab&q=gomock&ia=web
+
+https://duckduckgo.com/?t=ffab&q=gock+golang&ia=web
+
+https://github.com/h2non/gock
+
+---
+
+https://duckduckgo.com/?t=ffab&q=gomega+matchers&ia=images
+
+https://onsi.github.io/gomega/
+
+https://onsi.github.io/gomega/#adding-your-own-matchers
+
+https://duckduckgo.com/?t=ffab&q=golang+gomega+compare+slices+without+order+of+elements&ia=web&iax=qa
+
+https://onsi.github.io/gomega/#consistofelement-interface
+
+https://duckduckgo.com/?t=ffab&q=golang+spread+slice&ia=web
+
+https://duckduckgo.com/?q=golang+gomega+gstruct&t=ffab&ia=web
+
+https://pkg.go.dev/github.com/onsi/gomega/gstruct
+
+https://duckduckgo.com/?t=ffab&q=azure+bastion&ia=web
+
+https://azure.microsoft.com/en-us/services/azure-bastion/
