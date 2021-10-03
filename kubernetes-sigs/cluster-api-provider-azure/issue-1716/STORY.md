@@ -858,3 +858,7 @@ Different error scenarios for `Delete` in public ips service, within it's comput
 - Other scenarios
   - Deletion of public ip in progress, which also comes up as an error
 - Mix of non operation-not-done and operation-not-done errors occur
+
+---
+
+https://github.com/kubernetes-sigs/cluster-api-provider-azure/blob/main/docs/proposals/20210716-async-azure-resource-creation-deletion.md
