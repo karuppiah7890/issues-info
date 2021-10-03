@@ -31,16 +31,16 @@ Low Level TODO - migrate the following tests
 - TestListPartitionInvisibleIdx [DONE]
 - TestListPartitionCTE [DONE]
 - TestListPartitionTempTable [DONE]
-- TestListPartitionAlterPK
-- TestListPartitionRandomTransaction
-- TestIssue27018
-- TestIssue27017
-- TestIssue27544
-- TestIssue27012
-- TestIssue27030
-- TestIssue27070
-- TestIssue27031
-- TestIssue27493
+- TestListPartitionAlterPK [DONE]
+- TestListPartitionRandomTransaction [DONE]
+- TestIssue27018 [DONE]
+- TestIssue27017 [DONE]
+- TestIssue27544 [DONE]
+- TestIssue27012 [DONE]
+- TestIssue27030 [DONE]
+- TestIssue27070 [DONE]
+- TestIssue27031 [DONE]
+- TestIssue27493 [DONE]
 
 ---
 
