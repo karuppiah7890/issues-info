@@ -83,3 +83,33 @@ Writing tests to check if color shows up :)
 https://duckduckgo.com/?q=print+text+in+red+color+in+bash&t=ffab&ia=web&iax=qa
 
 It's done now :D
+
+---
+
+Checking alternate syntax highlighting packages in Golang
+
+https://duckduckgo.com/?t=ffab&q=golang+yaml+syntax+highlight&ia=web
+
+https://github.com/alecthomas/chroma - generic with YAML support
+
+https://github.com/zyedidia/highlight
+
+https://github.com/andreazorzetto/yh - specifically for YAML which I had already tried out
+
+
+---
+
+Features we are looking for in the highlighter Golang package
+- Of course it has to be a Golang package - written in Golang and we should be able to use it's package (library) with ease
+- Support YAML and hence JSON too
+- Support syntax highlight in CLI / Terminal UI - which means we need ANSI colors
+
+
+ANSI colors -
+
+https://duckduckgo.com/?t=ffab&q=terminal+ansi+colors&ia=web
+
+https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences#4842446
+
+https://stackoverflow.com/a/33206814/4772008
+
