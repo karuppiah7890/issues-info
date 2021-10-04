@@ -874,3 +874,282 @@ Update details about PR
 
 Testing
 - Run build, test, verify etc similar to #1696 PR tests and check if everything is good to go
+
+---
+
+Run
+- `make test`
+- `make verify`
+- Check more at https://capz.sigs.k8s.io/developers/jobs.html or https://github.com/kubernetes-sigs/cluster-api-provider-azure/blob/main/docs/book/src/developers/jobs.md
+
+
+---
+
+```bash
+cluster-api-provider-azure $ make go-test
+echo /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin/kubectl-v1.21.4
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/hack/tools/bin/kubectl-v1.21.4
+go test ./...
+?   	sigs.k8s.io/cluster-api-provider-azure	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/api/v1alpha3	41.472s
+ok  	sigs.k8s.io/cluster-api-provider-azure/api/v1alpha4	5.694s
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure	1.875s
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/converters	1.673s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/mock_azure	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/scope	2.675s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/scope/mocks	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/scope/strategies/machinepool_deployments	2.145s
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/agentpools	1.885s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/agentpools/mock_agentpools	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/async	1.768s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/async/mock_async	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/availabilitysets	2.324s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/availabilitysets/mock_availabilitysets	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/bastionhosts	3.177s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/bastionhosts/mocks_bastionhosts	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/disks	3.092s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/disks/mock_disks	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/groups	3.497s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/groups/mock_groups	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/inboundnatrules	3.448s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/inboundnatrules/mock_inboundnatrules	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/loadbalancers	3.856s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/loadbalancers/mock_loadbalancers	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/managedclusters	2.743s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/managedclusters/mock_managedclusters	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/natgateways	2.137s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/natgateways/mock_natgateways	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/networkinterfaces	2.409s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/networkinterfaces/mock_networkinterfaces	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/privatedns	2.759s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/privatedns/mock_privatedns	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/publicips	3.099s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/publicips/mock_publicips	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/resourceskus	3.036s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/resourceskus/mock_resourceskus	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/roleassignments	3.026s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/roleassignments/mock_roleassignments	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/routetables	2.847s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/routetables/mock_routetables	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/scalesets	2.850s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/scalesets/mock_scalesets	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/scalesetvms	2.561s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/scalesetvms/mock_scalesetvms	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/securitygroups	2.714s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/securitygroups/mock_securitygroups	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/subnets	2.852s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/subnets/mock_subnets	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags	3.011s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/tags/mock_tags	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/virtualmachines	2.771s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/virtualmachines/mock_virtualmachines	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/virtualnetworks	2.836s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/virtualnetworks/mock_virtualnetworks	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmextensions	3.026s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmextensions/mock_vmextensions	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmssextensions	2.882s
+?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmssextensions/mock_vmssextensions	[no test files]
+I1004 23:20:48.129422   61108 azuremachine_controller.go:249]  "msg"="Reconciling AzureMachine"  
+I1004 23:20:48.129917   61108 azuremachine_controller.go:264]  "msg"="Cluster infrastructure is not ready yet"  
+I1004 23:20:48.130045   61108 azuremachine_controller.go:249]  "msg"="Reconciling AzureMachine"  
+I1004 23:20:48.130315   61108 azuremachine_controller.go:271]  "msg"="Bootstrap data secret reference is not yet available"  
+2021-10-04T23:20:48.135+0530	INFO	azurecluster-resource	default	{"name": "foo"}
+Running Suite: Controller Suite
+===============================
+Random Seed: 1633369848
+Will run 4 of 4 specs
+
+2021-10-04T23:20:48.139+0530	DEBUG	controller-runtime.test-env	starting control plane
+2021-10-04T23:20:49.309+0530	ERROR	controller-runtime.test-env	unable to start the controlplane	{"tries": 0, "error": "timeout waiting for process kube-apiserver to start successfully (it may have failed to start, or stopped unexpectedly before becoming ready)"}
+sigs.k8s.io/cluster-api-provider-azure/controllers.glob..func4
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:51
+reflect.Value.call
+	/Users/karuppiahn/.go/src/reflect/value.go:476
+reflect.Value.Call
+	/Users/karuppiahn/.go/src/reflect/value.go:337
+github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49
+github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86
+2021-10-04T23:20:49.589+0530	ERROR	controller-runtime.test-env	unable to start the controlplane	{"tries": 1, "error": "timeout waiting for process kube-apiserver to start successfully (it may have failed to start, or stopped unexpectedly before becoming ready)"}
+sigs.k8s.io/cluster-api-provider-azure/controllers.glob..func4
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:51
+reflect.Value.call
+	/Users/karuppiahn/.go/src/reflect/value.go:476
+reflect.Value.Call
+	/Users/karuppiahn/.go/src/reflect/value.go:337
+github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49
+github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86
+2021-10-04T23:20:49.757+0530	ERROR	controller-runtime.test-env	unable to start the controlplane	{"tries": 2, "error": "timeout waiting for process kube-apiserver to start successfully (it may have failed to start, or stopped unexpectedly before becoming ready)"}
+sigs.k8s.io/cluster-api-provider-azure/controllers.glob..func4
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:51
+reflect.Value.call
+	/Users/karuppiahn/.go/src/reflect/value.go:476
+reflect.Value.Call
+	/Users/karuppiahn/.go/src/reflect/value.go:337
+github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49
+github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86
+2021-10-04T23:20:49.930+0530	ERROR	controller-runtime.test-env	unable to start the controlplane	{"tries": 3, "error": "timeout waiting for process kube-apiserver to start successfully (it may have failed to start, or stopped unexpectedly before becoming ready)"}
+sigs.k8s.io/cluster-api-provider-azure/controllers.glob..func4
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:51
+reflect.Value.call
+	/Users/karuppiahn/.go/src/reflect/value.go:476
+reflect.Value.Call
+	/Users/karuppiahn/.go/src/reflect/value.go:337
+github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49
+github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86
+2021-10-04T23:20:50.121+0530	ERROR	controller-runtime.test-env	unable to start the controlplane	{"tries": 4, "error": "timeout waiting for process kube-apiserver to start successfully (it may have failed to start, or stopped unexpectedly before becoming ready)"}
+sigs.k8s.io/cluster-api-provider-azure/controllers.glob..func4
+	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:51
+reflect.Value.call
+	/Users/karuppiahn/.go/src/reflect/value.go:476
+reflect.Value.Call
+	/Users/karuppiahn/.go/src/reflect/value.go:337
+github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49
+github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1
+	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86
+STEP: bootstrapping test environment
+Panic [1.982 seconds]
+[BeforeSuite] BeforeSuite 
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:49
+
+  Test Panicked
+  unable to start control plane itself: failed to start the controlplane. retried 5 times: timeout waiting for process kube-apiserver to start successfully (it may have failed to start, or stopped unexpectedly before becoming ready)
+  /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/internal/test/env/env.go:105
+
+  Full Stack Trace
+  sigs.k8s.io/cluster-api-provider-azure/internal/test/env.NewTestEnvironment(0x2b6fb0a)
+  	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/internal/test/env/env.go:105 +0x3f7
+  sigs.k8s.io/cluster-api-provider-azure/controllers.glob..func4(0xc0005b6360)
+  	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:51 +0x5e
+  reflect.Value.call(0x282f980, 0x2c319f8, 0x13, 0x2b46e1b, 0x4, 0xc000091f58, 0x1, 0x1, 0x0, 0x0, ...)
+  	/Users/karuppiahn/.go/src/reflect/value.go:476 +0x8e7
+  reflect.Value.Call(0x282f980, 0x2c319f8, 0x13, 0xc000082f58, 0x1, 0x1, 0x0, 0x0, 0x0)
+  	/Users/karuppiahn/.go/src/reflect/value.go:337 +0xb9
+  github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1(0xc0005b6360)
+  	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49 +0x15a
+  github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1(0xc000415440, 0xc0005b6360)
+  	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86 +0x74
+  created by github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync
+  	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:71 +0xa5
+------------------------------
+
+
+Ran 4 of 0 Specs in 1.982 seconds
+FAIL! -- 0 Passed | 4 Failed | 0 Pending | 0 Skipped
+You're using deprecated Ginkgo functionality:
+=============================================
+Ginkgo 2.0 is under active development and will introduce (a small number of) breaking changes.
+To learn more, view the migration guide at https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md
+To comment, chime in at https://github.com/onsi/ginkgo/issues/711
+
+  You are passing a Done channel to a test node to test asynchronous behavior.  This is deprecated in Ginkgo V2.  Your test will run synchronously and the timeout will be ignored.
+  Learn more at: https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md#removed-async-testing
+    /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:49
+  You are using a custom reporter.  Support for custom reporters will likely be removed in V2.  Most users were using them to generate junit or teamcity reports and this functionality will be merged into the core reporter.  In addition, Ginkgo 2.0 will support emitting a JSON-formatted report that users can then manipulate to generate custom reports.
+
+  If this change will be impactful to you please leave a comment on https://github.com/onsi/ginkgo/issues/711
+  Learn more at: https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md#removed-custom-reporters
+
+To silence deprecations that can be silenced set the following environment variable:
+  ACK_GINKGO_DEPRECATIONS=1.16.4
+
+--- FAIL: TestAPIs (1.98s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/controllers	4.772s
+?   	sigs.k8s.io/cluster-api-provider-azure/exp	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/exp/api/v1alpha3	20.282s
+ok  	sigs.k8s.io/cluster-api-provider-azure/exp/api/v1alpha4	5.613s
+Running Suite: Controller Suite
+===============================
+Random Seed: 1633369849
+Will run 2 of 2 specs
+
+STEP: bootstrapping test environment
+Panic [2.065 seconds]
+[BeforeSuite] BeforeSuite 
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/exp/controllers/suite_test.go:50
+
+  Test Panicked
+  unable to start control plane itself: failed to start the controlplane. retried 5 times: timeout waiting for process kube-apiserver to start successfully (it may have failed to start, or stopped unexpectedly before becoming ready)
+  /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/internal/test/env/env.go:105
+
+  Full Stack Trace
+  sigs.k8s.io/cluster-api-provider-azure/internal/test/env.NewTestEnvironment(0x2c212bc)
+  	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/internal/test/env/env.go:105 +0x3f7
+  sigs.k8s.io/cluster-api-provider-azure/exp/controllers.glob..func3(0xc000b3c000)
+  	/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/exp/controllers/suite_test.go:52 +0x5e
+  reflect.Value.call(0x2884100, 0x2cdeba0, 0x13, 0x2bf89ba, 0x4, 0xc0005a3f58, 0x1, 0x1, 0x0, 0x0, ...)
+  	/Users/karuppiahn/.go/src/reflect/value.go:476 +0x8e7
+  reflect.Value.Call(0x2884100, 0x2cdeba0, 0x13, 0xc000a3cf58, 0x1, 0x1, 0x0, 0x0, 0x0)
+  	/Users/karuppiahn/.go/src/reflect/value.go:337 +0xb9
+  github.com/onsi/ginkgo/internal/leafnodes.newRunner.func1(0xc000b3c000)
+  	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:49 +0x15a
+  github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1(0xc0005449c0, 0xc000b3c000)
+  	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86 +0x74
+  created by github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync
+  	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:71 +0xa5
+------------------------------
+
+
+Ran 2 of 0 Specs in 2.066 seconds
+FAIL! -- 0 Passed | 2 Failed | 0 Pending | 0 Skipped
+You're using deprecated Ginkgo functionality:
+=============================================
+Ginkgo 2.0 is under active development and will introduce (a small number of) breaking changes.
+To learn more, view the migration guide at https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md
+To comment, chime in at https://github.com/onsi/ginkgo/issues/711
+
+  You are passing a Done channel to a test node to test asynchronous behavior.  This is deprecated in Ginkgo V2.  Your test will run synchronously and the timeout will be ignored.
+  Learn more at: https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md#removed-async-testing
+    /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/exp/controllers/suite_test.go:50
+  You are using a custom reporter.  Support for custom reporters will likely be removed in V2.  Most users were using them to generate junit or teamcity reports and this functionality will be merged into the core reporter.  In addition, Ginkgo 2.0 will support emitting a JSON-formatted report that users can then manipulate to generate custom reports.
+
+  If this change will be impactful to you please leave a comment on https://github.com/onsi/ginkgo/issues/711
+  Learn more at: https://github.com/onsi/ginkgo/blob/v2/docs/MIGRATING_TO_V2.md#removed-custom-reporters
+
+To silence deprecations that can be silenced set the following environment variable:
+  ACK_GINKGO_DEPRECATIONS=1.16.4
+
+--- FAIL: TestAPIs (2.07s)
+FAIL
+FAIL	sigs.k8s.io/cluster-api-provider-azure/exp/controllers	5.033s
+?   	sigs.k8s.io/cluster-api-provider-azure/exp/controllers/mocks	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/feature	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/hack/boilerplate/test	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/internal/test	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/internal/test/env	2.645s
+?   	sigs.k8s.io/cluster-api-provider-azure/internal/test/logentries	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/internal/test/matchers/gomega	(cached)
+?   	sigs.k8s.io/cluster-api-provider-azure/internal/test/matchers/gomock	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/internal/test/mock_log	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/internal/test/record	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/pkg/cloudtest	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/pkg/coalescing	(cached)
+?   	sigs.k8s.io/cluster-api-provider-azure/pkg/coalescing/mocks	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/pkg/ot	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/pkg/record	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/test/e2e	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/util/cache/ttllru	(cached)
+?   	sigs.k8s.io/cluster-api-provider-azure/util/cache/ttllru/mocks	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/util/futures	2.929s
+?   	sigs.k8s.io/cluster-api-provider-azure/util/generators	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/util/identity	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/util/reconciler	(cached)
+?   	sigs.k8s.io/cluster-api-provider-azure/util/slice	[no test files]
+ok  	sigs.k8s.io/cluster-api-provider-azure/util/ssh	(cached)
+ok  	sigs.k8s.io/cluster-api-provider-azure/util/system	(cached)
+?   	sigs.k8s.io/cluster-api-provider-azure/util/tele	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/util/webhook	[no test files]
+?   	sigs.k8s.io/cluster-api-provider-azure/version	[no test files]
+FAIL
+make: *** [go-test] Error 1
+cluster-api-provider-azure $ 
+```
