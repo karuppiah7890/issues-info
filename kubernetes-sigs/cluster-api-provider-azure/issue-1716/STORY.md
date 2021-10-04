@@ -862,3 +862,15 @@ Different error scenarios for `Delete` in public ips service, within it's comput
 ---
 
 https://github.com/kubernetes-sigs/cluster-api-provider-azure/blob/main/docs/proposals/20210716-async-azure-resource-creation-deletion.md
+
+---
+
+[TODO]
+
+Update details about PR
+- What changes it has
+- The TODOs it has
+- Questions
+
+Testing
+- Run build, test, verify etc similar to #1696 PR tests and check if everything is good to go
