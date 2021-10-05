@@ -3,13 +3,13 @@ https://github.com/kubernetes-sigs/cluster-api-provider-azure/issues/1696
 TODO
 
 - Setup dev environment [DONE]
-- Check how to run tests
-- Check how to run particular tests related to resource groups alone
+- Check how to run tests [DONE]
+- Check how to run particular tests related to resource groups alone [DONE]
 - Write a failing test for the issue - existing managed azure resource group and then update resource group tags should update tags
 - Run the written test and ensure it fails for the proper reason
 - Fix the issue with code
 - Run the written test and check if it passes
-- Checkout the different properties of a resource group other than tags in the K8s resource spec and in the Azure cloud. Can the other properties be updated? Should that also be managed by the CAPZ controller?
+- Checkout the different properties of a resource group other than tags in the K8s resource spec and in the Azure cloud. Can the other properties be updated? Should that also be managed by the CAPZ controller? [DONE]
 
 ---
 
@@ -6203,7 +6203,7 @@ Ideally we have to test `CreateOrUpdateAsync` in `azure/services/groups/client.g
 
 ---
 
-TODO - handle if existingTagValue is `nil` [DONE]
+[DONE] TODO - handle if existingTagValue is `nil` [DONE]
 
 `existingTagValue == nil || (existingTagValue != nil && *existingTagValue != tagValue)`
 
@@ -9871,9 +9871,9 @@ FAIL
 cluster-api-provider-azure $
 ```
 
-TODO
+TODO [DONE]
 
-- Fix mock for GroupScope - since GroupScope interface has been update. Error to fix -
+- Fix mock for GroupScope - since GroupScope interface has been update. Error to fix - [DONE]
 
 ```bash
 azure/services/groups/groups_test.go:115:5: cannot use scopeMock (type *mock_groups.MockGroupScope) as type GroupScope in field value:
@@ -10512,7 +10512,7 @@ Requirements
 - Try the Tags API with dummy resource group to understand complete behavior of the API - the create or update API vs the update at scope API [DONE]
 - Use get-at-scope tags API in tags.go service to check if resource is owned or not! [DONE]
 - Convert the tags.go service to use a update-at-scope API instead of a GET and create-or-update API to update tags to prevent race condition. It can use get for checking managed / not-managed alone. We also need to use delete tags too using update-at-scope API for deletions! This assumes that no one changed or removed the owned tag value after the GET and just before our updates
-- Discuss about how delete can be done by comparing desired tags vs last applied tags. And how update can be done by comparing desired tags vs current tags from get-at-scope
+- Discuss about how delete can be done by comparing desired tags vs last applied tags. And how update can be done by comparing desired tags vs current tags from get-at-scope [DONE]
 - Rename `created` to `createdOrUpdated` in code, test code `expectedCreatedOrUpdated` etc? Too verbose name, so leave it for now [DONE]
 
 ---
@@ -11133,7 +11133,7 @@ Fix PR tests etc
 
 ---
 
-PR Tests and Merge blockers [BLOCKER] [TODO]
+[DONE] PR Tests and Merge blockers [BLOCKER] [TODO] [DONE]
 
 https://prow.k8s.io/pr-history/?org=kubernetes-sigs&repo=cluster-api-provider-azure&pr=1721
 
@@ -11539,5 +11539,18 @@ cluster-api-provider-azure $ echo $?
 0
 cluster-api-provider-azure $ 
 ```
+
+---
+
+[TODO]
+
+- Ask how we want the commits to be - one commit or separate commits?
+    - What about the linting fix commit and the updation of mock commit? Maybe that can be merged with the commit that did the change that broke the lint
+
+- Reply to the comments from @CecileRobertMichon here https://github.com/kubernetes-sigs/cluster-api-provider-azure/pull/1721#issuecomment-933767052 [DONE]
+
+- Think about how and when we update last-applied-annotation and if it makes sense and if it will work in all edge cases - starting from the first reconcile (of resource group service and tags service) to any reconcile in the future. Write tests to check if everything is good!
+
+---
 
 
