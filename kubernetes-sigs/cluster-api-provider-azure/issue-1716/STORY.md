@@ -1551,3 +1551,26 @@ nothing to commit, working tree clean
 ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$ 
 ```
 
+---
+
+PR summary
+
+- Make `publicips` service `Reconcile` and `Delete` async
+- Add / modify various test cases for both `Reconcile` and `Delete` method according to the latest code changes
+- Move `PublicIPSpec` entity from `azure` to `publicips` package to implement the `azure.ResourceSpecGetter` interface in the `publicips` package itself and to also avoid cyclic dependency / cyclic import issues caused by implementing the `azure.ResourceSpecGetter` by keeping `PublicIPSpec` in `azure` package itself
+- Add `ResourceGroup`, `Location`, `ClusterName`, `AdditionalTags`, `Zones` fields to `PublicIPSpec` so that they can be used from the spec in the `azure.ResourceSpecGetter` method implementation of `PublicIPSpec`
+- Added various test cases for `PublicIPSpec` methods
+- Make `PublicIPSpecs()` method return `[]azure.ResourceSpecGetter` instead of `[]PublicIPSpec` following other async PR implementations. Any reason why we want to use it instead of the actual spec directly? As however the correct spec and appropriate client sent to the `async.CreateResource` function will work with appropriate Azure APIs to create the resource, and same for resource deletion
+- Add test for `ClusterScope`'s `PublicIPSpecs` method
+- Make changes to `MachineScope`'s `PublicIPSpecs` method test to accomodate the latest changes in code and to ensure the latest changes are tested too
+- Add test for `MachineScope`'s `AdditionalTags` method
+- Fix `bastionhosts_test.go` test as there were some compile errors due to changing `CreateOrUpdate` method name in `publicips` client to `CreateOrUpdateAsync`. Raised issue regarding other issues in the file #1753 and also fixed it separately in #1754 . If that gets merged then I can rebase this PR on top of that
+
+
+Not much testing at publicips client level - I noticed that the client field being used is a concrete type and not an interface that can be mocked and injected. That is the client field `publicips` of type `network.PublicIPAddressesClient` in here
+
+https://github.com/kubernetes-sigs/cluster-api-provider-azure/blob/7f78c7bc945b8cabc35c476c09013fb1a9dab320/azure/services/publicips/client.go#L36-L39
+
+There's little logic in client level that I thought could be covered in the tests but left it as I figured Azure API call mocking would be more effort since I can't inject mocks easily with the code as is, and alternatives seemed a bit more complex / more code, for example use if I something like [gock](https://github.com/h2non/gock), it might be too low level to mock the Azure API calls with request data (request URL, request method, request body etc)
+
+I haven't handled the `publicips` update part as of now. I wanted to first understand what can be updated. As part of the Public IP Spec - there's only one field that I think could possibly be updated - the DNS Name. Everything else cannot be updated and are more of read only data. I'm also assuming that users won't create a Public IPv4 address and then want to change to Public IPv6 - I haven't tried this yet with the Azure API. But let me know what we want to support and / what is supported by the APIs and what makes sense and we can take it forward from there
