@@ -16,3 +16,32 @@ This PR does the following
   - `mPublicIP.Get` gets called before `mSubnet.Get`
 - Comment out `t.Parallel` temporarily with details about the removal of parallelization - tldr; enabling parallel tests seems to give wrong test results
 - Fix the expected error messages
+
+---
+
+Both `bastion successfully created with already created public ip` test and `bastion successfully created` test do the same thing now. So removed the first one!
+
+---
+
+Updated commit message
+
+fix tests in bastion_hosts_test.go file
+
+- Remove `create publicip fails` test in bastion host `Reconcile` test as we don't create public IP as part of bastion host `Reconcile`
+- Remove `bastion successfully created with created public ip` test in bastion host `Reconcile` test as we don't crea
+  te public IP as part of bastion host `Reconcile`
+- Remove unnecessary / wrong method call expectations using mocks
+  - `mPublicIP.CreateOrUpdate` method call expectations
+  - `m.Delete(gomockinternal.AContext(), "my-rg", "my-bastionhost1")` expectation
+- Fix the order of method call expectations using mocks
+  - `mPublicIP.Get` gets called before `mSubnet.Get`
+- Comment out `t.Parallel` temporarily with details about the removal of parallelization - tldr; enabling parallel tests seems to give wrong test results
+- Fix the expected error messages
+
+---
+
+```bash
+go test -timeout 30s -run ^(TestReconcileBastionHosts|TestDeleteBastionHost)$ sigs.k8s.io/cluster-api-provider-azure/azure/services/bastionhosts
+```
+
+---
