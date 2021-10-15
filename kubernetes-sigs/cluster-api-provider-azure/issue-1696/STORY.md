@@ -11553,4 +11553,8 @@ cluster-api-provider-azure $
 
 ---
 
+TODO
+- Fix the tags client [DONE]
+  - to find deletions by comparing last applied tags vs desired tags [DONE]
+  - to find create/update by comparing current tags vs desired tags [DONE]
 
