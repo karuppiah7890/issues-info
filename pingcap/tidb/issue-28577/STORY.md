@@ -238,11 +238,10 @@ As part of https://github.com/pingcap/tidb/issues/28542 , I figured - let me mig
 [TODO] [Level-3]
 
 - Think about how to migrate the test setup
-    - The setup is at suite level - so more like before all the tests run, so it has to move to `main_test.go` I guess
+  - The setup is at suite level - so more like before all the tests run, so it has to move to `main_test.go` I guess
 - Think about how the different test suites are related within the file. Also, some test suite structs are used in other test files too, so beware to NOT delete them or else other tests will fail. Also, check if the test suite setup on the struct can be removed or not, for example, if removed can it affect other tests? Or do other tests have appropriate test setup? It's a weird thing though since it's a single package and all tests in the package would run together so setup would ideally be in one place only, hmm
 - Beware of using the `t.Parallel()` in the proper test functions
 - Ask if we want to split the test file into multiple test files! :)
-- 
 
 ---
 
@@ -291,10 +290,43 @@ All test suites and which are parallel and which are serial
 - testPrepareSuite [Serial]
 - testResourceTagSuite [Serial]
 
-
-
 ---
 
+Migrating `TestPessimisticSelectForUpdate` which is part of `testSuiteP1` test suite
+
+`testSuiteP1` contains `` which has three methods which we need to checkout and migrate
+
+- `SetUpSuite`
+- `TearDownSuite`
+- `fillData`
+
+Previously in [one PR](https://github.com/pingcap/tidb/pull/28543) [I was told that there are some existing helper utils for tests, like this one](https://github.com/pingcap/tidb/pull/28543#discussion_r725760406) -
+
+```go
+store, clean := testkit.CreateMockStore(t)
+defer clean()
+```
+
+instead of using same custom defined functions again and again, like this one
+
+```go
+func SetUpTest(t *testing.T) (kv.Storage, *domain.Domain) {
+	var err error
+	store, dom, err := newStoreWithBootstrap()
+	require.NoError(t, err)
+	return store, dom
+}
+
+func TearDownTest(t *testing.T, store kv.Storage, dom *domain.Domain) {
+	dom.Close()
+	err := store.Close()
+	require.NoError(t, err)
+}
+```
+
+Also, this is setup suite! That is, run once before all the tests, hmm. I need to put it in `main_test.go` I guess, let's see. But there's already on main test file in executor package directory and also, I can't put the setup test suite code there - that would do the setup for all the tests in different test files and not just `executor_test.go`, hmm
+
+---
 
 `executor: migrate TestPessimisticSelectForUpdate to testify (#28577)`
 
@@ -1061,8 +1093,8 @@ All test suites and which are parallel and which are serial
 ```bash
 { make failpoint-enable; go test -v -run ^TestSortLeftJoinWithNullColumnInRightChildPanic$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
----
 
+---
 
 `executor: migrate TestUnionAutoSignedCast to testify (#28577)`
 
@@ -1709,32 +1741,32 @@ All test suites and which are parallel and which are serial
 ```bash
 { make failpoint-enable; go test -v -run ^TestIssue20975UpdateNoChangeWithPartitionTable$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
----
 
+---
 
 `executor: migrate TestIssue20975SelectForUpdateWithPartitionTable to testify (#28577)`
 
 ```bash
 { make failpoint-enable; go test -v -run ^TestIssue20975SelectForUpdateWithPartitionTable$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
----
 
+---
 
 `executor: migrate TestIssue20975SelectForUpdatePointGetWithPartitionTable to testify (#28577)`
 
 ```bash
 { make failpoint-enable; go test -v -run ^TestIssue20975SelectForUpdatePointGetWithPartitionTable$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
----
 
+---
 
 `executor: migrate TestIssue20975SelectForUpdateBatchPointGetWithPartitionTable to testify (#28577)`
 
 ```bash
 { make failpoint-enable; go test -v -run ^TestIssue20975SelectForUpdateBatchPointGetWithPartitionTable$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
----
 
+---
 
 `executor: migrate TestIssue20305 to testify (#28577)`
 
@@ -2037,4 +2069,3 @@ All test suites and which are parallel and which are serial
 ```bash
 { make failpoint-enable; go test -v -run ^TestCTEWithIndexLookupJoinDeadLock$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
-
