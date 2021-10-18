@@ -113,3 +113,17 @@ https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences#
 
 https://stackoverflow.com/a/33206814/4772008
 
+---
+
+[TODO]
+- Check Chroma library and try it out
+- Incorporate the changes from the maintainer
+- Run everything and check once manually
+- Check if we can add some basic tests
+- Push all changes to the PR branch
+- Convert draft PR to ready for review PR and ask to review
+- Ask any questions that you have
+  - Commit message
+  - No of commits
+  - code
+  - etc
