@@ -154,3 +154,56 @@ FAIL	sigs.k8s.io/cluster-api-provider-azure/azure/services/bastionhosts	0.475s
 FAIL
 ```
 
+---
+
+`TestAzureCluster_ValidateUpdate` test issue
+
+It was introduced in - 752728db490b719f2f935b042dde0defe29c246c
+
+At that point, the `old` cluster was not being used as part of the source code implementation and was not tested by the test too
+
+For testing the existing cluster, it used to use
+    - `validateClusterSpec`
+        - which in turn uses `validateNetworkSpec`, which checks `c.Spec.NetworkSpec`
+            - which in turn uses `validateResourceGroup`
+                - which in turn checks `c.Spec.NetworkSpec.Vnet.ResourceGroup`, checks using `resourceGroupRegex` regexp
+            - which in turn also uses `validateSubnets`
+                - which in turn checks `c.Spec.NetworkSpec.Subnets`
+                - which in turn uses `validateSubnetName`
+                - which in turn uses `validateInternalLBIPAddress`
+                    - which turn checks - For a given subnet in `c.Spec.NetworkSpec.Subnets`, checks subnet's `InternalLBIPAddress`
+
+All tests pass in `752728db490b719f2f935b042dde0defe29c246c` - both with and without `tc := tc`. Ideally it should have `tc := tc` for correctness to run the test properly and check the code properly!
+
+Currently it's broken at `fix-1760` branch, hmm
+
+Checking previous commit which touched the tests - `202fa4e4f1ad1b16740874fd43efe808c3ea150b`
+
+`api/v1beta1/azurecluster_webhook_test.go`
+
+`202fa4e4f1ad1b16740874fd43efe808c3ea150b` - tests fail with `tc := tc` ! :O
+
+`e5c40a4f727d51be6e0c819ebbaad01580af3871` - adds 2 tests to `api/v1alpha4/azurecluster_webhook_test.go` with old cluster, hmm
+
+`e5c40a4f727d51be6e0c819ebbaad01580af3871` - tests fail with `tc := tc` ! :O
+
+`70f6c5b025c2968c5c0bd0210ca0798ea377d211` - compile itself failed with 0 changes!
+
+```bash
+Running tool: /Users/karuppiahn/.go/bin/go test -timeout 30s -run ^TestAzureCluster_ValidateUpdate$ sigs.k8s.io/cluster-api-provider-azure/api/v1alpha4
+
+# sigs.k8s.io/cluster-api-provider-azure/api/v1alpha4 [sigs.k8s.io/cluster-api-provider-azure/api/v1alpha4.test]
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/api/v1alpha4/azuremachine_validation.go:98:10: disk.ManagedDisk undefined (type DataDisk has no field or method ManagedDisk)
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/api/v1alpha4/azuremachine_validation.go:99:61: disk.ManagedDisk undefined (type DataDisk has no field or method ManagedDisk)
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/api/v1alpha4/azuremachine_validation.go:101:40: disk.ManagedDisk undefined (type DataDisk has no field or method ManagedDisk)
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/api/v1alpha4/azuremachine_validation.go:201:14: newDisk.ManagedDisk undefined (type DataDisk has no field or method ManagedDisk)
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/api/v1alpha4/azuremachine_validation.go:201:44: oldDisk.ManagedDisk undefined (type DataDisk has no field or method ManagedDisk)
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/api/v1alpha4/azuremachine_validation.go:202:59: oldDisk.ManagedDisk undefined (type DataDisk has no field or method ManagedDisk)
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/api/v1alpha4/azuremachine_validation.go:202:81: newDisk.ManagedDisk undefined (type DataDisk has no field or method ManagedDisk)
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/api/v1alpha4/azuremachine_validation.go:203:22: newDisk.ManagedDisk undefined (type DataDisk has no field or method ManagedDisk)
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/api/v1alpha4/azuremachine_validation.go:203:52: oldDisk.ManagedDisk undefined (type DataDisk has no field or method ManagedDisk)
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/api/v1alpha4/azuremachine_validation.go:203:84: newDisk.ManagedDisk undefined (type DataDisk has no field or method ManagedDisk)
+/Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/api/v1alpha4/azuremachine_validation.go:203:84: too many errors
+FAIL	sigs.k8s.io/cluster-api-provider-azure/api/v1alpha4 [build failed]
+FAIL
+```
