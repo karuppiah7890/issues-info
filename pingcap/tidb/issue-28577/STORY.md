@@ -14,224 +14,253 @@ As part of https://github.com/pingcap/tidb/issues/28542 , I figured - let me mig
 
 [TODO] [Level-2]
 
-- TestPessimisticSelectForUpdate [DONE]
-- TestBind [DONE]
-- TestChangePumpAndDrainer
-- TestLoadStats
-- TestPlanRecreator
-- TestShow
-- TestAdmin
-- TestAdminShowDDLJobs
-- TestAdminChecksumOfPartitionedTable
-- TestSelectWithoutFrom
-- TestSelectBackslashN
-- TestSelectNull
-- TestSelectStringLiteral
-- TestSelectLimit
-- TestSelectOrderBy
-- TestOrderBy
-- TestSelectErrorRow
-- TestIssue2612
-- TestIssue345
-- TestIssue5055
-- TestSetOperation
-- TestSetOperationOnDiffColType
-- TestIndexScanWithYearCol
-- TestUnion
-- TestUnionLimit
-- TestNeighbouringProj
-- TestIn
-- TestTablePKisHandleScan
-- TestIndexScan
-- TestIndexReverseOrder
-- TestTableReverseOrder
-- TestDefaultNull
-- TestUnsignedPKColumn
-- TestJSON
-- TestMultiUpdate
-- TestGeneratedColumnWrite
-- TestGeneratedColumnRead
-- TestGeneratedColumnPointGet
-- TestToPBExpr
-- TestDatumXAPI
-- TestSQLMode
-- TestTableDual
-- TestTableScan
-- TestAdapterStatement
-- TestIsPointGet
-- TestClusteredIndexIsPointGet
-- TestPointGetRepeatableRead
-- TestBatchPointGetRepeatableRead
-- TestSplitRegionTimeout
-- TestRow
-- TestColumnName
-- TestSelectVar
-- TestHistoryRead
-- TestLowResolutionTSORead
-- TestStaleReadFutureTime
-- TestScanControlSelection
-- TestSimpleDAG
-- TestTimestampTimeZone
-- TestTimestampDefaultValueTimeZone
-- TestTiDBCurrentTS
-- TestTiDBLastTxnInfo
-- TestTiDBLastTxnInfoCommitMode
-- TestTiDBLastQueryInfo
-- TestSelectForUpdate
-- TestEmptyEnum
-- TestIssue4024
-- TestAddIndexPriority
-- TestAlterTableComment
-- TestTimezonePushDown
-- TestNotFillCacheFlag
-- TestSyncLog
-- TestHandleTransfer
-- TestBit
-- TestEnum
-- TestSet
-- TestSubqueryInValues
-- TestEnhancedRangeAccess
-- TestMaxInt64Handle
-- TestTableScanWithPointRanges
-- TestUnsignedPk
-- TestSignedCommonHandle
-- TestIssue5666
-- TestIssue5341
-- TestContainDotColumn
-- TestCheckIndex
-- TestCheckTable
-- TestCheckTableClusterIndex
-- TestCoprocessorStreamingFlag
-- TestIncorrectLimitArg
-- TestLimit
-- TestCoprocessorStreamingWarning
-- TestYearTypeDeleteIndex
-- TestForSelectScopeInUnion
-- TestUnsignedDecimalOverflow
-- TestIndexJoinTableDualPanic
-- TestSortLeftJoinWithNullColumnInRightChildPanic
-- TestUnionAutoSignedCast
-- TestUpdateClustered
-- TestUpdateJoin
-- TestMaxOneRow
-- TestCurrentTimestampValueSelection
-- TestRowID
-- TestDoSubquery
-- TestSubqueryTableAlias
-- TestTSOFail
-- TestSelectHashPartitionTable
-- TestSelectPartition
-- TestDeletePartition
-- TestSelectView
-- TestStrToDateBuiltin
-- TestAddDateBuiltinWithWarnings
-- TestIssue27232
-- TestStrToDateBuiltinWithWarnings
-- TestReadPartitionedTable
-- TestSplitRegion
-- TestSplitRegionEdgeCase
-- TestClusterIndexSplitTableIntegration
-- TestClusterIndexShowTableRegion
-- TestClusterIndexOuterJoinElimination
-- TestShowTableRegion
-- TestIssue10435
-- TestUnsignedFeedback
-- TestCharsetFeature
-- TestIssue23567
-- TestSummaryFailedUpdate
-- TestOOMPanicAction
-- TestRecoverTable
-- TestFlashbackTable
-- TestRecoverTempTable
-- TestPointGetPreparedPlan
-- TestPointGetPreparedPlanWithCommitMode
-- TestPointUpdatePreparedPlan
-- TestPointUpdatePreparedPlanWithCommitMode
-- TestPartitionHashCode
-- TestAlterDefaultValue
-- TestPrepareLoadData
-- TestSlowQuery
-- TestIssue20236
-- TestSQLDigestTextRetriever
-- TestFunctionDecodeSQLDigests
-- TestFunctionDecodeSQLDigestsPrivilege
-- TestIssue15718
-- TestIssue15767
-- TestIssue16025
-- TestIssue16854
-- TestIssue16921
-- TestIssue19100
-- TestInsertValuesWithSubQuery
-- TestDIVZeroInPartitionExpr
-- TestInsertIntoGivenPartitionSet
-- TestUpdateGivenPartitionSet
-- TestApplyCache
-- TestGenerateColumnReplace
-- TestSlowQueryWithoutSlowLog
-- TestSlowQuerySensitiveQuery
-- TestSlowQueryPrepared
-- TestLogSlowLogIndex
-- TestSlowQuery
-- TestKillTableReader
-- TestPrevStmtDesensitization
-- TestIssue19372
-- TestCollectCopRuntimeStats
-- TestIndexLookupRuntimeStats
-- TestHashAggRuntimeStats
-- TestIndexMergeRuntimeStats
-- TestCollectDMLRuntimeStats
-- TestIssue13758
-- TestIntegrationCopCache
-- TestCoprocessorOOMTicase
-- TestIssue20237
-- TestIssue19148
-- TestIssue19667
-- TestIssue20975UpdateNoChange
-- TestIssue20975SelectForUpdate
-- TestIssue20975SelectForUpdatePointGet
-- TestIssue20975SelectForUpdateBatchPointGet
-- TestIssue20975UpdateNoChangeWithPartitionTable
-- TestIssue20975SelectForUpdateWithPartitionTable
-- TestIssue20975SelectForUpdatePointGetWithPartitionTable
-- TestIssue20975SelectForUpdateBatchPointGetWithPartitionTable
-- TestIssue20305
-- TestIssue22817
-- TestIssue13953
-- TestZeroDateTimeCompatibility
-- TestInvalidDateValueInCreateTable
-- TestOOMActionPriority
-- TestIssue21441
-- Test17780
-- TestIssue9918
-- Test13004
-- Test12178
-- Test11883
-- Test15492
-- TestTrackAggMemoryUsage
-- Test12201
-- TestIssue21451
-- TestIssue15563
-- TestIssue22231
-- TestIssue22201
-- TestIssue22941
-- TestTxnWriteThroughputSLI
-- TestIssue23993
-- TestProjectionBitType
-- TestIssue23609
-- TestIssue24091
-- TestIssue24210
-- TestDeadlocksTable
-- TestExprBlackListForEnum
-- TestResourceGroupTag
-- TestIssue24933
-- TestInvalidReadTemporaryTable
-- TestEmptyTableSampleTemporaryTable
-- TestIssue25506
-- TestIssue26348
-- TestIssue26532
-- TestIssue25447
-- TestIssue23602
-- TestCTEWithIndexLookupJoinDeadLock
+```bash
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/.*$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+```
+
+- testSuiteP1 > TestPessimisticSelectForUpdate [DONE]
+- testSuiteP1 > TestBind [DONE]
+- testSuiteP1 > TestChangePumpAndDrainer [DONE]
+- testSuiteP1 > TestLoadStats [DONE]
+- testSuiteP1 > TestPlanReplayer [DONE]
+- testSuiteP1 > TestShow [DONE]
+- testSuiteP1 > TestSelectWithoutFrom [DONE]
+- testSuiteP1 > TestSelectBackslashN [DONE]
+- testSuiteP1 > TestSelectNull [DONE]
+- testSuiteP1 > TestSelectStringLiteral [DONE]
+- testSuiteP1 > TestSelectLimit [DONE]
+- testSuiteP1 > TestSelectOrderBy [DONE]
+- testSuiteP1 > TestOrderBy [DONE]
+- testSuiteP1 > TestSelectErrorRow [DONE]
+- testSuiteP1 > TestIssue2612 [DONE]
+- testSuiteP1 > TestIssue345 [DONE]
+- testSuiteP1 > TestIssue5055 [DONE]
+- testSuiteP1 > TestNeighbouringProj [DONE]
+- testSuiteP1 > TestIn [DONE]
+- testSuiteP1 > TestTablePKisHandleScan [DONE]
+- testSuiteP1 > TestIndexReverseOrder [DONE]
+- testSuiteP1 > TestTableReverseOrder [DONE]
+- testSuiteP1 > TestDefaultNull [DONE]
+- testSuiteP1 > TestUnsignedPKColumn [DONE]
+- testSuiteP1 > TestJSON [DONE]
+- testSuiteP1 > TestMultiUpdate [DONE]
+- testSuiteP1 > TestGeneratedColumnWrite [DONE]
+- testSuiteP1 > TestGeneratedColumnRead [DONE]
+- testSuiteP1 > TestGeneratedColumnPointGet [DONE]
+- testSuiteP1 > TestUnionAutoSignedCast [DONE]
+- testSuiteP1 > TestUpdateClustered [DONE]
+- testSuiteP1 > TestSelectPartition [DONE]
+- testSuiteP1 > TestDeletePartition
+- testSuiteP1 > TestPrepareLoadData
+- testSuiteP1 > TestIssue22941
+- testSuiteP1 > TestIssue28935
+
+- testSuite3 > TestAdmin
+- testSuite3 > TestYearTypeDeleteIndex
+- testSuite3 > TestForSelectScopeInUnion
+- testSuite3 > TestUnsignedDecimalOverflow
+- testSuite3 > TestIndexJoinTableDualPanic
+- testSuite3 > TestSortLeftJoinWithNullColumnInRightChildPanic
+- testSuite3 > TestMaxOneRow
+- testSuite3 > TestRowID
+- testSuite3 > TestDoSubquery
+- testSuite3 > TestSubqueryTableAlias
+- testSuite3 > TestSelectHashPartitionTable
+
+- testSuite > TestScanControlSelection
+- testSuite > TestSimpleDAG
+- testSuite > TestTimestampTimeZone
+- testSuite > TestTimestampDefaultValueTimeZone
+- testSuite > TestTiDBCurrentTS
+- testSuite > TestTiDBLastTxnInfo
+- testSuite > TestTiDBLastQueryInfo
+- testSuite > TestSelectForUpdate
+- testSuite > TestSelectForUpdateOf
+- testSuite > TestEmptyEnum
+- testSuite > TestIssue4024
+- testSuite > TestTimezonePushDown
+- testSuite > TestNotFillCacheFlag
+- testSuite > TestHandleTransfer
+- testSuite > TestBit
+- testSuite > TestEnum
+- testSuite > TestSet
+- testSuite > TestSubqueryInValues
+- testSuite > TestEnhancedRangeAccess
+- testSuite > TestMaxInt64Handle
+- testSuite > TestTableScanWithPointRanges
+- testSuite > TestUnsignedPk
+- testSuite > TestSignedCommonHandle
+- testSuite > TestIssue5666
+- testSuite > TestIssue5341
+- testSuite > TestContainDotColumn
+- testSuite > TestCheckIndex
+- testSuite > TestCheckTable
+- testSuite > TestCheckTableClusterIndex
+- testSuite > TestCoprocessorStreamingFlag
+- testSuite > TestIncorrectLimitArg
+- testSuite > TestLimit
+- testSuite > TestCoprocessorStreamingWarning
+- testSuite > TestSelectView
+- testSuite > TestSummaryFailedUpdate
+- testSuite > TestOOMPanicAction
+- testSuite > TestIssue16921
+- testSuite > TestIssue19100
+- testSuite > TestGenerateColumnReplace
+- testSuite > TestIssue19372
+- testSuite > TestCollectDMLRuntimeStats
+- testSuite > TestIssue13758
+- testSuite > TestIssue20237
+- testSuite > TestIssue19667
+- testSuite > TestIssue20975UpdateNoChange
+- testSuite > TestIssue20975SelectForUpdate
+- testSuite > TestIssue20975SelectForUpdatePointGet
+- testSuite > TestIssue20975SelectForUpdateBatchPointGet
+- testSuite > TestIssue20975UpdateNoChangeWithPartitionTable
+- testSuite > TestIssue20975SelectForUpdateWithPartitionTable
+- testSuite > TestIssue20975SelectForUpdatePointGetWithPartitionTable
+- testSuite > TestIssue20975SelectForUpdateBatchPointGetWithPartitionTable
+- testSuite > TestIssue20305
+- testSuite > TestIssue22817
+- testSuite > TestIssue13953
+- testSuite > TestZeroDateTimeCompatibility
+- testSuite > TestInvalidDateValueInCreateTable
+- testSuite > TestOOMActionPriority
+- testSuite > Test17780
+- testSuite > TestIssue9918
+- testSuite > Test13004
+- testSuite > Test12178
+- testSuite > Test11883
+- testSuite > Test15492
+- testSuite > TestTrackAggMemoryUsage
+- testSuite > Test12201
+- testSuite > TestIssue21451
+- testSuite > TestIssue15563
+- testSuite > TestIssue22231
+- testSuite > TestIssue22201
+- testSuite > TestIssue23993
+- testSuite > TestIssue23609
+- testSuite > TestIssue24933
+- testSuite > TestTableSampleTemporaryTable
+- testSuite > TestIssue25506
+- testSuite > TestIssue26348
+- testSuite > TestIssue26532
+- testSuite > TestIssue25447
+- testSuite > TestIssue23602
+- testSuite > TestCTEWithIndexLookupJoinDeadLock
+- testSuite > TestGetResultRowsCount
+
+- testSuiteP2 > TestAdminShowDDLJobs
+- testSuiteP2 > TestAdminChecksumOfPartitionedTable
+- testSuiteP2 > TestUnion
+- testSuiteP2 > TestToPBExpr
+- testSuiteP2 > TestDatumXAPI
+- testSuiteP2 > TestSQLMode
+- testSuiteP2 > TestTableDual
+- testSuiteP2 > TestTableScan
+- testSuiteP2 > TestAdapterStatement
+- testSuiteP2 > TestIsPointGet
+- testSuiteP2 > TestClusteredIndexIsPointGet
+- testSuiteP2 > TestRow
+- testSuiteP2 > TestColumnName
+- testSuiteP2 > TestSelectVar
+- testSuiteP2 > TestHistoryRead
+- testSuiteP2 > TestCurrentTimestampValueSelection
+- testSuiteP2 > TestStrToDateBuiltin
+- testSuiteP2 > TestAddDateBuiltinWithWarnings
+- testSuiteP2 > TestIssue27232
+- testSuiteP2 > TestStrToDateBuiltinWithWarnings
+- testSuiteP2 > TestReadPartitionedTable
+- testSuiteP2 > TestIssue10435
+- testSuiteP2 > TestPointGetPreparedPlan
+- testSuiteP2 > TestPointGetPreparedPlanWithCommitMode
+- testSuiteP2 > TestPointUpdatePreparedPlan
+- testSuiteP2 > TestPointUpdatePreparedPlanWithCommitMode
+- testSuiteP2 > TestApplyCache
+- testSuiteP2 > TestProjectionBitType
+
+- testSuiteWithData > TestSetOperation
+- testSuiteWithData > TestSetOperationOnDiffColType
+- testSuiteWithData > TestIndexScanWithYearCol
+- testSuiteWithData > TestClusterIndexOuterJoinElimination
+
+- testSuite2 > TestUnionLimit
+- testSuite2 > TestLowResolutionTSORead
+- testSuite2 > TestStaleReadFutureTime
+- testSuite2 > TestAddIndexPriority
+
+- testSuite8 > TestIndexScan
+
+- testSerialSuite > TestPointGetRepeatableRead
+- testSerialSuite > TestBatchPointGetRepeatableRead
+- testSerialSuite > TestSplitRegionTimeout
+- testSerialSuite > TestTiDBLastTxnInfoCommitMode
+- testSerialSuite > TestTSOFail
+- testSerialSuite > TestKillTableReader
+- testSerialSuite > TestPrevStmtDesensitization
+- testSerialSuite > TestCoprocessorOOMTicase
+- testSerialSuite > TestIssue19148
+- testSerialSuite > TestIssue21441
+- testSerialSuite > TestTxnWriteThroughputSLI
+- testSerialSuite > TestIssue24210
+- testSerialSuite > TestDeadlocksTable
+- testSerialSuite > TestExprBlackListForEnum
+
+- testSuite1 > TestAlterTableComment
+- testSuite1 > TestSyncLog
+- testSuite1 > TestPartitionHashCode
+- testSuite1 > TestAlterDefaultValue
+- testSuite1 > TestIssue15718
+- testSuite1 > TestIssue15767
+- testSuite1 > TestIssue16025
+- testSuite1 > TestIssue16854
+- testSuite1 > TestInsertValuesWithSubQuery
+- testSuite1 > TestDIVZeroInPartitionExpr
+- testSuite1 > TestInsertIntoGivenPartitionSet
+- testSuite1 > TestUpdateGivenPartitionSet
+- testSuite1 > TestIssue24091
+
+- testSuite6 > TestUpdateJoin
+
+- testSplitTable > TestSplitRegion
+- testSplitTable > TestSplitRegionEdgeCase
+- testSplitTable > TestClusterIndexSplitTableIntegration
+- testSplitTable > TestClusterIndexShowTableRegion
+- testSplitTable > TestShowTableRegion
+
+- testSerialSuite2 > TestUnsignedFeedback
+- testSerialSuite2 > TestIssue23567
+
+- testSuiteWithCliBaseCharset > TestCharsetFeature
+- testSuiteWithCliBaseCharset > TestCharsetFeatureCollation
+
+- testRecoverTable > TestRecoverTable
+- testRecoverTable > TestFlashbackTable
+- testRecoverTable > TestRecoverTempTable
+
+- testClusterTableSuite > TestSlowQuery
+- testClusterTableSuite > TestIssue20236
+- testClusterTableSuite > TestSQLDigestTextRetriever
+- testClusterTableSuite > TestFunctionDecodeSQLDigests
+- testClusterTableSuite > TestFunctionDecodeSQLDigestsPrivilege
+
+- testSlowQuery > TestSlowQueryWithoutSlowLog
+- testSlowQuery > TestSlowQuerySensitiveQuery
+- testSlowQuery > TestSlowQueryPrepared
+- testSlowQuery > TestLogSlowLogIndex
+- testSlowQuery > TestSlowQuery
+
+- testSerialSuite1 > TestCollectCopRuntimeStats
+- testSerialSuite1 > TestIndexLookupRuntimeStats
+- testSerialSuite1 > TestHashAggRuntimeStats
+- testSerialSuite1 > TestIndexMergeRuntimeStats
+
+- testCoprCache > TestIntegrationCopCache
+
+- testResourceTagSuite > TestResourceGroupTag
+
+- testStaleTxnSuite > TestInvalidReadTemporaryTable
+
+
 
 ---
 
@@ -361,7 +390,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestChangePumpAndDrainer to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestChangePumpAndDrainer$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestChangePumpAndDrainer$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -369,15 +398,15 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestLoadStats to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestLoadStats$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestLoadStats$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
 
-`executor: migrate TestPlanRecreator to testify (#28577)`
+`executor: migrate TestPlanReplayer to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestPlanRecreator$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestPlanReplayer$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -385,7 +414,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestShow to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestShow$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestShow$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -417,7 +446,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestSelectWithoutFrom to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestSelectWithoutFrom$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestSelectWithoutFrom$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -425,7 +454,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestSelectBackslashN to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestSelectBackslashN$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestSelectBackslashN$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -433,7 +462,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestSelectNull to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestSelectNull$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestSelectNull$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -441,7 +470,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestSelectStringLiteral to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestSelectStringLiteral$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestSelectStringLiteral$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -449,7 +478,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestSelectLimit to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestSelectLimit$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestSelectLimit$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -457,7 +486,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestSelectOrderBy to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestSelectOrderBy$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestSelectOrderBy$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -465,7 +494,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestOrderBy to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestOrderBy$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestOrderBy$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -473,7 +502,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestSelectErrorRow to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestSelectErrorRow$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestSelectErrorRow$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -481,7 +510,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestIssue2612 to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestIssue2612$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestIssue2612$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -489,7 +518,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestIssue345 to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestIssue345$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestIssue345$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -497,7 +526,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestIssue5055 to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestIssue5055$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestIssue5055$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -545,7 +574,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestNeighbouringProj to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestNeighbouringProj$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestNeighbouringProj$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -553,7 +582,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestIn to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestIn$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestIn$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -561,7 +590,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestTablePKisHandleScan to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestTablePKisHandleScan$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestTablePKisHandleScan$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -577,7 +606,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestIndexReverseOrder to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestIndexReverseOrder$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestIndexReverseOrder$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -585,7 +614,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestTableReverseOrder to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestTableReverseOrder$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestTableReverseOrder$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -593,7 +622,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestDefaultNull to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestDefaultNull$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestDefaultNull$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -601,7 +630,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestUnsignedPKColumn to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestUnsignedPKColumn$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestUnsignedPKColumn$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -609,7 +638,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestJSON to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestJSON$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestJSON$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -617,7 +646,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestMultiUpdate to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestMultiUpdate$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestMultiUpdate$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -625,7 +654,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestGeneratedColumnWrite to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestGeneratedColumnWrite$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestGeneratedColumnWrite$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -633,7 +662,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestGeneratedColumnRead to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestGeneratedColumnRead$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestGeneratedColumnRead$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -3395,4 +3424,153 @@ tidb $ { make failpoint-enable; go test -v -run ^TestSuiteP1/.*$ github.com/ping
 PASS
 ok  	github.com/pingcap/tidb/executor	2.409s
 tidb $ 
+```
+
+```bash
+=== CONT  TestSuiteP1/Tests/TestPessimisticSelectForUpdate
+    testkit.go:77: 
+        	Error Trace:	testkit.go:77
+        	            				executor_test.go:290
+        	Error:      	Received unexpected error:
+        	            	[schema:1050]Table 't' already exists
+        	            	github.com/pingcap/errors.AddStack
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174
+        	            	github.com/pingcap/errors.Trace
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/juju_adaptor.go:15
+        	            	github.com/pingcap/tidb/ddl.(*ddl).doDDLJob
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl.go:621
+        	            	github.com/pingcap/tidb/ddl.(*ddl).CreateTableWithInfo
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_api.go:2085
+        	            	github.com/pingcap/tidb/ddl.(*ddl).CreateTable
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_api.go:1994
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).executeCreateTable
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:338
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:149
+        	            	github.com/pingcap/tidb/executor.Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414
+        	            	github.com/pingcap/tidb/session.runStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683
+        	            	github.com/pingcap/tidb/session.(*session).ExecuteStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).MustExec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75
+        	            	github.com/pingcap/tidb/executor_test.SubTestPessimisticSelectForUpdate.func1
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:290
+        	            	testing.tRunner
+        	            		/Users/karuppiahn/.go/src/testing/testing.go:1193
+        	            	runtime.goexit
+        	            		/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371
+        	Test:       	TestSuiteP1/Tests/TestPessimisticSelectForUpdate
+        	Messages:   	sql:create table t(id int primary key, a int), [], error stack [schema:1050]Table 't' already exists
+        	            	github.com/pingcap/errors.AddStack
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174
+        	            	github.com/pingcap/errors.Trace
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/juju_adaptor.go:15
+        	            	github.com/pingcap/tidb/ddl.(*ddl).doDDLJob
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl.go:621
+        	            	github.com/pingcap/tidb/ddl.(*ddl).CreateTableWithInfo
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_api.go:2085
+        	            	github.com/pingcap/tidb/ddl.(*ddl).CreateTable
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_api.go:1994
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).executeCreateTable
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:338
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:149
+        	            	github.com/pingcap/tidb/executor.Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414
+        	            	github.com/pingcap/tidb/session.runStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683
+        	            	github.com/pingcap/tidb/session.(*session).ExecuteStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).MustExec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75
+        	            	github.com/pingcap/tidb/executor_test.SubTestPessimisticSelectForUpdate.func1
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:290
+        	            	testing.tRunner
+        	            		/Users/karuppiahn/.go/src/testing/testing.go:1193
+        	            	runtime.goexit
+```
+
+```bash
+=== CONT  TestSuiteP1/Tests/TestOrderBy
+    testkit.go:77: 
+        	Error Trace:	testkit.go:77
+        	            				executor_test.go:1204
+        	Error:      	Received unexpected error:
+        	            	[planner:1046]No database selected
+        	            	github.com/pingcap/errors.AddStack
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174
+        	            	github.com/pingcap/errors.Trace
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/juju_adaptor.go:15
+        	            	github.com/pingcap/tidb/planner/core.(*preprocessor).handleTableName
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/planner/core/preprocess.go:1372
+        	            	github.com/pingcap/tidb/planner/core.(*preprocessor).Leave
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/planner/core/preprocess.go:480
+        	            	github.com/pingcap/tidb/parser/ast.(*TableName).Accept
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/parser/ast/dml.go:439
+        	            	github.com/pingcap/tidb/parser/ast.(*DropTableStmt).Accept
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/parser/ast/ddl.go:1182
+        	            	github.com/pingcap/tidb/planner/core.Preprocess
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/planner/core/preprocess.go:117
+        	            	github.com/pingcap/tidb/executor.(*Compiler).Compile
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/compiler.go:60
+        	            	github.com/pingcap/tidb/session.(*session).ExecuteStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1555
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).MustExec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75
+        	            	github.com/pingcap/tidb/executor_test.SubTestOrderBy.func1
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:1204
+        	            	testing.tRunner
+        	            		/Users/karuppiahn/.go/src/testing/testing.go:1193
+        	            	runtime.goexit
+        	            		/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371
+        	Test:       	TestSuiteP1/Tests/TestOrderBy
+        	Messages:   	sql:drop table if exists t, [], error stack [planner:1046]No database selected
+        	            	github.com/pingcap/errors.AddStack
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174
+        	            	github.com/pingcap/errors.Trace
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/juju_adaptor.go:15
+        	            	github.com/pingcap/tidb/planner/core.(*preprocessor).handleTableName
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/planner/core/preprocess.go:1372
+        	            	github.com/pingcap/tidb/planner/core.(*preprocessor).Leave
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/planner/core/preprocess.go:480
+        	            	github.com/pingcap/tidb/parser/ast.(*TableName).Accept
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/parser/ast/dml.go:439
+        	            	github.com/pingcap/tidb/parser/ast.(*DropTableStmt).Accept
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/parser/ast/ddl.go:1182
+        	            	github.com/pingcap/tidb/planner/core.Preprocess
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/planner/core/preprocess.go:117
+        	            	github.com/pingcap/tidb/executor.(*Compiler).Compile
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/compiler.go:60
+        	            	github.com/pingcap/tidb/session.(*session).ExecuteStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1555
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).MustExec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75
+        	            	github.com/pingcap/tidb/executor_test.SubTestOrderBy.func1
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:1204
+        	            	testing.tRunner
+        	            		/Users/karuppiahn/.go/src/testing/testing.go:1193
+        	            	runtime.goexit
+        	            		/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371
 ```
