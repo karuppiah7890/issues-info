@@ -50,10 +50,10 @@ As part of https://github.com/pingcap/tidb/issues/28542 , I figured - let me mig
 - testSuiteP1 > TestUnionAutoSignedCast [DONE]
 - testSuiteP1 > TestUpdateClustered [DONE]
 - testSuiteP1 > TestSelectPartition [DONE]
-- testSuiteP1 > TestDeletePartition
-- testSuiteP1 > TestPrepareLoadData
-- testSuiteP1 > TestIssue22941
-- testSuiteP1 > TestIssue28935
+- testSuiteP1 > TestDeletePartition [DONE]
+- testSuiteP1 > TestPrepareLoadData [DONE]
+- testSuiteP1 > TestIssue22941 [DONE]
+- testSuiteP1 > TestIssue28935 [DONE]
 
 - testSuite3 > TestAdmin
 - testSuite3 > TestYearTypeDeleteIndex
@@ -1230,7 +1230,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestDeletePartition to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestDeletePartition$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestDeletePartition$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -1454,7 +1454,7 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestPrepareLoadData to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestPrepareLoadData$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestPrepareLoadData$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -1966,7 +1966,15 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestIssue22941 to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestIssue22941$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestIssue22941$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+```
+
+---
+
+`executor: migrate TestIssue28935 to testify (#28577)`
+
+```bash
+{ make failpoint-enable; go test -v -run ^TestSuiteP1/Tests/TestIssue28935$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
