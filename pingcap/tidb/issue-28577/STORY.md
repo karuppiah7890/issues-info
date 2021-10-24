@@ -55,17 +55,17 @@ As part of https://github.com/pingcap/tidb/issues/28542 , I figured - let me mig
 - testSuiteP1 > TestIssue22941 [DONE]
 - testSuiteP1 > TestIssue28935 [DONE]
 
-- testSuite3 > TestAdmin
-- testSuite3 > TestYearTypeDeleteIndex
-- testSuite3 > TestForSelectScopeInUnion
-- testSuite3 > TestUnsignedDecimalOverflow
-- testSuite3 > TestIndexJoinTableDualPanic
-- testSuite3 > TestSortLeftJoinWithNullColumnInRightChildPanic
-- testSuite3 > TestMaxOneRow
-- testSuite3 > TestRowID
-- testSuite3 > TestDoSubquery
-- testSuite3 > TestSubqueryTableAlias
-- testSuite3 > TestSelectHashPartitionTable
+- testSuite3 > TestAdmin [DONE]
+- testSuite3 > TestYearTypeDeleteIndex [DONE]
+- testSuite3 > TestForSelectScopeInUnion [DONE]
+- testSuite3 > TestUnsignedDecimalOverflow [DONE]
+- testSuite3 > TestIndexJoinTableDualPanic [DONE]
+- testSuite3 > TestSortLeftJoinWithNullColumnInRightChildPanic [DONE]
+- testSuite3 > TestMaxOneRow [DONE]
+- testSuite3 > TestRowID [DONE]
+- testSuite3 > TestDoSubquery [DONE]
+- testSuite3 > TestSubqueryTableAlias [DONE]
+- testSuite3 > TestSelectHashPartitionTable [DONE]
 
 - testSuite > TestScanControlSelection
 - testSuite > TestSimpleDAG
@@ -422,7 +422,13 @@ For all `TestSuiteP1` sub tests -
 `executor: migrate TestAdmin to testify (#28577)`
 
 ```bash
-{ make failpoint-enable; go test -v -run ^TestAdmin$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+{ make failpoint-enable; go test -v -run ^TestSuite3/Tests/TestAdmin$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+```
+
+---
+
+```bash
+{ make failpoint-enable; go test -v -run ^TestSuite3/.*$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 ---
@@ -3582,3 +3588,713 @@ tidb $
         	            	runtime.goexit
         	            		/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371
 ```
+
+---
+
+```bash
+tidb $ { make failpoint-enable; go test -v -run ^TestSuite3/.*$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+# github.com/shirou/gopsutil/cpu
+../../../../../go/pkg/mod/github.com/shirou/gopsutil@v3.21.2+incompatible/cpu/cpu_darwin_cgo.go:13:5: warning: 'TARGET_OS_MAC' is not defined, evaluates to 0 [-Wundef-prefix=TARGET_OS_]
+=== RUN   TestSuite3
+[2021/10/24 13:45:39.399 +05:30] [INFO] [tidb.go:72] ["new domain"] [store=30e9e076-04f1-4ff8-ab6d-ffa782f74960] ["ddl lease"=0s] ["stats lease"=-1ns] ["index usage sync lease"=0s]
+[2021/10/24 13:45:39.406 +05:30] [INFO] [domain.go:164] ["full load InfoSchema success"] [currentSchemaVersion=0] [neededSchemaVersion=0] ["start time"=1.629492ms]
+[2021/10/24 13:45:39.406 +05:30] [INFO] [domain.go:387] ["full load and reset schema validator"]
+[2021/10/24 13:45:39.406 +05:30] [INFO] [ddl.go:347] ["[ddl] start DDL"] [ID=fdf6dc6f-0a1f-430a-8f42-dcc68a673d25] [runWorker=true]
+[2021/10/24 13:45:39.406 +05:30] [INFO] [ddl.go:336] ["[ddl] start delRangeManager OK"] ["is a emulator"=true]
+[2021/10/24 13:45:39.406 +05:30] [INFO] [ddl_worker.go:155] ["[ddl] start DDL worker"] [worker="worker 2, tp add index"]
+[2021/10/24 13:45:39.407 +05:30] [INFO] [delete_range.go:142] ["[ddl] start delRange emulator"]
+[2021/10/24 13:45:39.407 +05:30] [INFO] [ddl_worker.go:155] ["[ddl] start DDL worker"] [worker="worker 1, tp general"]
+[2021/10/24 13:45:39.407 +05:30] [INFO] [tidb.go:260] ["rollbackTxn called due to ddl/autocommit failure"]
+[2021/10/24 13:45:39.407 +05:30] [WARN] [session.go:1580] ["run statement failed"] [schemaVersion=0] [error="[schema:1049]Unknown database 'mysql'"] [errorVerbose="[schema:1049]Unknown database 'mysql'\ngithub.com/pingcap/errors.AddStack\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174\ngithub.com/pingcap/errors.(*Error).GenWithStackByArgs\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/normalize.go:159\ngithub.com/pingcap/tidb/executor.(*SimpleExec).executeUse\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/simple.go:556\ngithub.com/pingcap/tidb/executor.(*SimpleExec).Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/simple.go:126\ngithub.com/pingcap/tidb/executor.Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465\ngithub.com/pingcap/tidb/executor.(*ExecStmt).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414\ngithub.com/pingcap/tidb/session.runStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683\ngithub.com/pingcap/tidb/session.(*session).ExecuteStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577\ngithub.com/pingcap/tidb/session.(*session).ExecuteInternal\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1289\ngithub.com/pingcap/tidb/session.checkBootstrapped\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/bootstrap.go:618\ngithub.com/pingcap/tidb/session.bootstrap\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/bootstrap.go:366\ngithub.com/pingcap/tidb/session.runInBootstrapSession\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:2587\ngithub.com/pingcap/tidb/session.BootstrapSession\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:2433\ngithub.com/pingcap/tidb/executor_test.(*baseTestSuite).NewSetUpSuite\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:218\ngithub.com/pingcap/tidb/executor_test.TestSuite3\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:316\ntesting.tRunner\n\t/Users/karuppiahn/.go/src/testing/testing.go:1193\nruntime.goexit\n\t/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371"] [session="{\n  \"currDBName\": \"\",\n  \"id\": 0,\n  \"status\": 2,\n  \"strictMode\": true,\n  \"user\": null\n}"]
+[2021/10/24 13:45:39.408 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=0] [cur_db=] [sql="CREATE DATABASE IF NOT EXISTS test"] [user=]
+[2021/10/24 13:45:39.411 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:2, Type:create schema, State:none, SchemaState:queueing, SchemaID:1, TableID:0, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.409 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.411 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:2, Type:create schema, State:none, SchemaState:queueing, SchemaID:1, TableID:0, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.409 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE DATABASE IF NOT EXISTS test"]
+[2021/10/24 13:45:39.412 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:2, Type:create schema, State:none, SchemaState:queueing, SchemaID:1, TableID:0, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.409 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.414 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:2, Type:create schema, State:synced, SchemaState:public, SchemaID:1, TableID:0, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.409 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.415 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=2]
+[2021/10/24 13:45:39.415 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.418 +05:30] [INFO] [domain.go:164] ["full load InfoSchema success"] [currentSchemaVersion=0] [neededSchemaVersion=1] ["start time"=2.212853ms]
+[2021/10/24 13:45:39.418 +05:30] [INFO] [domain.go:387] ["full load and reset schema validator"]
+[2021/10/24 13:45:39.418 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=1] [cur_db=] [sql="CREATE DATABASE IF NOT EXISTS `mysql`"] [user=]
+[2021/10/24 13:45:39.420 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:4, Type:create schema, State:none, SchemaState:queueing, SchemaID:3, TableID:0, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.419 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.420 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:4, Type:create schema, State:none, SchemaState:queueing, SchemaID:3, TableID:0, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.419 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE DATABASE IF NOT EXISTS `mysql`"]
+[2021/10/24 13:45:39.420 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:4, Type:create schema, State:none, SchemaState:queueing, SchemaID:3, TableID:0, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.419 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.422 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:4, Type:create schema, State:synced, SchemaState:public, SchemaID:3, TableID:0, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.419 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.423 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=4]
+[2021/10/24 13:45:39.423 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.424 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=1] [neededSchemaVersion=2] ["start time"=454.539µs] [phyTblIDs="[]"] [actionTypes="[]"]
+[2021/10/24 13:45:39.425 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=2] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.user (\n\t\tHost\t\t\t\t\tCHAR(255),\n\t\tUser\t\t\t\t\tCHAR(32),\n\t\tauthentication_string\tTEXT,\n\t\tplugin\t\t\t\t\tCHAR(64),\n\t\tSelect_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tInsert_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tUpdate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDelete_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tProcess_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tGrant_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReferences_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_db_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tSuper_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_tmp_table_priv\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tLock_tables_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tExecute_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_view_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_view_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tIndex_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_user_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tEvent_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tTrigger_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_role_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_role_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAccount_locked\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShutdown_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReload_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tFILE_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tConfig_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_Tablespace_Priv  ENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tRepl_slave_priv\t    \tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tRepl_client_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (Host, User));"] [user=]
+[2021/10/24 13:45:39.428 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:6, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:5, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.426 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.428 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:6, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:5, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.426 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.user (\n\t\tHost\t\t\t\t\tCHAR(255),\n\t\tUser\t\t\t\t\tCHAR(32),\n\t\tauthentication_string\tTEXT,\n\t\tplugin\t\t\t\t\tCHAR(64),\n\t\tSelect_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tInsert_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tUpdate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDelete_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tProcess_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tGrant_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReferences_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_db_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tSuper_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_tmp_table_priv\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tLock_tables_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tExecute_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_view_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_view_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tIndex_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_user_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tEvent_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tTrigger_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_role_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_role_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAccount_locked\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShutdown_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReload_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tFILE_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tConfig_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_Tablespace_Priv  ENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tRepl_slave_priv\t    \tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tRepl_client_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (Host, User));"]
+[2021/10/24 13:45:39.429 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:6, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:5, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.426 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.435 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:6, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:5, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.426 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.437 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=6]
+[2021/10/24 13:45:39.438 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.439 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=2] [neededSchemaVersion=3] ["start time"=1.288267ms] [phyTblIDs="[5]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.439 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=3] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.global_priv (Host CHAR(255) NOT NULL DEFAULT '',User CHAR(80) NOT NULL DEFAULT '',Priv LONGTEXT NOT NULL DEFAULT '',PRIMARY KEY (Host, User))"] [user=]
+[2021/10/24 13:45:39.441 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:8, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:7, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.44 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.441 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:8, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:7, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.44 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.global_priv (Host CHAR(255) NOT NULL DEFAULT '',User CHAR(80) NOT NULL DEFAULT '',Priv LONGTEXT NOT NULL DEFAULT '',PRIMARY KEY (Host, User))"]
+[2021/10/24 13:45:39.442 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:8, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:7, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.44 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.445 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:8, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:7, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.44 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.446 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=8]
+[2021/10/24 13:45:39.446 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.447 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=3] [neededSchemaVersion=4] ["start time"=769.537µs] [phyTblIDs="[7]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.448 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=4] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.db (\n\t\tHost\t\t\t\t\tCHAR(255),\n\t\tDB\t\t\t\t\t\tCHAR(64),\n\t\tUser\t\t\t\t\tCHAR(32),\n\t\tSelect_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tInsert_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tUpdate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDelete_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tGrant_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReferences_priv \t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tIndex_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_tmp_table_priv\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tLock_tables_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_view_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_view_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tExecute_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tEvent_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tTrigger_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (Host, DB, User));"] [user=]
+[2021/10/24 13:45:39.450 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:10, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:9, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.449 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.450 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:10, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:9, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.449 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.db (\n\t\tHost\t\t\t\t\tCHAR(255),\n\t\tDB\t\t\t\t\t\tCHAR(64),\n\t\tUser\t\t\t\t\tCHAR(32),\n\t\tSelect_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tInsert_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tUpdate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDelete_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tDrop_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tGrant_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tReferences_priv \t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tIndex_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_tmp_table_priv\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tLock_tables_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_view_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tShow_view_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tCreate_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tAlter_routine_priv\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tExecute_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tEvent_priv\t\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tTrigger_priv\t\t\tENUM('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (Host, DB, User));"]
+[2021/10/24 13:45:39.451 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:10, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:9, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.449 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.456 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:10, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:9, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.449 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.458 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=10]
+[2021/10/24 13:45:39.458 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.459 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=4] [neededSchemaVersion=5] ["start time"=1.063877ms] [phyTblIDs="[9]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.459 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=5] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.tables_priv (\n\t\tHost\t\tCHAR(255),\n\t\tDB\t\t\tCHAR(64),\n\t\tUser\t\tCHAR(32),\n\t\tTable_name\tCHAR(64),\n\t\tGrantor\t\tCHAR(77),\n\t\tTimestamp\tTIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n\t\tTable_priv\tSET('Select','Insert','Update','Delete','Create','Drop','Grant','Index','Alter','Create View','Show View','Trigger','References'),\n\t\tColumn_priv\tSET('Select','Insert','Update','References'),\n\t\tPRIMARY KEY (Host, DB, User, Table_name));"] [user=]
+[2021/10/24 13:45:39.462 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:12, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:11, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.461 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.462 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:12, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:11, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.461 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.tables_priv (\n\t\tHost\t\tCHAR(255),\n\t\tDB\t\t\tCHAR(64),\n\t\tUser\t\tCHAR(32),\n\t\tTable_name\tCHAR(64),\n\t\tGrantor\t\tCHAR(77),\n\t\tTimestamp\tTIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n\t\tTable_priv\tSET('Select','Insert','Update','Delete','Create','Drop','Grant','Index','Alter','Create View','Show View','Trigger','References'),\n\t\tColumn_priv\tSET('Select','Insert','Update','References'),\n\t\tPRIMARY KEY (Host, DB, User, Table_name));"]
+[2021/10/24 13:45:39.462 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:12, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:11, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.461 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.466 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:12, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:11, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.461 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.467 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=12]
+[2021/10/24 13:45:39.467 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.468 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=5] [neededSchemaVersion=6] ["start time"=822.882µs] [phyTblIDs="[11]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.469 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=6] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.columns_priv(\n\t\tHost\t\tCHAR(255),\n\t\tDB\t\t\tCHAR(64),\n\t\tUser\t\tCHAR(32),\n\t\tTable_name\tCHAR(64),\n\t\tColumn_name\tCHAR(64),\n\t\tTimestamp\tTIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n\t\tColumn_priv\tSET('Select','Insert','Update','References'),\n\t\tPRIMARY KEY (Host, DB, User, Table_name, Column_name));"] [user=]
+[2021/10/24 13:45:39.471 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:14, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:13, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.47 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.471 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:14, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:13, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.47 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.columns_priv(\n\t\tHost\t\tCHAR(255),\n\t\tDB\t\t\tCHAR(64),\n\t\tUser\t\tCHAR(32),\n\t\tTable_name\tCHAR(64),\n\t\tColumn_name\tCHAR(64),\n\t\tTimestamp\tTIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n\t\tColumn_priv\tSET('Select','Insert','Update','References'),\n\t\tPRIMARY KEY (Host, DB, User, Table_name, Column_name));"]
+[2021/10/24 13:45:39.472 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:14, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:13, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.47 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.475 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:14, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:13, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.47 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.476 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=14]
+[2021/10/24 13:45:39.476 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.477 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=6] [neededSchemaVersion=7] ["start time"=827.373µs] [phyTblIDs="[13]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.477 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=7] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.GLOBAL_VARIABLES(\n\t\tVARIABLE_NAME  VARCHAR(64) NOT NULL PRIMARY KEY,\n\t\tVARIABLE_VALUE VARCHAR(1024) DEFAULT NULL);"] [user=]
+[2021/10/24 13:45:39.479 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:16, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:15, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.478 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.479 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:16, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:15, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.478 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.GLOBAL_VARIABLES(\n\t\tVARIABLE_NAME  VARCHAR(64) NOT NULL PRIMARY KEY,\n\t\tVARIABLE_VALUE VARCHAR(1024) DEFAULT NULL);"]
+[2021/10/24 13:45:39.480 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:16, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:15, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.478 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.483 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:16, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:15, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.478 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.484 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=16]
+[2021/10/24 13:45:39.484 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.485 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=7] [neededSchemaVersion=8] ["start time"=729.515µs] [phyTblIDs="[15]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.485 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=8] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.tidb(\n\t\tVARIABLE_NAME  \tVARCHAR(64) NOT NULL PRIMARY KEY,\n\t\tVARIABLE_VALUE \tVARCHAR(1024) DEFAULT NULL,\n\t\tCOMMENT \t\tVARCHAR(1024));"] [user=]
+[2021/10/24 13:45:39.487 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:18, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:17, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.486 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.487 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:18, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:17, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.486 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.tidb(\n\t\tVARIABLE_NAME  \tVARCHAR(64) NOT NULL PRIMARY KEY,\n\t\tVARIABLE_VALUE \tVARCHAR(1024) DEFAULT NULL,\n\t\tCOMMENT \t\tVARCHAR(1024));"]
+[2021/10/24 13:45:39.488 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:18, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:17, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.486 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.491 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:18, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:17, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.486 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.492 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=18]
+[2021/10/24 13:45:39.492 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.493 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=8] [neededSchemaVersion=9] ["start time"=749.487µs] [phyTblIDs="[17]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.493 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=9] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.help_topic (\n  \t\thelp_topic_id \t\tINT(10) UNSIGNED NOT NULL,\n  \t\tname \t\t\t\tCHAR(64) NOT NULL,\n  \t\thelp_category_id \tSMALLINT(5) UNSIGNED NOT NULL,\n  \t\tdescription \t\tTEXT NOT NULL,\n  \t\texample \t\t\tTEXT NOT NULL,\n  \t\turl \t\t\t\tTEXT NOT NULL,\n  \t\tPRIMARY KEY (help_topic_id) clustered,\n  \t\tUNIQUE KEY name (name)\n\t\t) ENGINE=InnoDB DEFAULT CHARSET=utf8 STATS_PERSISTENT=0 COMMENT='help topics';"] [user=]
+[2021/10/24 13:45:39.495 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:20, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:19, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.494 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.495 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:20, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:19, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.494 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.help_topic (\n  \t\thelp_topic_id \t\tINT(10) UNSIGNED NOT NULL,\n  \t\tname \t\t\t\tCHAR(64) NOT NULL,\n  \t\thelp_category_id \tSMALLINT(5) UNSIGNED NOT NULL,\n  \t\tdescription \t\tTEXT NOT NULL,\n  \t\texample \t\t\tTEXT NOT NULL,\n  \t\turl \t\t\t\tTEXT NOT NULL,\n  \t\tPRIMARY KEY (help_topic_id) clustered,\n  \t\tUNIQUE KEY name (name)\n\t\t) ENGINE=InnoDB DEFAULT CHARSET=utf8 STATS_PERSISTENT=0 COMMENT='help topics';"]
+[2021/10/24 13:45:39.496 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:20, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:19, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.494 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.499 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:20, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:19, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.494 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.500 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=20]
+[2021/10/24 13:45:39.501 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.502 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=9] [neededSchemaVersion=10] ["start time"=833.172µs] [phyTblIDs="[19]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.502 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=10] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_meta (\n\t\tversion \t\tBIGINT(64) UNSIGNED NOT NULL,\n\t\ttable_id \t\tBIGINT(64) NOT NULL,\n\t\tmodify_count\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tcount \t\t\tBIGINT(64) UNSIGNED NOT NULL DEFAULT 0,\n\t\tsnapshot        BIGINT(64) UNSIGNED NOT NULL DEFAULT 0,\n\t\tINDEX idx_ver(version),\n\t\tUNIQUE INDEX tbl(table_id)\n\t);"] [user=]
+[2021/10/24 13:45:39.504 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:22, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:21, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.503 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.504 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:22, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:21, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.503 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_meta (\n\t\tversion \t\tBIGINT(64) UNSIGNED NOT NULL,\n\t\ttable_id \t\tBIGINT(64) NOT NULL,\n\t\tmodify_count\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tcount \t\t\tBIGINT(64) UNSIGNED NOT NULL DEFAULT 0,\n\t\tsnapshot        BIGINT(64) UNSIGNED NOT NULL DEFAULT 0,\n\t\tINDEX idx_ver(version),\n\t\tUNIQUE INDEX tbl(table_id)\n\t);"]
+[2021/10/24 13:45:39.505 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:22, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:21, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.503 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.508 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:22, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:21, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.503 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.509 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=22]
+[2021/10/24 13:45:39.509 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.510 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=10] [neededSchemaVersion=11] ["start time"=777.7µs] [phyTblIDs="[21]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.510 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=11] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_histograms (\n\t\ttable_id \t\t\tBIGINT(64) NOT NULL,\n\t\tis_index \t\t\tTINYINT(2) NOT NULL,\n\t\thist_id \t\t\tBIGINT(64) NOT NULL,\n\t\tdistinct_count \t\tBIGINT(64) NOT NULL,\n\t\tnull_count \t\t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\ttot_col_size \t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tmodify_count \t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tversion \t\t\tBIGINT(64) UNSIGNED NOT NULL DEFAULT 0,\n\t\tcm_sketch \t\t\tBLOB(6291456),\n\t\tstats_ver \t\t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tflag \t\t\t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tcorrelation \t\tDOUBLE NOT NULL DEFAULT 0,\n\t\tlast_analyze_pos \tBLOB DEFAULT NULL,\n\t\tUNIQUE INDEX tbl(table_id, is_index, hist_id)\n\t);"] [user=]
+[2021/10/24 13:45:39.511 +05:30] [INFO] [ddl_api.go:672] ["Automatically convert BLOB(6291456) to MEDIUMBLOB"]
+[2021/10/24 13:45:39.513 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:24, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:23, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.512 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.513 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:24, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:23, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.512 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_histograms (\n\t\ttable_id \t\t\tBIGINT(64) NOT NULL,\n\t\tis_index \t\t\tTINYINT(2) NOT NULL,\n\t\thist_id \t\t\tBIGINT(64) NOT NULL,\n\t\tdistinct_count \t\tBIGINT(64) NOT NULL,\n\t\tnull_count \t\t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\ttot_col_size \t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tmodify_count \t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tversion \t\t\tBIGINT(64) UNSIGNED NOT NULL DEFAULT 0,\n\t\tcm_sketch \t\t\tBLOB(6291456),\n\t\tstats_ver \t\t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tflag \t\t\t\tBIGINT(64) NOT NULL DEFAULT 0,\n\t\tcorrelation \t\tDOUBLE NOT NULL DEFAULT 0,\n\t\tlast_analyze_pos \tBLOB DEFAULT NULL,\n\t\tUNIQUE INDEX tbl(table_id, is_index, hist_id)\n\t);"]
+[2021/10/24 13:45:39.514 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:24, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:23, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.512 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.517 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:24, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:23, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.512 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.519 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=24]
+[2021/10/24 13:45:39.519 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.520 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=11] [neededSchemaVersion=12] ["start time"=970.94µs] [phyTblIDs="[23]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.520 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=12] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_buckets (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tbucket_id \tBIGINT(64) NOT NULL,\n\t\tcount \t\tBIGINT(64) NOT NULL,\n\t\trepeats \tBIGINT(64) NOT NULL,\n\t\tupper_bound BLOB NOT NULL,\n\t\tlower_bound BLOB ,\n\t\tndv         BIGINT NOT NULL DEFAULT 0,\n\t\tUNIQUE INDEX tbl(table_id, is_index, hist_id, bucket_id)\n\t);"] [user=]
+[2021/10/24 13:45:39.523 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:26, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:25, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.522 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.523 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:26, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:25, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.522 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_buckets (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tbucket_id \tBIGINT(64) NOT NULL,\n\t\tcount \t\tBIGINT(64) NOT NULL,\n\t\trepeats \tBIGINT(64) NOT NULL,\n\t\tupper_bound BLOB NOT NULL,\n\t\tlower_bound BLOB ,\n\t\tndv         BIGINT NOT NULL DEFAULT 0,\n\t\tUNIQUE INDEX tbl(table_id, is_index, hist_id, bucket_id)\n\t);"]
+[2021/10/24 13:45:39.524 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:26, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:25, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.522 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.527 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:26, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:25, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.522 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.529 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=26]
+[2021/10/24 13:45:39.529 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.530 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=12] [neededSchemaVersion=13] ["start time"=969.469µs] [phyTblIDs="[25]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.530 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=13] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.gc_delete_range (\n\t\tjob_id \t\tBIGINT NOT NULL COMMENT \"the DDL job ID\",\n\t\telement_id \tBIGINT NOT NULL COMMENT \"the schema element ID\",\n\t\tstart_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tend_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tts \t\t\tBIGINT NOT NULL COMMENT \"timestamp in uint64\",\n\t\tUNIQUE KEY delete_range_index (job_id, element_id)\n\t);"] [user=]
+[2021/10/24 13:45:39.533 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:28, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:27, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.532 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.533 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:28, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:27, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.532 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.gc_delete_range (\n\t\tjob_id \t\tBIGINT NOT NULL COMMENT \"the DDL job ID\",\n\t\telement_id \tBIGINT NOT NULL COMMENT \"the schema element ID\",\n\t\tstart_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tend_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tts \t\t\tBIGINT NOT NULL COMMENT \"timestamp in uint64\",\n\t\tUNIQUE KEY delete_range_index (job_id, element_id)\n\t);"]
+[2021/10/24 13:45:39.534 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:28, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:27, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.532 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.538 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:28, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:27, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.532 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.539 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=28]
+[2021/10/24 13:45:39.539 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.540 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=13] [neededSchemaVersion=14] ["start time"=824.196µs] [phyTblIDs="[27]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.541 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=14] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.gc_delete_range_done (\n\t\tjob_id \t\tBIGINT NOT NULL COMMENT \"the DDL job ID\",\n\t\telement_id \tBIGINT NOT NULL COMMENT \"the schema element ID\",\n\t\tstart_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tend_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tts \t\t\tBIGINT NOT NULL COMMENT \"timestamp in uint64\",\n\t\tUNIQUE KEY delete_range_done_index (job_id, element_id)\n\t);"] [user=]
+[2021/10/24 13:45:39.543 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:30, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:29, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.542 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.543 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:30, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:29, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.542 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.gc_delete_range_done (\n\t\tjob_id \t\tBIGINT NOT NULL COMMENT \"the DDL job ID\",\n\t\telement_id \tBIGINT NOT NULL COMMENT \"the schema element ID\",\n\t\tstart_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tend_key \tVARCHAR(255) NOT NULL COMMENT \"encoded in hex\",\n\t\tts \t\t\tBIGINT NOT NULL COMMENT \"timestamp in uint64\",\n\t\tUNIQUE KEY delete_range_done_index (job_id, element_id)\n\t);"]
+[2021/10/24 13:45:39.544 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:30, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:29, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.542 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.547 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:30, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:29, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.542 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.548 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=30]
+[2021/10/24 13:45:39.548 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.549 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=14] [neededSchemaVersion=15] ["start time"=816.63µs] [phyTblIDs="[29]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.550 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=15] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_feedback (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tfeedback \tBLOB NOT NULL,\n\t\tINDEX hist(table_id, is_index, hist_id)\n\t);"] [user=]
+[2021/10/24 13:45:39.552 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:32, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:31, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.551 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.552 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:32, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:31, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.551 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_feedback (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tfeedback \tBLOB NOT NULL,\n\t\tINDEX hist(table_id, is_index, hist_id)\n\t);"]
+[2021/10/24 13:45:39.552 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:32, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:31, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.551 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.555 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:32, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:31, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.551 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.557 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=32]
+[2021/10/24 13:45:39.557 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.558 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=15] [neededSchemaVersion=16] ["start time"=809.535µs] [phyTblIDs="[31]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.558 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=16] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.role_edges (\n\t\tFROM_HOST \t\t\tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tFROM_USER \t\t\tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tTO_HOST \t\t\tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tTO_USER \t\t\tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tWITH_ADMIN_OPTION \tENUM('N','Y') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (FROM_HOST,FROM_USER,TO_HOST,TO_USER)\n\t);"] [user=]
+[2021/10/24 13:45:39.560 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:34, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:33, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.559 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.560 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:34, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:33, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.559 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.role_edges (\n\t\tFROM_HOST \t\t\tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tFROM_USER \t\t\tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tTO_HOST \t\t\tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tTO_USER \t\t\tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tWITH_ADMIN_OPTION \tENUM('N','Y') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (FROM_HOST,FROM_USER,TO_HOST,TO_USER)\n\t);"]
+[2021/10/24 13:45:39.561 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:34, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:33, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.559 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.564 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:34, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:33, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.559 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.565 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=34]
+[2021/10/24 13:45:39.565 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.566 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=16] [neededSchemaVersion=17] ["start time"=805.551µs] [phyTblIDs="[33]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.567 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=17] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.default_roles (\n\t\tHOST \t\t\t\tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tUSER \t\t\t\tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tDEFAULT_ROLE_HOST \tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '%',\n\t\tDEFAULT_ROLE_USER \tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tPRIMARY KEY (HOST,USER,DEFAULT_ROLE_HOST,DEFAULT_ROLE_USER)\n\t)"] [user=]
+[2021/10/24 13:45:39.569 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:36, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:35, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.568 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.569 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:36, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:35, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.568 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.default_roles (\n\t\tHOST \t\t\t\tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tUSER \t\t\t\tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tDEFAULT_ROLE_HOST \tCHAR(60) COLLATE utf8_bin NOT NULL DEFAULT '%',\n\t\tDEFAULT_ROLE_USER \tCHAR(32) COLLATE utf8_bin NOT NULL DEFAULT '',\n\t\tPRIMARY KEY (HOST,USER,DEFAULT_ROLE_HOST,DEFAULT_ROLE_USER)\n\t)"]
+[2021/10/24 13:45:39.570 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:36, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:35, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.568 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.575 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:36, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:35, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.568 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.577 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=36]
+[2021/10/24 13:45:39.577 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.579 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=17] [neededSchemaVersion=18] ["start time"=1.037ms] [phyTblIDs="[35]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.579 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=18] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.bind_info (\n\t\toriginal_sql TEXT NOT NULL,\n\t\tbind_sql TEXT NOT NULL,\n\t\tdefault_db TEXT NOT NULL,\n\t\tstatus TEXT NOT NULL,\n\t\tcreate_time TIMESTAMP(3) NOT NULL,\n\t\tupdate_time TIMESTAMP(3) NOT NULL,\n\t\tcharset TEXT NOT NULL,\n\t\tcollation TEXT NOT NULL,\n\t\tsource VARCHAR(10) NOT NULL DEFAULT 'unknown',\n\t\tINDEX sql_index(original_sql(700),default_db(68)) COMMENT \"accelerate the speed when add global binding query\",\n\t\tINDEX time_index(update_time) COMMENT \"accelerate the speed when querying with last update time\"\n\t) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;"] [user=]
+[2021/10/24 13:45:39.583 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:38, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:37, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.581 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.583 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:38, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:37, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.581 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.bind_info (\n\t\toriginal_sql TEXT NOT NULL,\n\t\tbind_sql TEXT NOT NULL,\n\t\tdefault_db TEXT NOT NULL,\n\t\tstatus TEXT NOT NULL,\n\t\tcreate_time TIMESTAMP(3) NOT NULL,\n\t\tupdate_time TIMESTAMP(3) NOT NULL,\n\t\tcharset TEXT NOT NULL,\n\t\tcollation TEXT NOT NULL,\n\t\tsource VARCHAR(10) NOT NULL DEFAULT 'unknown',\n\t\tINDEX sql_index(original_sql(700),default_db(68)) COMMENT \"accelerate the speed when add global binding query\",\n\t\tINDEX time_index(update_time) COMMENT \"accelerate the speed when querying with last update time\"\n\t) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;"]
+[2021/10/24 13:45:39.584 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:38, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:37, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.581 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.587 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:38, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:37, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.581 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.589 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=38]
+[2021/10/24 13:45:39.589 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.590 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=18] [neededSchemaVersion=19] ["start time"=863.938µs] [phyTblIDs="[37]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.594 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=19] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_top_n (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tvalue \t\tLONGBLOB,\n\t\tcount \t\tBIGINT(64) UNSIGNED NOT NULL,\n\t\tINDEX tbl(table_id, is_index, hist_id)\n\t);"] [user=]
+[2021/10/24 13:45:39.596 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:40, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:39, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.595 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.596 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:40, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:39, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.595 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_top_n (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tvalue \t\tLONGBLOB,\n\t\tcount \t\tBIGINT(64) UNSIGNED NOT NULL,\n\t\tINDEX tbl(table_id, is_index, hist_id)\n\t);"]
+[2021/10/24 13:45:39.597 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:40, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:39, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.595 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.600 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:40, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:39, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.595 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.601 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=40]
+[2021/10/24 13:45:39.601 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.602 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=19] [neededSchemaVersion=20] ["start time"=782.725µs] [phyTblIDs="[39]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.602 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=20] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.expr_pushdown_blacklist (\n\t\tname \t\tCHAR(100) NOT NULL,\n\t\tstore_type \tCHAR(100) NOT NULL DEFAULT 'tikv,tiflash,tidb',\n\t\treason \t\tVARCHAR(200)\n\t);"] [user=]
+[2021/10/24 13:45:39.604 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:42, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:41, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.603 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.604 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:42, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:41, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.603 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.expr_pushdown_blacklist (\n\t\tname \t\tCHAR(100) NOT NULL,\n\t\tstore_type \tCHAR(100) NOT NULL DEFAULT 'tikv,tiflash,tidb',\n\t\treason \t\tVARCHAR(200)\n\t);"]
+[2021/10/24 13:45:39.605 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:42, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:41, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.603 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.608 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:42, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:41, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.603 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.609 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=42]
+[2021/10/24 13:45:39.609 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.610 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=20] [neededSchemaVersion=21] ["start time"=749.418µs] [phyTblIDs="[41]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.610 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=21] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.opt_rule_blacklist (\n\t\tname \tCHAR(100) NOT NULL\n\t);"] [user=]
+[2021/10/24 13:45:39.613 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:44, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:43, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.612 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.613 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:44, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:43, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.612 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.opt_rule_blacklist (\n\t\tname \tCHAR(100) NOT NULL\n\t);"]
+[2021/10/24 13:45:39.613 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:44, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:43, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.612 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.616 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:44, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:43, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.612 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.617 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=44]
+[2021/10/24 13:45:39.617 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.618 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=21] [neededSchemaVersion=22] ["start time"=725.253µs] [phyTblIDs="[43]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.618 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=22] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_extended (\n\t\tname varchar(32) NOT NULL,\n\t\ttype tinyint(4) NOT NULL,\n\t\ttable_id bigint(64) NOT NULL,\n\t\tcolumn_ids varchar(32) NOT NULL,\n\t\tstats blob DEFAULT NULL,\n\t\tversion bigint(64) unsigned NOT NULL,\n\t\tstatus tinyint(4) NOT NULL,\n\t\tPRIMARY KEY(name, table_id),\n\t\tKEY idx_1 (table_id, status, version),\n\t\tKEY idx_2 (status, version)\n\t);"] [user=]
+[2021/10/24 13:45:39.621 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:46, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:45, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.619 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.621 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:46, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:45, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.619 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_extended (\n\t\tname varchar(32) NOT NULL,\n\t\ttype tinyint(4) NOT NULL,\n\t\ttable_id bigint(64) NOT NULL,\n\t\tcolumn_ids varchar(32) NOT NULL,\n\t\tstats blob DEFAULT NULL,\n\t\tversion bigint(64) unsigned NOT NULL,\n\t\tstatus tinyint(4) NOT NULL,\n\t\tPRIMARY KEY(name, table_id),\n\t\tKEY idx_1 (table_id, status, version),\n\t\tKEY idx_2 (status, version)\n\t);"]
+[2021/10/24 13:45:39.622 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:46, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:45, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.619 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.626 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:46, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:45, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.619 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.627 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=46]
+[2021/10/24 13:45:39.627 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.628 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=22] [neededSchemaVersion=23] ["start time"=1.073491ms] [phyTblIDs="[45]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.629 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=23] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.schema_index_usage (\n\t\tTABLE_ID bigint(64),\n\t\tINDEX_ID bigint(21),\n\t\tQUERY_COUNT bigint(64),\n\t\tROWS_SELECTED bigint(64),\n\t\tLAST_USED_AT timestamp,\n\t\tPRIMARY KEY(TABLE_ID, INDEX_ID)\n\t);"] [user=]
+[2021/10/24 13:45:39.631 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:48, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:47, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.63 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.631 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:48, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:47, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.63 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.schema_index_usage (\n\t\tTABLE_ID bigint(64),\n\t\tINDEX_ID bigint(21),\n\t\tQUERY_COUNT bigint(64),\n\t\tROWS_SELECTED bigint(64),\n\t\tLAST_USED_AT timestamp,\n\t\tPRIMARY KEY(TABLE_ID, INDEX_ID)\n\t);"]
+[2021/10/24 13:45:39.633 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:48, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:47, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.63 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.636 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:48, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:47, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.63 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.637 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=48]
+[2021/10/24 13:45:39.637 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.638 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=23] [neededSchemaVersion=24] ["start time"=793.171µs] [phyTblIDs="[47]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.638 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=24] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.stats_fm_sketch (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tvalue \t\tLONGBLOB,\n\t\tINDEX tbl(table_id, is_index, hist_id)\n\t);"] [user=]
+[2021/10/24 13:45:39.640 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:50, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:49, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.639 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.640 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:50, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:49, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.639 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.stats_fm_sketch (\n\t\ttable_id \tBIGINT(64) NOT NULL,\n\t\tis_index \tTINYINT(2) NOT NULL,\n\t\thist_id \tBIGINT(64) NOT NULL,\n\t\tvalue \t\tLONGBLOB,\n\t\tINDEX tbl(table_id, is_index, hist_id)\n\t);"]
+[2021/10/24 13:45:39.641 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:50, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:49, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.639 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.644 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:50, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:49, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.639 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.645 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=50]
+[2021/10/24 13:45:39.645 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.646 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=24] [neededSchemaVersion=25] ["start time"=771.192µs] [phyTblIDs="[49]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.646 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=25] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.global_grants (\n\t\tUSER char(32) NOT NULL DEFAULT '',\n\t\tHOST char(255) NOT NULL DEFAULT '',\n\t\tPRIV char(32) NOT NULL DEFAULT '',\n\t\tWITH_GRANT_OPTION enum('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (USER,HOST,PRIV)\n\t);"] [user=]
+[2021/10/24 13:45:39.649 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:52, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:51, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.648 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.649 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:52, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:51, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.648 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.global_grants (\n\t\tUSER char(32) NOT NULL DEFAULT '',\n\t\tHOST char(255) NOT NULL DEFAULT '',\n\t\tPRIV char(32) NOT NULL DEFAULT '',\n\t\tWITH_GRANT_OPTION enum('N','Y') NOT NULL DEFAULT 'N',\n\t\tPRIMARY KEY (USER,HOST,PRIV)\n\t);"]
+[2021/10/24 13:45:39.649 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:52, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:51, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.648 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.652 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:52, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:51, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.648 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.654 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=52]
+[2021/10/24 13:45:39.654 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.655 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=25] [neededSchemaVersion=26] ["start time"=772.985µs] [phyTblIDs="[51]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.655 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=26] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.capture_plan_baselines_blacklist (\n\t\tid bigint(64) auto_increment,\n\t\tfilter_type varchar(32) NOT NULL COMMENT \"type of the filter, only db, table and frequency supported now\",\n\t\tfilter_value varchar(32) NOT NULL,\n\t\tkey idx(filter_type),\n\t\tprimary key(id)\n\t);"] [user=]
+[2021/10/24 13:45:39.657 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:54, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:53, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.656 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.657 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:54, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:53, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.656 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.capture_plan_baselines_blacklist (\n\t\tid bigint(64) auto_increment,\n\t\tfilter_type varchar(32) NOT NULL COMMENT \"type of the filter, only db, table and frequency supported now\",\n\t\tfilter_value varchar(32) NOT NULL,\n\t\tkey idx(filter_type),\n\t\tprimary key(id)\n\t);"]
+[2021/10/24 13:45:39.658 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:54, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:53, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.656 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.660 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:54, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:53, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.656 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.661 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=54]
+[2021/10/24 13:45:39.661 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.662 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=26] [neededSchemaVersion=27] ["start time"=780.948µs] [phyTblIDs="[53]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.663 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=0] [schemaVersion=27] [cur_db=] [sql="CREATE TABLE IF NOT EXISTS mysql.column_stats_usage (\n\t\ttable_id BIGINT(64) NOT NULL,\n\t\tcolumn_id BIGINT(64) NOT NULL,\n\t\tlast_used_at TIMESTAMP,\n\t\tlast_analyzed_at TIMESTAMP,\n\t\tPRIMARY KEY (table_id, column_id) CLUSTERED\n\t);"] [user=]
+[2021/10/24 13:45:39.665 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:56, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:55, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.664 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.665 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:56, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:55, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.664 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="CREATE TABLE IF NOT EXISTS mysql.column_stats_usage (\n\t\ttable_id BIGINT(64) NOT NULL,\n\t\tcolumn_id BIGINT(64) NOT NULL,\n\t\tlast_used_at TIMESTAMP,\n\t\tlast_analyzed_at TIMESTAMP,\n\t\tPRIMARY KEY (table_id, column_id) CLUSTERED\n\t);"]
+[2021/10/24 13:45:39.666 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 1, tp general"] [job="ID:56, Type:create table, State:none, SchemaState:queueing, SchemaID:3, TableID:55, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.664 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.669 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 1, tp general"] [job="ID:56, Type:create table, State:synced, SchemaState:public, SchemaID:3, TableID:55, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.664 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.670 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=56]
+[2021/10/24 13:45:39.670 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.671 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=27] [neededSchemaVersion=28] ["start time"=774.647µs] [phyTblIDs="[55]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.705 +05:30] [INFO] [bootstrap.go:383] ["bootstrap successful"] ["take time"=298.041857ms]
+[2021/10/24 13:45:39.705 +05:30] [INFO] [ddl_worker.go:149] ["[ddl] DDL worker closed"] [worker="worker 1, tp general"] ["take time"=672ns]
+[2021/10/24 13:45:39.705 +05:30] [INFO] [ddl_worker.go:149] ["[ddl] DDL worker closed"] [worker="worker 2, tp add index"] ["take time"=134ns]
+[2021/10/24 13:45:39.705 +05:30] [INFO] [delete_range.go:132] ["[ddl] closing delRange"]
+[2021/10/24 13:45:39.705 +05:30] [INFO] [session_pool.go:86] ["[ddl] closing sessionPool"]
+[2021/10/24 13:45:39.705 +05:30] [INFO] [ddl.go:417] ["[ddl] DDL closed"] [ID=fdf6dc6f-0a1f-430a-8f42-dcc68a673d25] ["take time"=103.09µs]
+[2021/10/24 13:45:39.705 +05:30] [INFO] [ddl.go:328] ["[ddl] stop DDL"] [ID=fdf6dc6f-0a1f-430a-8f42-dcc68a673d25]
+[2021/10/24 13:45:39.705 +05:30] [INFO] [domain.go:437] ["topNSlowQueryLoop exited."]
+[2021/10/24 13:45:39.706 +05:30] [INFO] [domain.go:466] ["infoSyncerKeeper exited."]
+[2021/10/24 13:45:39.706 +05:30] [INFO] [domain.go:494] ["topologySyncerKeeper exited."]
+[2021/10/24 13:45:39.706 +05:30] [INFO] [domain.go:650] ["domain closed"] ["take time"=244.003µs]
+[2021/10/24 13:45:39.706 +05:30] [INFO] [tidb.go:72] ["new domain"] [store=30e9e076-04f1-4ff8-ab6d-ffa782f74960] ["ddl lease"=0s] ["stats lease"=-1ns] ["index usage sync lease"=0s]
+[2021/10/24 13:45:39.713 +05:30] [INFO] [domain.go:164] ["full load InfoSchema success"] [currentSchemaVersion=0] [neededSchemaVersion=28] ["start time"=7.010125ms]
+[2021/10/24 13:45:39.713 +05:30] [INFO] [domain.go:387] ["full load and reset schema validator"]
+[2021/10/24 13:45:39.713 +05:30] [INFO] [ddl.go:347] ["[ddl] start DDL"] [ID=9c7e93d9-a6b3-4380-a4cf-a7939673b531] [runWorker=true]
+[2021/10/24 13:45:39.713 +05:30] [INFO] [ddl.go:336] ["[ddl] start delRangeManager OK"] ["is a emulator"=true]
+[2021/10/24 13:45:39.713 +05:30] [INFO] [ddl_worker.go:155] ["[ddl] start DDL worker"] [worker="worker 4, tp add index"]
+[2021/10/24 13:45:39.713 +05:30] [INFO] [delete_range.go:142] ["[ddl] start delRange emulator"]
+[2021/10/24 13:45:39.713 +05:30] [INFO] [ddl_worker.go:155] ["[ddl] start DDL worker"] [worker="worker 3, tp general"]
+[2021/10/24 13:45:39.717 +05:30] [WARN] [sysvar_cache.go:51] ["sysvar cache is empty, triggering rebuild"]
+[2021/10/24 13:45:39.733 +05:30] [INFO] [telemetry.go:174] ["Telemetry configuration"] [endpoint=https://telemetry.pingcap.com/api/v1/tidb/report] [report_interval=6h0m0s] [enabled=true]
+=== RUN   TestSuite3/Tests
+=== RUN   TestSuite3/Tests/TestAdmin
+=== PAUSE TestSuite3/Tests/TestAdmin
+=== RUN   TestSuite3/Tests/TestYearTypeDeleteIndex
+=== PAUSE TestSuite3/Tests/TestYearTypeDeleteIndex
+=== RUN   TestSuite3/Tests/TestForSelectScopeInUnion
+=== PAUSE TestSuite3/Tests/TestForSelectScopeInUnion
+=== CONT  TestSuite3/Tests/TestAdmin
+=== CONT  TestSuite3/Tests/TestForSelectScopeInUnion
+=== CONT  TestSuite3/Tests/TestYearTypeDeleteIndex
+[2021/10/24 13:45:39.734 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=2] [schemaVersion=28] [cur_db=test] [sql="drop table if exists t"] [user=]
+[2021/10/24 13:45:39.734 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=3] [schemaVersion=28] [cur_db=test] [sql="drop table if exists t"] [user=]
+[2021/10/24 13:45:39.734 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=28] [cur_db=test] [sql="drop table if exists admin_test"] [user=]
+[2021/10/24 13:45:39.734 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=2] [schemaVersion=28] [cur_db=test] [sql="create table t(a int)"] [user=]
+[2021/10/24 13:45:39.734 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=3] [schemaVersion=28] [cur_db=test] [sql="create table t(a YEAR, PRIMARY KEY(a));"] [user=]
+[2021/10/24 13:45:39.734 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=1] [schemaVersion=28] [cur_db=test] [sql="create table admin_test (c1 int, c2 int, c3 int default 1, index (c1))"] [user=]
+[2021/10/24 13:45:39.735 +05:30] [INFO] [prewrite.go:329] ["prewrite encounters lock"] [session=0] [lock="key: 6d4e657874476c6f62ff616c494400000000fb0000000000000073, primary: 6d4e657874476c6f62ff616c494400000000fb0000000000000073, txnStartTS: 428622044131229701, lockForUpdateTS:0, minCommitTs:428622044131229702, ttl: 3000, type: Put, UseAsyncCommit: false, txnSize: 0"]
+[2021/10/24 13:45:39.737 +05:30] [WARN] [txn.go:66] [RunInNewTxn] ["retry txn"=428622044131229703] ["original txn"=428622044131229703] [error="[kv:9007]Write conflict, txnStartTS=428622044131229703, conflictStartTS=428622044131229701, conflictCommitTS=428622044131491840, key=[]byte{0x6d, 0x4e, 0x65, 0x78, 0x74, 0x47, 0x6c, 0x6f, 0x62, 0xff, 0x61, 0x6c, 0x49, 0x44, 0x0, 0x0, 0x0, 0x0, 0xfb, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x73} primary=[]byte(nil) [try again later]"]
+[2021/10/24 13:45:39.739 +05:30] [WARN] [txn.go:66] [RunInNewTxn] ["retry txn"=428622044131229704] ["original txn"=428622044131229704] [error="[kv:9007]Write conflict, txnStartTS=428622044131229704, conflictStartTS=428622044131229701, conflictCommitTS=428622044131491840, key=[]byte{0x6d, 0x4e, 0x65, 0x78, 0x74, 0x47, 0x6c, 0x6f, 0x62, 0xff, 0x61, 0x6c, 0x49, 0x44, 0x0, 0x0, 0x0, 0x0, 0xfb, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x73} primary=[]byte(nil) [try again later]"]
+[2021/10/24 13:45:39.740 +05:30] [INFO] [prewrite.go:329] ["prewrite encounters lock"] [session=0] [lock="key: 6d4e657874476c6f62ff616c494400000000fb0000000000000073, primary: 6d4e657874476c6f62ff616c494400000000fb0000000000000073, txnStartTS: 428622044132016128, lockForUpdateTS:0, minCommitTs:428622044132016129, ttl: 3001, type: Put, UseAsyncCommit: false, txnSize: 0"]
+[2021/10/24 13:45:39.741 +05:30] [WARN] [txn.go:66] [RunInNewTxn] ["retry txn"=428622044131491841] ["original txn"=428622044131491841] [error="[kv:9007]Write conflict, txnStartTS=428622044131491841, conflictStartTS=428622044132016128, conflictCommitTS=428622044132540417, key=[]byte{0x6d, 0x4e, 0x65, 0x78, 0x74, 0x47, 0x6c, 0x6f, 0x62, 0xff, 0x61, 0x6c, 0x49, 0x44, 0x0, 0x0, 0x0, 0x0, 0xfb, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x73} primary=[]byte(nil) [try again later]"]
+[2021/10/24 13:45:39.741 +05:30] [WARN] [txn.go:66] [RunInNewTxn] ["retry txn"=428622044132540416] ["original txn"=428622044131229704] [error="[kv:9007]Write conflict, txnStartTS=428622044132540416, conflictStartTS=428622044132016128, conflictCommitTS=428622044132540417, key=[]byte{0x6d, 0x4e, 0x65, 0x78, 0x74, 0x47, 0x6c, 0x6f, 0x62, 0xff, 0x61, 0x6c, 0x49, 0x44, 0x0, 0x0, 0x0, 0x0, 0xfb, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x73} primary=[]byte(nil) [try again later]"]
+[2021/10/24 13:45:39.742 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:59, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:57, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.741 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.742 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:59, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:57, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.741 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="create table t(a int)"]
+[2021/10/24 13:45:39.743 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:59, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:57, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.741 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.743 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:60, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:58, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.742 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.743 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:60, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:58, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.742 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="create table t(a YEAR, PRIMARY KEY(a));"]
+[2021/10/24 13:45:39.743 +05:30] [WARN] [txn.go:66] [RunInNewTxn] ["retry txn"=428622044133326851] ["original txn"=428622044131229704] [error="[kv:9007]Write conflict, txnStartTS=428622044133326851, conflictStartTS=428622044133326848, conflictCommitTS=428622044133588992, key=[]byte{0x6d, 0x4e, 0x65, 0x78, 0x74, 0x47, 0x6c, 0x6f, 0x62, 0xff, 0x61, 0x6c, 0x49, 0x44, 0x0, 0x0, 0x0, 0x0, 0xfb, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x73} primary=[]byte(nil) [try again later]"]
+[2021/10/24 13:45:39.745 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 3, tp general"] [job="ID:59, Type:create table, State:synced, SchemaState:public, SchemaID:1, TableID:57, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.741 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.746 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:60, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:58, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.742 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.746 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=59]
+[2021/10/24 13:45:39.746 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.747 +05:30] [INFO] [ddl_worker.go:691] ["[ddl] DDL job is cancelled normally"] [worker="worker 3, tp general"] [error="[schema:1050]Table 't' already exists"] [errorVerbose="[schema:1050]Table 't' already exists\ngithub.com/pingcap/errors.AddStack\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174\ngithub.com/pingcap/errors.(*Error).GenWithStackByArgs\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/normalize.go:159\ngithub.com/pingcap/tidb/ddl.checkTableNotExistsFromStore\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/table.go:1186\ngithub.com/pingcap/tidb/ddl.checkTableNotExists\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/table.go:1144\ngithub.com/pingcap/tidb/ddl.onCreateTable\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/table.go:63\ngithub.com/pingcap/tidb/ddl.(*worker).runDDLJob\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_worker.go:750\ngithub.com/pingcap/tidb/ddl.(*worker).handleDDLJobQueue.func1\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_worker.go:542\ngithub.com/pingcap/tidb/kv.RunInNewTxn\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/kv/txn.go:47\ngithub.com/pingcap/tidb/ddl.(*worker).handleDDLJobQueue\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_worker.go:498\ngithub.com/pingcap/tidb/ddl.(*worker).start\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_worker.go:198\nruntime.goexit\n\t/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371"]
+[2021/10/24 13:45:39.747 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 3, tp general"] [job="ID:60, Type:create table, State:cancelled, SchemaState:queueing, SchemaID:1, TableID:58, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.742 +0530 IST, Err:[schema:1050]Table 't' already exists, ErrCount:1, SnapshotVersion:0"]
+[2021/10/24 13:45:39.747 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=28] [neededSchemaVersion=29] ["start time"=685.54µs] [phyTblIDs="[57]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.748 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:62, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:61, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.746 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.748 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:62, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:61, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.746 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="create table admin_test (c1 int, c2 int, c3 int default 1, index (c1))"]
+[2021/10/24 13:45:39.748 +05:30] [WARN] [ddl_worker.go:200] ["[ddl] handle DDL job failed"] [worker="worker 3, tp general"] [error="[kv:9007]Write conflict, txnStartTS=428622044134375424, conflictStartTS=428622044134375428, conflictCommitTS=428622044134637568, key=[]byte{0x6d, 0x44, 0x44, 0x4c, 0x4a, 0x6f, 0x62, 0x4c, 0x69, 0xff, 0x73, 0x74, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xf9, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x4c} primary=[]byte(nil) [try again later]"]
+[2021/10/24 13:45:39.748 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:60, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:58, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.742 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.749 +05:30] [INFO] [ddl_worker.go:691] ["[ddl] DDL job is cancelled normally"] [worker="worker 3, tp general"] [error="[schema:1050]Table 't' already exists"] [errorVerbose="[schema:1050]Table 't' already exists\ngithub.com/pingcap/errors.AddStack\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174\ngithub.com/pingcap/errors.(*Error).GenWithStackByArgs\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/normalize.go:159\ngithub.com/pingcap/tidb/ddl.checkTableNotExistsFromInfoSchema\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/table.go:1168\ngithub.com/pingcap/tidb/ddl.checkTableNotExists\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/table.go:1141\ngithub.com/pingcap/tidb/ddl.onCreateTable\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/table.go:63\ngithub.com/pingcap/tidb/ddl.(*worker).runDDLJob\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_worker.go:750\ngithub.com/pingcap/tidb/ddl.(*worker).handleDDLJobQueue.func1\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_worker.go:542\ngithub.com/pingcap/tidb/kv.RunInNewTxn\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/kv/txn.go:47\ngithub.com/pingcap/tidb/ddl.(*worker).handleDDLJobQueue\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_worker.go:498\ngithub.com/pingcap/tidb/ddl.(*worker).start\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_worker.go:198\nruntime.goexit\n\t/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371"]
+[2021/10/24 13:45:39.749 +05:30] [WARN] [2pc.go:1600] ["schemaLeaseChecker is not set for this transaction"] [sessionID=2] [startTS=428622044134637570] [commitTS=428622044135161856]
+[2021/10/24 13:45:39.749 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 3, tp general"] [job="ID:60, Type:create table, State:cancelled, SchemaState:queueing, SchemaID:1, TableID:58, RowCount:0, ArgLen:1, start time: 2021-10-24 13:45:39.742 +0530 IST, Err:[schema:1050]Table 't' already exists, ErrCount:1, SnapshotVersion:0"]
+[2021/10/24 13:45:39.750 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:62, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.746 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.750 +05:30] [INFO] [ddl.go:620] ["[ddl] DDL job is failed"] [jobID=60]
+[2021/10/24 13:45:39.750 +05:30] [INFO] [tidb.go:260] ["rollbackTxn called due to ddl/autocommit failure"]
+[2021/10/24 13:45:39.750 +05:30] [WARN] [session.go:1580] ["run statement failed"] [schemaVersion=29] [error="[schema:1050]Table 't' already exists"] [errorVerbose="[schema:1050]Table 't' already exists\ngithub.com/pingcap/errors.AddStack\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174\ngithub.com/pingcap/errors.Trace\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/juju_adaptor.go:15\ngithub.com/pingcap/tidb/ddl.(*ddl).doDDLJob\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl.go:621\ngithub.com/pingcap/tidb/ddl.(*ddl).CreateTableWithInfo\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_api.go:2085\ngithub.com/pingcap/tidb/ddl.(*ddl).CreateTable\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_api.go:1994\ngithub.com/pingcap/tidb/executor.(*DDLExec).executeCreateTable\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:338\ngithub.com/pingcap/tidb/executor.(*DDLExec).Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:149\ngithub.com/pingcap/tidb/executor.Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465\ngithub.com/pingcap/tidb/executor.(*ExecStmt).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414\ngithub.com/pingcap/tidb/session.runStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683\ngithub.com/pingcap/tidb/session.(*session).ExecuteStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577\ngithub.com/pingcap/tidb/testkit.(*TestKit).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149\ngithub.com/pingcap/tidb/testkit.(*TestKit).MustExec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75\ngithub.com/pingcap/tidb/executor_test.SubTestYearTypeDeleteIndex.func1\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:4325\ntesting.tRunner\n\t/Users/karuppiahn/.go/src/testing/testing.go:1193\nruntime.goexit\n\t/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371"] [session="{\n  \"currDBName\": \"test\",\n  \"id\": 3,\n  \"status\": 2,\n  \"strictMode\": true,\n  \"user\": null\n}"]
+    testkit.go:77: 
+        	Error Trace:	testkit.go:77
+        	            				executor_test.go:4325
+        	Error:      	Received unexpected error:
+        	            	[schema:1050]Table 't' already exists
+        	            	github.com/pingcap/errors.AddStack
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174
+        	            	github.com/pingcap/errors.Trace
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/juju_adaptor.go:15
+        	            	github.com/pingcap/tidb/ddl.(*ddl).doDDLJob
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl.go:621
+        	            	github.com/pingcap/tidb/ddl.(*ddl).CreateTableWithInfo
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_api.go:2085
+        	            	github.com/pingcap/tidb/ddl.(*ddl).CreateTable
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_api.go:1994
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).executeCreateTable
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:338
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:149
+        	            	github.com/pingcap/tidb/executor.Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414
+        	            	github.com/pingcap/tidb/session.runStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683
+        	            	github.com/pingcap/tidb/session.(*session).ExecuteStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).MustExec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75
+        	            	github.com/pingcap/tidb/executor_test.SubTestYearTypeDeleteIndex.func1
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:4325
+        	            	testing.tRunner
+        	            		/Users/karuppiahn/.go/src/testing/testing.go:1193
+        	            	runtime.goexit
+        	            		/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371
+        	Test:       	TestSuite3/Tests/TestYearTypeDeleteIndex
+        	Messages:   	sql:create table t(a YEAR, PRIMARY KEY(a));, [], error stack [schema:1050]Table 't' already exists
+        	            	github.com/pingcap/errors.AddStack
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174
+        	            	github.com/pingcap/errors.Trace
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/juju_adaptor.go:15
+        	            	github.com/pingcap/tidb/ddl.(*ddl).doDDLJob
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl.go:621
+        	            	github.com/pingcap/tidb/ddl.(*ddl).CreateTableWithInfo
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_api.go:2085
+        	            	github.com/pingcap/tidb/ddl.(*ddl).CreateTable
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_api.go:1994
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).executeCreateTable
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:338
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:149
+        	            	github.com/pingcap/tidb/executor.Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414
+        	            	github.com/pingcap/tidb/session.runStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683
+        	            	github.com/pingcap/tidb/session.(*session).ExecuteStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).MustExec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75
+        	            	github.com/pingcap/tidb/executor_test.SubTestYearTypeDeleteIndex.func1
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:4325
+        	            	testing.tRunner
+        	            		/Users/karuppiahn/.go/src/testing/testing.go:1193
+        	            	runtime.goexit
+        	            		/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371
+[2021/10/24 13:45:39.751 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=5] [schemaVersion=29] [cur_db=test] [sql="drop table t"] [user=]
+[2021/10/24 13:45:39.752 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:63, Type:drop table, State:none, SchemaState:queueing, SchemaID:1, TableID:57, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.752 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.752 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:63, Type:drop table, State:none, SchemaState:queueing, SchemaID:1, TableID:57, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.752 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="drop table t"]
+[2021/10/24 13:45:39.753 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 3, tp general"] [job="ID:62, Type:create table, State:synced, SchemaState:public, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.746 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.753 +05:30] [WARN] [ddl_worker.go:200] ["[ddl] handle DDL job failed"] [worker="worker 3, tp general"] [error="[kv:9007]Write conflict, txnStartTS=428622044135948289, conflictStartTS=428622044135948288, conflictCommitTS=428622044135948290, key=[]byte{0x6d, 0x44, 0x44, 0x4c, 0x4a, 0x6f, 0x62, 0x4c, 0x69, 0xff, 0x73, 0x74, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xf9, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x4c} primary=[]byte(nil) [try again later]"]
+[2021/10/24 13:45:39.754 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 3, tp general"] [job="ID:62, Type:create table, State:synced, SchemaState:public, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.746 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.755 +05:30] [WARN] [session.go:721] ["can not retry txn"] [label=general] [error="[kv:9007]Write conflict, txnStartTS=428622044135424002, conflictStartTS=428622044135948291, conflictCommitTS=428622044136210433, key={tableID=57, handle=1} primary=[]byte(nil) [try again later]"] [IsBatchInsert=false] [IsPessimistic=false] [InRestrictedSQL=false] [tidb_retry_limit=10] [tidb_disable_txn_auto_retry=true]
+[2021/10/24 13:45:39.755 +05:30] [WARN] [session.go:737] ["commit failed"] ["finished txn"="Txn{state=invalid}"] [error="[kv:9007]Write conflict, txnStartTS=428622044135424002, conflictStartTS=428622044135948291, conflictCommitTS=428622044136210433, key={tableID=57, handle=1} primary=[]byte(nil) [try again later]"]
+[2021/10/24 13:45:39.755 +05:30] [WARN] [session.go:1580] ["run statement failed"] [schemaVersion=29] [error="previous statement: select 1 as a union select a from t for update: [kv:9007]Write conflict, txnStartTS=428622044135424002, conflictStartTS=428622044135948291, conflictCommitTS=428622044136210433, key={tableID=57, handle=1} primary=[]byte(nil) [try again later]"] [errorVerbose="[kv:9007]Write conflict, txnStartTS=428622044135424002, conflictStartTS=428622044135948291, conflictCommitTS=428622044136210433, key={tableID=57, handle=1} primary=[]byte(nil) [try again later]\nprevious statement: select 1 as a union select a from t for update"] [session="{\n  \"currDBName\": \"test\",\n  \"id\": 2,\n  \"status\": 2,\n  \"strictMode\": true,\n  \"user\": null\n}"]
+[2021/10/24 13:45:39.755 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:63, Type:drop table, State:none, SchemaState:queueing, SchemaID:1, TableID:57, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.752 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.756 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=62]
+[2021/10/24 13:45:39.756 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.757 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=29] [neededSchemaVersion=30] ["start time"=712.395µs] [phyTblIDs="[61]"] [actionTypes="[8]"]
+[2021/10/24 13:45:39.757 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:63, Type:drop table, State:running, SchemaState:write only, SchemaID:1, TableID:57, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.752 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.758 +05:30] [WARN] [2pc.go:1600] ["schemaLeaseChecker is not set for this transaction"] [sessionID=1] [startTS=428622044137259011] [commitTS=428622044137521152]
+[2021/10/24 13:45:39.759 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:63, Type:drop table, State:running, SchemaState:delete only, SchemaID:1, TableID:57, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.752 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.760 +05:30] [WARN] [session.go:721] ["can not retry txn"] [label=general] [error="[kv:9007]Write conflict, txnStartTS=428622044136734723, conflictStartTS=428622044137521153, conflictCommitTS=428622044137783299, key={tableID=57, handle=1} primary=[]byte(nil) [try again later]"] [IsBatchInsert=false] [IsPessimistic=false] [InRestrictedSQL=false] [tidb_retry_limit=10] [tidb_disable_txn_auto_retry=true]
+[2021/10/24 13:45:39.760 +05:30] [WARN] [session.go:737] ["commit failed"] ["finished txn"="Txn{state=invalid}"] [error="[kv:9007]Write conflict, txnStartTS=428622044136734723, conflictStartTS=428622044137521153, conflictCommitTS=428622044137783299, key={tableID=57, handle=1} primary=[]byte(nil) [try again later]"]
+[2021/10/24 13:45:39.761 +05:30] [WARN] [session.go:1580] ["run statement failed"] [schemaVersion=30] [error="previous statement: select 1 as a union select a from t order by a for update: [kv:9007]Write conflict, txnStartTS=428622044136734723, conflictStartTS=428622044137521153, conflictCommitTS=428622044137783299, key={tableID=57, handle=1} primary=[]byte(nil) [try again later]"] [errorVerbose="[kv:9007]Write conflict, txnStartTS=428622044136734723, conflictStartTS=428622044137521153, conflictCommitTS=428622044137783299, key={tableID=57, handle=1} primary=[]byte(nil) [try again later]\nprevious statement: select 1 as a union select a from t order by a for update"] [session="{\n  \"currDBName\": \"test\",\n  \"id\": 2,\n  \"status\": 2,\n  \"strictMode\": true,\n  \"user\": null\n}"]
+[2021/10/24 13:45:39.761 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=6] [schemaVersion=30] [cur_db=test] [sql="drop table admin_test"] [user=]
+[2021/10/24 13:45:39.762 +05:30] [INFO] [delete_range.go:451] ["[ddl] insert into delete-range table"] [jobID=63] [elementID=57]
+=== CONT  TestSuite3/Tests/TestAdmin
+    executor_test.go:509: 
+        	Error Trace:	executor_test.go:509
+        	Error:      	Not equal: 
+        	            	expected: 33
+        	            	actual  : 32
+        	Test:       	TestSuite3/Tests/TestAdmin
+[2021/10/24 13:45:39.762 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:64, Type:drop table, State:none, SchemaState:queueing, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.761 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.762 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:64, Type:drop table, State:none, SchemaState:queueing, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.761 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="drop table admin_test"]
+[2021/10/24 13:45:39.763 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=7] [schemaVersion=30] [cur_db=test] [sql="drop table admin_test"] [user=]
+[2021/10/24 13:45:39.764 +05:30] [INFO] [ddl_worker.go:313] ["[ddl] add DDL jobs"] ["batch count"=1] [jobs="ID:65, Type:drop table, State:none, SchemaState:queueing, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.763 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0; "]
+[2021/10/24 13:45:39.764 +05:30] [INFO] [ddl.go:553] ["[ddl] start DDL job"] [job="ID:65, Type:drop table, State:none, SchemaState:queueing, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.763 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"] [query="drop table admin_test"]
+[2021/10/24 13:45:39.765 +05:30] [INFO] [delete_range.go:107] ["[ddl] add job into delete-range table"] [jobID=63] [jobType="drop table"]
+[2021/10/24 13:45:39.765 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 3, tp general"] [job="ID:63, Type:drop table, State:synced, SchemaState:queueing, SchemaID:1, TableID:57, RowCount:0, ArgLen:3, start time: 2021-10-24 13:45:39.752 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.766 +05:30] [WARN] [ddl_worker.go:200] ["[ddl] handle DDL job failed"] [worker="worker 3, tp general"] [error="[kv:9007]Write conflict, txnStartTS=428622044138307588, conflictStartTS=428622044138831873, conflictCommitTS=428622044138831874, key=[]byte{0x6d, 0x44, 0x44, 0x4c, 0x4a, 0x6f, 0x62, 0x4c, 0x69, 0xff, 0x73, 0x74, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xf9, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x4c} primary=[]byte(nil) [try again later]"]
+[2021/10/24 13:45:39.767 +05:30] [INFO] [delete_range.go:451] ["[ddl] insert into delete-range table"] [jobID=63] [elementID=57]
+[2021/10/24 13:45:39.767 +05:30] [INFO] [delete_range.go:107] ["[ddl] add job into delete-range table"] [jobID=63] [jobType="drop table"]
+[2021/10/24 13:45:39.767 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 3, tp general"] [job="ID:63, Type:drop table, State:synced, SchemaState:queueing, SchemaID:1, TableID:57, RowCount:0, ArgLen:3, start time: 2021-10-24 13:45:39.752 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.768 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:64, Type:drop table, State:none, SchemaState:queueing, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.761 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.769 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=63]
+[2021/10/24 13:45:39.769 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.770 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=30] [neededSchemaVersion=33] ["start time"=735.824µs] [phyTblIDs="[57]"] [actionTypes="[16]"]
+[2021/10/24 13:45:39.770 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:64, Type:drop table, State:running, SchemaState:write only, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.761 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.772 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:64, Type:drop table, State:running, SchemaState:delete only, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.761 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.774 +05:30] [INFO] [delete_range.go:238] ["[ddl] delRange emulator complete task"] [jobID=63] [elementID=57] [startKey=748000000000000039] [endKey=74800000000000003a]
+[2021/10/24 13:45:39.775 +05:30] [INFO] [delete_range.go:451] ["[ddl] insert into delete-range table"] [jobID=64] [elementID=61]
+[2021/10/24 13:45:39.776 +05:30] [INFO] [delete_range.go:107] ["[ddl] add job into delete-range table"] [jobID=64] [jobType="drop table"]
+[2021/10/24 13:45:39.777 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 3, tp general"] [job="ID:64, Type:drop table, State:synced, SchemaState:queueing, SchemaID:1, TableID:61, RowCount:0, ArgLen:3, start time: 2021-10-24 13:45:39.761 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.778 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:65, Type:drop table, State:none, SchemaState:queueing, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.763 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+[2021/10/24 13:45:39.778 +05:30] [INFO] [ddl.go:615] ["[ddl] DDL job is finished"] [jobID=64]
+[2021/10/24 13:45:39.778 +05:30] [INFO] [callback.go:107] ["performing DDL change, must reload"]
+[2021/10/24 13:45:39.778 +05:30] [INFO] [ddl_worker.go:691] ["[ddl] DDL job is cancelled normally"] [worker="worker 3, tp general"] [error="[schema:1146]Table '(Schema ID 1).(Table ID 61)' doesn't exist"] [errorVerbose="[schema:1146]Table '(Schema ID 1).(Table ID 61)' doesn't exist\ngithub.com/pingcap/errors.AddStack\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174\ngithub.com/pingcap/errors.(*Error).GenWithStackByArgs\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/normalize.go:159\ngithub.com/pingcap/tidb/ddl.getTableInfo\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/table.go:581\ngithub.com/pingcap/tidb/ddl.checkTableExistAndCancelNonExistJob\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/table.go:557\ngithub.com/pingcap/tidb/ddl.onDropTableOrView\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/table.go:291\ngithub.com/pingcap/tidb/ddl.(*worker).runDDLJob\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_worker.go:756\ngithub.com/pingcap/tidb/ddl.(*worker).handleDDLJobQueue.func1\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_worker.go:542\ngithub.com/pingcap/tidb/kv.RunInNewTxn\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/kv/txn.go:47\ngithub.com/pingcap/tidb/ddl.(*worker).handleDDLJobQueue\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_worker.go:498\ngithub.com/pingcap/tidb/ddl.(*worker).start\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_worker.go:198\nruntime.goexit\n\t/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371"]
+[2021/10/24 13:45:39.778 +05:30] [INFO] [ddl_worker.go:418] ["[ddl] finish DDL job"] [worker="worker 3, tp general"] [job="ID:65, Type:drop table, State:cancelled, SchemaState:queueing, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 13:45:39.763 +0530 IST, Err:[schema:1146]Table '(Schema ID 1).(Table ID 61)' doesn't exist, ErrCount:1, SnapshotVersion:0"]
+[2021/10/24 13:45:39.779 +05:30] [INFO] [domain.go:133] ["diff load InfoSchema success"] [currentSchemaVersion=33] [neededSchemaVersion=36] ["start time"=579.075µs] [phyTblIDs="[61]"] [actionTypes="[16]"]
+[2021/10/24 13:45:39.779 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=6] [schemaVersion=36] [cur_db=test] [sql="drop table t"] [user=]
+[2021/10/24 13:45:39.779 +05:30] [INFO] [tidb.go:260] ["rollbackTxn called due to ddl/autocommit failure"]
+[2021/10/24 13:45:39.779 +05:30] [WARN] [session.go:1580] ["run statement failed"] [schemaVersion=36] [error="[schema:1051]Unknown table 'test.t'"] [errorVerbose="[schema:1051]Unknown table 'test.t'\ngithub.com/pingcap/errors.AddStack\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174\ngithub.com/pingcap/errors.(*Error).GenWithStackByArgs\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/normalize.go:159\ngithub.com/pingcap/tidb/executor.(*DDLExec).dropTableObject\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:525\ngithub.com/pingcap/tidb/executor.(*DDLExec).executeDropTable\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:450\ngithub.com/pingcap/tidb/executor.(*DDLExec).Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:160\ngithub.com/pingcap/tidb/executor.Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465\ngithub.com/pingcap/tidb/executor.(*ExecStmt).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414\ngithub.com/pingcap/tidb/session.runStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683\ngithub.com/pingcap/tidb/session.(*session).ExecuteStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577\ngithub.com/pingcap/tidb/testkit.(*TestKit).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149\ngithub.com/pingcap/tidb/testkit.(*TestKit).MustExec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75\ngithub.com/pingcap/tidb/executor_test.(*testSuite3).newTearDownTest\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:5068\ngithub.com/pingcap/tidb/executor_test.SubTestForSelectScopeInUnion.func1\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:4365\ntesting.tRunner\n\t/Users/karuppiahn/.go/src/testing/testing.go:1193\nruntime.goexit\n\t/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371"] [session="{\n  \"currDBName\": \"test\",\n  \"id\": 6,\n  \"status\": 2,\n  \"strictMode\": true,\n  \"user\": null\n}"]
+=== CONT  TestSuite3/Tests/TestForSelectScopeInUnion
+    testkit.go:77: 
+        	Error Trace:	testkit.go:77
+        	            				executor_test.go:5068
+        	            				executor_test.go:4365
+        	Error:      	Received unexpected error:
+        	            	[schema:1051]Unknown table 'test.t'
+        	            	github.com/pingcap/errors.AddStack
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174
+        	            	github.com/pingcap/errors.(*Error).GenWithStackByArgs
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/normalize.go:159
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).dropTableObject
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:525
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).executeDropTable
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:450
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:160
+        	            	github.com/pingcap/tidb/executor.Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414
+        	            	github.com/pingcap/tidb/session.runStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683
+        	            	github.com/pingcap/tidb/session.(*session).ExecuteStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).MustExec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75
+        	            	github.com/pingcap/tidb/executor_test.(*testSuite3).newTearDownTest
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:5068
+        	            	github.com/pingcap/tidb/executor_test.SubTestForSelectScopeInUnion.func1
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:4365
+        	            	testing.tRunner
+        	            		/Users/karuppiahn/.go/src/testing/testing.go:1193
+        	            	runtime.goexit
+        	            		/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371
+        	Test:       	TestSuite3/Tests/TestForSelectScopeInUnion
+        	Messages:   	sql:drop table t, [], error stack [schema:1051]Unknown table 'test.t'
+        	            	github.com/pingcap/errors.AddStack
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174
+        	            	github.com/pingcap/errors.(*Error).GenWithStackByArgs
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/normalize.go:159
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).dropTableObject
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:525
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).executeDropTable
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:450
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:160
+        	            	github.com/pingcap/tidb/executor.Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414
+        	            	github.com/pingcap/tidb/session.runStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683
+        	            	github.com/pingcap/tidb/session.(*session).ExecuteStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).MustExec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75
+        	            	github.com/pingcap/tidb/executor_test.(*testSuite3).newTearDownTest
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:5068
+        	            	github.com/pingcap/tidb/executor_test.SubTestForSelectScopeInUnion.func1
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:4365
+        	            	testing.tRunner
+        	            		/Users/karuppiahn/.go/src/testing/testing.go:1193
+        	            	runtime.goexit
+        	            		/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371
+[2021/10/24 13:45:39.780 +05:30] [INFO] [ddl.go:620] ["[ddl] DDL job is failed"] [jobID=65]
+[2021/10/24 13:45:39.780 +05:30] [INFO] [tidb.go:260] ["rollbackTxn called due to ddl/autocommit failure"]
+[2021/10/24 13:45:39.780 +05:30] [WARN] [session.go:1580] ["run statement failed"] [schemaVersion=36] [error="[schema:1051]Unknown table 'test.admin_test'"] [errorVerbose="[schema:1051]Unknown table 'test.admin_test'\ngithub.com/pingcap/errors.AddStack\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174\ngithub.com/pingcap/errors.(*Error).GenWithStackByArgs\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/normalize.go:159\ngithub.com/pingcap/tidb/executor.(*DDLExec).dropTableObject\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:525\ngithub.com/pingcap/tidb/executor.(*DDLExec).executeDropTable\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:450\ngithub.com/pingcap/tidb/executor.(*DDLExec).Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:160\ngithub.com/pingcap/tidb/executor.Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465\ngithub.com/pingcap/tidb/executor.(*ExecStmt).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414\ngithub.com/pingcap/tidb/session.runStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683\ngithub.com/pingcap/tidb/session.(*session).ExecuteStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577\ngithub.com/pingcap/tidb/testkit.(*TestKit).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149\ngithub.com/pingcap/tidb/testkit.(*TestKit).MustExec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75\ngithub.com/pingcap/tidb/executor_test.(*testSuite3).newTearDownTest\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:5068\nruntime.Goexit\n\t/Users/karuppiahn/.go/src/runtime/panic.go:613\ntesting.(*common).FailNow\n\t/Users/karuppiahn/.go/src/testing/testing.go:741\ngithub.com/stretchr/testify/require.Equal\n\t/Users/karuppiahn/go/pkg/mod/github.com/stretchr/testify@v1.7.0/require/require.go:165\ngithub.com/pingcap/tidb/executor_test.SubTestAdmin.func1\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:509\ntesting.tRunner\n\t/Users/karuppiahn/.go/src/testing/testing.go:1193\nruntime.goexit\n\t/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371"] [session="{\n  \"currDBName\": \"test\",\n  \"id\": 7,\n  \"status\": 2,\n  \"strictMode\": true,\n  \"user\": null\n}"]
+=== CONT  TestSuite3/Tests/TestAdmin
+    testkit.go:77: 
+        	Error Trace:	testkit.go:77
+        	            					executor_test.go:5068
+        	            				panic.go:613
+        	            				testing.go:741
+        	            				executor_test.go:509
+        	Error:      	Received unexpected error:
+        	            	[schema:1051]Unknown table 'test.admin_test'
+        	            	github.com/pingcap/errors.AddStack
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174
+        	            	github.com/pingcap/errors.(*Error).GenWithStackByArgs
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/normalize.go:159
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).dropTableObject
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:525
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).executeDropTable
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:450
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:160
+        	            	github.com/pingcap/tidb/executor.Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414
+        	            	github.com/pingcap/tidb/session.runStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683
+        	            	github.com/pingcap/tidb/session.(*session).ExecuteStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).MustExec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75
+        	            	github.com/pingcap/tidb/executor_test.(*testSuite3).newTearDownTest
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:5068
+        	            	runtime.Goexit
+        	            		/Users/karuppiahn/.go/src/runtime/panic.go:613
+        	            	testing.(*common).FailNow
+        	            		/Users/karuppiahn/.go/src/testing/testing.go:741
+        	            	github.com/stretchr/testify/require.Equal
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/stretchr/testify@v1.7.0/require/require.go:165
+        	            	github.com/pingcap/tidb/executor_test.SubTestAdmin.func1
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:509
+        	            	testing.tRunner
+        	            		/Users/karuppiahn/.go/src/testing/testing.go:1193
+        	            	runtime.goexit
+        	            		/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371
+        	Test:       	TestSuite3/Tests/TestAdmin
+        	Messages:   	sql:drop table admin_test, [], error stack [schema:1051]Unknown table 'test.admin_test'
+        	            	github.com/pingcap/errors.AddStack
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174
+        	            	github.com/pingcap/errors.(*Error).GenWithStackByArgs
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/normalize.go:159
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).dropTableObject
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:525
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).executeDropTable
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:450
+        	            	github.com/pingcap/tidb/executor.(*DDLExec).Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:160
+        	            	github.com/pingcap/tidb/executor.Next
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465
+        	            	github.com/pingcap/tidb/executor.(*ExecStmt).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414
+        	            	github.com/pingcap/tidb/session.runStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683
+        	            	github.com/pingcap/tidb/session.(*session).ExecuteStmt
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).Exec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149
+        	            	github.com/pingcap/tidb/testkit.(*TestKit).MustExec
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75
+        	            	github.com/pingcap/tidb/executor_test.(*testSuite3).newTearDownTest
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:5068
+        	            	runtime.Goexit
+        	            		/Users/karuppiahn/.go/src/runtime/panic.go:613
+        	            	testing.(*common).FailNow
+        	            		/Users/karuppiahn/.go/src/testing/testing.go:741
+        	            	github.com/stretchr/testify/require.Equal
+        	            		/Users/karuppiahn/go/pkg/mod/github.com/stretchr/testify@v1.7.0/require/require.go:165
+        	            	github.com/pingcap/tidb/executor_test.SubTestAdmin.func1
+        	            		/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:509
+        	            	testing.tRunner
+        	            		/Users/karuppiahn/.go/src/testing/testing.go:1193
+        	            	runtime.goexit
+        	            		/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371
+[2021/10/24 13:45:39.780 +05:30] [INFO] [ddl_worker.go:149] ["[ddl] DDL worker closed"] [worker="worker 3, tp general"] ["take time"=576ns]
+[2021/10/24 13:45:39.780 +05:30] [INFO] [ddl_worker.go:149] ["[ddl] DDL worker closed"] [worker="worker 4, tp add index"] ["take time"=134ns]
+[2021/10/24 13:45:39.780 +05:30] [INFO] [delete_range.go:132] ["[ddl] closing delRange"]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [delete_range.go:238] ["[ddl] delRange emulator complete task"] [jobID=64] [elementID=61] [startKey=74800000000000003d] [endKey=74800000000000003e]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [session_pool.go:86] ["[ddl] closing sessionPool"]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [ddl.go:417] ["[ddl] DDL closed"] [ID=9c7e93d9-a6b3-4380-a4cf-a7939673b531] ["take time"=3.459795ms]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [ddl.go:328] ["[ddl] stop DDL"] [ID=9c7e93d9-a6b3-4380-a4cf-a7939673b531]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [domain.go:437] ["topNSlowQueryLoop exited."]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [domain.go:1151] ["PlanReplayerLoop exited."]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [domain.go:1099] ["TelemetryReportLoop exited."]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [domain.go:466] ["infoSyncerKeeper exited."]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [domain.go:1066] ["handleEvolvePlanTasksLoop exited."]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [domain.go:1129] ["TelemetryRotateSubWindowLoop exited."]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [domain.go:1025] ["globalBindHandleWorkerLoop exited."]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [domain.go:898] ["loadPrivilegeInLoop exited."]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [domain.go:494] ["topologySyncerKeeper exited."]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [domain.go:947] ["LoadSysVarCacheLoop exited."]
+[2021/10/24 13:45:39.784 +05:30] [INFO] [domain.go:650] ["domain closed"] ["take time"=3.574186ms]
+[2021/10/24 13:45:39.804 +05:30] [INFO] [db.go:567] ["Closing database"]
+[2021/10/24 13:45:39.805 +05:30] [INFO] [db.go:592] ["Memtable flushed"]
+[2021/10/24 13:45:39.805 +05:30] [INFO] [db.go:596] ["Compaction finished"]
+[2021/10/24 13:45:39.805 +05:30] [INFO] [db.go:615] ["BlobManager finished"]
+[2021/10/24 13:45:39.805 +05:30] [INFO] [db.go:619] ["ResourceManager finished"]
+[2021/10/24 13:45:39.805 +05:30] [INFO] [db.go:625] ["Waiting for closer"]
+--- FAIL: TestSuite3 (0.50s)
+    --- FAIL: TestSuite3/Tests (0.00s)
+        --- FAIL: TestSuite3/Tests/TestYearTypeDeleteIndex (0.04s)
+        --- FAIL: TestSuite3/Tests/TestForSelectScopeInUnion (0.05s)
+        --- FAIL: TestSuite3/Tests/TestAdmin (0.05s)
+FAIL
+FAIL	github.com/pingcap/tidb/executor	2.021s
+FAIL
+
+tidb $ 
+tidb $ 
+```
+
+---
+
+```bash
+=== CONT  TestSuite3/Tests/TestAdmin
+    executor_test.go:551: 
+        	Error Trace:	executor_test.go:551
+        	Error:      	Not equal: 
+        	            	expected: 58
+        	            	actual  : 60
+        	Test:       	TestSuite3/Tests/TestAdmin
+```
+
+```bash
+=== CONT  TestSuite3/Tests/TestAdmin
+    executor_test.go:521: 
+        	Error Trace:	executor_test.go:521
+        	Error:      	Not equal: 
+        	            	expected: ""
+        	            	actual  : "ID:64, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:62, RowCount:0, ArgLen:0, start time: 2021-10-24 16:42:57.462 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"
+        	            	
+        	            	Diff:
+        	            	--- Expected
+        	            	+++ Actual
+        	            	@@ -1 +1 @@
+        	            	-
+        	            	+ID:64, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:62, RowCount:0, ArgLen:0, start time: 2021-10-24 16:42:57.462 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0
+        	Test:       	TestSuite3/Tests/TestAdmin
+```
+
+```bash
+=== CONT  TestSuite3/Tests/TestAdmin
+    executor_test.go:527: 
+        	Error Trace:	executor_test.go:527
+        	Error:      	Not equal: 
+        	            	expected: ""
+        	            	actual  : "ID:81, Type:drop table, State:running, SchemaState:delete only, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 16:58:11.807 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"
+        	            	
+        	            	Diff:
+        	            	--- Expected
+        	            	+++ Actual
+        	            	@@ -1 +1 @@
+        	            	-
+        	            	+ID:81, Type:drop table, State:running, SchemaState:delete only, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 16:58:11.807 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0
+        	Test:       	TestSuite3/Tests/TestAdmin
+```
+
+---
+
+[POSSIBLY-FLAKY] [TODO]
+
+- TestSuite3/Tests/TestAdmin
+
+
+
