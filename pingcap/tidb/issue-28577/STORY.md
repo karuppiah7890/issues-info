@@ -67,8 +67,8 @@ As part of https://github.com/pingcap/tidb/issues/28542 , I figured - let me mig
 - testSuite3 > TestSubqueryTableAlias [DONE]
 - testSuite3 > TestSelectHashPartitionTable [DONE]
 
-- testSuite > TestScanControlSelection
-- testSuite > TestSimpleDAG
+- testSuite > TestScanControlSelection [DONE]
+- testSuite > TestSimpleDAG [DONE]
 - testSuite > TestTimestampTimeZone
 - testSuite > TestTimestampDefaultValueTimeZone
 - testSuite > TestTiDBCurrentTS
