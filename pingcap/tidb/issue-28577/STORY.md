@@ -16,6 +16,18 @@ As part of https://github.com/pingcap/tidb/issues/28542 , I figured - let me mig
 
 ```bash
 { make failpoint-enable; go test -v -run ^TestSuiteP1/.*$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+
+# OR
+
+{ make failpoint-enable; go test -v -run ^TestSuiteP1$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+```
+
+```bash
+{ make failpoint-enable; go test -v -run ^TestSuite/.*$ github.com/pingcap/tidb/executor; make failpoint-disable; }
+
+# OR
+
+{ make failpoint-enable; go test -v -run ^TestSuite$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
 
 - testSuiteP1 > TestPessimisticSelectForUpdate [DONE]
@@ -69,11 +81,11 @@ As part of https://github.com/pingcap/tidb/issues/28542 , I figured - let me mig
 
 - testSuite > TestScanControlSelection [DONE]
 - testSuite > TestSimpleDAG [DONE]
-- testSuite > TestTimestampTimeZone
-- testSuite > TestTimestampDefaultValueTimeZone
-- testSuite > TestTiDBCurrentTS
-- testSuite > TestTiDBLastTxnInfo
-- testSuite > TestTiDBLastQueryInfo
+- testSuite > TestTimestampTimeZone [WIP]
+- testSuite > TestTimestampDefaultValueTimeZone [WIP]
+- testSuite > TestTiDBCurrentTS [WIP]
+- testSuite > TestTiDBLastTxnInfo [WIP]
+- testSuite > TestTiDBLastQueryInfo [WIP]
 - testSuite > TestSelectForUpdate
 - testSuite > TestSelectForUpdateOf
 - testSuite > TestEmptyEnum
@@ -259,8 +271,6 @@ As part of https://github.com/pingcap/tidb/issues/28542 , I figured - let me mig
 - testResourceTagSuite > TestResourceGroupTag
 
 - testStaleTxnSuite > TestInvalidReadTemporaryTable
-
-
 
 ---
 
@@ -3437,12 +3447,12 @@ tidb $ { make failpoint-enable; go test -v -run ^TestSuiteP1/.*$ github.com/ping
         --- PASS: TestSuiteP1/Tests/TestBind (0.04s)
 PASS
 ok  	github.com/pingcap/tidb/executor	2.409s
-tidb $ 
+tidb $
 ```
 
 ```bash
 === CONT  TestSuiteP1/Tests/TestPessimisticSelectForUpdate
-    testkit.go:77: 
+    testkit.go:77:
         	Error Trace:	testkit.go:77
         	            				executor_test.go:290
         	Error:      	Received unexpected error:
@@ -3524,7 +3534,7 @@ tidb $
 
 ```bash
 === CONT  TestSuiteP1/Tests/TestOrderBy
-    testkit.go:77: 
+    testkit.go:77:
         	Error Trace:	testkit.go:77
         	            				executor_test.go:1204
         	Error:      	Received unexpected error:
@@ -3899,7 +3909,7 @@ tidb $ { make failpoint-enable; go test -v -run ^TestSuite3/.*$ github.com/pingc
 [2021/10/24 13:45:39.750 +05:30] [INFO] [ddl.go:620] ["[ddl] DDL job is failed"] [jobID=60]
 [2021/10/24 13:45:39.750 +05:30] [INFO] [tidb.go:260] ["rollbackTxn called due to ddl/autocommit failure"]
 [2021/10/24 13:45:39.750 +05:30] [WARN] [session.go:1580] ["run statement failed"] [schemaVersion=29] [error="[schema:1050]Table 't' already exists"] [errorVerbose="[schema:1050]Table 't' already exists\ngithub.com/pingcap/errors.AddStack\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174\ngithub.com/pingcap/errors.Trace\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/juju_adaptor.go:15\ngithub.com/pingcap/tidb/ddl.(*ddl).doDDLJob\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl.go:621\ngithub.com/pingcap/tidb/ddl.(*ddl).CreateTableWithInfo\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_api.go:2085\ngithub.com/pingcap/tidb/ddl.(*ddl).CreateTable\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/ddl/ddl_api.go:1994\ngithub.com/pingcap/tidb/executor.(*DDLExec).executeCreateTable\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:338\ngithub.com/pingcap/tidb/executor.(*DDLExec).Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:149\ngithub.com/pingcap/tidb/executor.Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465\ngithub.com/pingcap/tidb/executor.(*ExecStmt).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414\ngithub.com/pingcap/tidb/session.runStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683\ngithub.com/pingcap/tidb/session.(*session).ExecuteStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577\ngithub.com/pingcap/tidb/testkit.(*TestKit).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149\ngithub.com/pingcap/tidb/testkit.(*TestKit).MustExec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75\ngithub.com/pingcap/tidb/executor_test.SubTestYearTypeDeleteIndex.func1\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:4325\ntesting.tRunner\n\t/Users/karuppiahn/.go/src/testing/testing.go:1193\nruntime.goexit\n\t/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371"] [session="{\n  \"currDBName\": \"test\",\n  \"id\": 3,\n  \"status\": 2,\n  \"strictMode\": true,\n  \"user\": null\n}"]
-    testkit.go:77: 
+    testkit.go:77:
         	Error Trace:	testkit.go:77
         	            				executor_test.go:4325
         	Error:      	Received unexpected error:
@@ -4000,9 +4010,9 @@ tidb $ { make failpoint-enable; go test -v -run ^TestSuite3/.*$ github.com/pingc
 [2021/10/24 13:45:39.761 +05:30] [INFO] [session.go:2864] ["CRUCIAL OPERATION"] [conn=6] [schemaVersion=30] [cur_db=test] [sql="drop table admin_test"] [user=]
 [2021/10/24 13:45:39.762 +05:30] [INFO] [delete_range.go:451] ["[ddl] insert into delete-range table"] [jobID=63] [elementID=57]
 === CONT  TestSuite3/Tests/TestAdmin
-    executor_test.go:509: 
+    executor_test.go:509:
         	Error Trace:	executor_test.go:509
-        	Error:      	Not equal: 
+        	Error:      	Not equal:
         	            	expected: 33
         	            	actual  : 32
         	Test:       	TestSuite3/Tests/TestAdmin
@@ -4037,7 +4047,7 @@ tidb $ { make failpoint-enable; go test -v -run ^TestSuite3/.*$ github.com/pingc
 [2021/10/24 13:45:39.779 +05:30] [INFO] [tidb.go:260] ["rollbackTxn called due to ddl/autocommit failure"]
 [2021/10/24 13:45:39.779 +05:30] [WARN] [session.go:1580] ["run statement failed"] [schemaVersion=36] [error="[schema:1051]Unknown table 'test.t'"] [errorVerbose="[schema:1051]Unknown table 'test.t'\ngithub.com/pingcap/errors.AddStack\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174\ngithub.com/pingcap/errors.(*Error).GenWithStackByArgs\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/normalize.go:159\ngithub.com/pingcap/tidb/executor.(*DDLExec).dropTableObject\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:525\ngithub.com/pingcap/tidb/executor.(*DDLExec).executeDropTable\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:450\ngithub.com/pingcap/tidb/executor.(*DDLExec).Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:160\ngithub.com/pingcap/tidb/executor.Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465\ngithub.com/pingcap/tidb/executor.(*ExecStmt).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414\ngithub.com/pingcap/tidb/session.runStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683\ngithub.com/pingcap/tidb/session.(*session).ExecuteStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577\ngithub.com/pingcap/tidb/testkit.(*TestKit).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149\ngithub.com/pingcap/tidb/testkit.(*TestKit).MustExec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75\ngithub.com/pingcap/tidb/executor_test.(*testSuite3).newTearDownTest\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:5068\ngithub.com/pingcap/tidb/executor_test.SubTestForSelectScopeInUnion.func1\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:4365\ntesting.tRunner\n\t/Users/karuppiahn/.go/src/testing/testing.go:1193\nruntime.goexit\n\t/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371"] [session="{\n  \"currDBName\": \"test\",\n  \"id\": 6,\n  \"status\": 2,\n  \"strictMode\": true,\n  \"user\": null\n}"]
 === CONT  TestSuite3/Tests/TestForSelectScopeInUnion
-    testkit.go:77: 
+    testkit.go:77:
         	Error Trace:	testkit.go:77
         	            				executor_test.go:5068
         	            				executor_test.go:4365
@@ -4117,7 +4127,7 @@ tidb $ { make failpoint-enable; go test -v -run ^TestSuite3/.*$ github.com/pingc
 [2021/10/24 13:45:39.780 +05:30] [INFO] [tidb.go:260] ["rollbackTxn called due to ddl/autocommit failure"]
 [2021/10/24 13:45:39.780 +05:30] [WARN] [session.go:1580] ["run statement failed"] [schemaVersion=36] [error="[schema:1051]Unknown table 'test.admin_test'"] [errorVerbose="[schema:1051]Unknown table 'test.admin_test'\ngithub.com/pingcap/errors.AddStack\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/errors.go:174\ngithub.com/pingcap/errors.(*Error).GenWithStackByArgs\n\t/Users/karuppiahn/go/pkg/mod/github.com/pingcap/errors@v0.11.5-0.20210425183316-da1aaba5fb63/normalize.go:159\ngithub.com/pingcap/tidb/executor.(*DDLExec).dropTableObject\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:525\ngithub.com/pingcap/tidb/executor.(*DDLExec).executeDropTable\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:450\ngithub.com/pingcap/tidb/executor.(*DDLExec).Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/ddl.go:160\ngithub.com/pingcap/tidb/executor.Next\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor.go:286\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelayExecutor\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:584\ngithub.com/pingcap/tidb/executor.(*ExecStmt).handleNoDelay\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:465\ngithub.com/pingcap/tidb/executor.(*ExecStmt).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/adapter.go:414\ngithub.com/pingcap/tidb/session.runStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1683\ngithub.com/pingcap/tidb/session.(*session).ExecuteStmt\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/session/session.go:1577\ngithub.com/pingcap/tidb/testkit.(*TestKit).Exec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:149\ngithub.com/pingcap/tidb/testkit.(*TestKit).MustExec\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/testkit/testkit.go:75\ngithub.com/pingcap/tidb/executor_test.(*testSuite3).newTearDownTest\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:5068\nruntime.Goexit\n\t/Users/karuppiahn/.go/src/runtime/panic.go:613\ntesting.(*common).FailNow\n\t/Users/karuppiahn/.go/src/testing/testing.go:741\ngithub.com/stretchr/testify/require.Equal\n\t/Users/karuppiahn/go/pkg/mod/github.com/stretchr/testify@v1.7.0/require/require.go:165\ngithub.com/pingcap/tidb/executor_test.SubTestAdmin.func1\n\t/Users/karuppiahn/projects/github.com/pingcap/tidb/executor/executor_test.go:509\ntesting.tRunner\n\t/Users/karuppiahn/.go/src/testing/testing.go:1193\nruntime.goexit\n\t/Users/karuppiahn/.go/src/runtime/asm_amd64.s:1371"] [session="{\n  \"currDBName\": \"test\",\n  \"id\": 7,\n  \"status\": 2,\n  \"strictMode\": true,\n  \"user\": null\n}"]
 === CONT  TestSuite3/Tests/TestAdmin
-    testkit.go:77: 
+    testkit.go:77:
         	Error Trace:	testkit.go:77
         	            					executor_test.go:5068
         	            				panic.go:613
@@ -4240,17 +4250,17 @@ FAIL
 FAIL	github.com/pingcap/tidb/executor	2.021s
 FAIL
 
-tidb $ 
-tidb $ 
+tidb $
+tidb $
 ```
 
 ---
 
 ```bash
 === CONT  TestSuite3/Tests/TestAdmin
-    executor_test.go:551: 
+    executor_test.go:551:
         	Error Trace:	executor_test.go:551
-        	Error:      	Not equal: 
+        	Error:      	Not equal:
         	            	expected: 58
         	            	actual  : 60
         	Test:       	TestSuite3/Tests/TestAdmin
@@ -4258,12 +4268,12 @@ tidb $
 
 ```bash
 === CONT  TestSuite3/Tests/TestAdmin
-    executor_test.go:521: 
+    executor_test.go:521:
         	Error Trace:	executor_test.go:521
-        	Error:      	Not equal: 
+        	Error:      	Not equal:
         	            	expected: ""
         	            	actual  : "ID:64, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:62, RowCount:0, ArgLen:0, start time: 2021-10-24 16:42:57.462 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"
-        	            	
+
         	            	Diff:
         	            	--- Expected
         	            	+++ Actual
@@ -4275,12 +4285,12 @@ tidb $
 
 ```bash
 === CONT  TestSuite3/Tests/TestAdmin
-    executor_test.go:527: 
+    executor_test.go:527:
         	Error Trace:	executor_test.go:527
-        	Error:      	Not equal: 
+        	Error:      	Not equal:
         	            	expected: ""
         	            	actual  : "ID:81, Type:drop table, State:running, SchemaState:delete only, SchemaID:1, TableID:61, RowCount:0, ArgLen:0, start time: 2021-10-24 16:58:11.807 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"
-        	            	
+
         	            	Diff:
         	            	--- Expected
         	            	+++ Actual
@@ -4295,6 +4305,3 @@ tidb $
 [POSSIBLY-FLAKY] [TODO]
 
 - TestSuite3/Tests/TestAdmin
-
-
-
