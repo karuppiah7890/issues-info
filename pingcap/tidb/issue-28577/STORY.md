@@ -81,11 +81,11 @@ As part of https://github.com/pingcap/tidb/issues/28542 , I figured - let me mig
 
 - testSuite > TestScanControlSelection [DONE]
 - testSuite > TestSimpleDAG [DONE]
-- testSuite > TestTimestampTimeZone [WIP]
-- testSuite > TestTimestampDefaultValueTimeZone [WIP]
-- testSuite > TestTiDBCurrentTS [WIP]
-- testSuite > TestTiDBLastTxnInfo [WIP]
-- testSuite > TestTiDBLastQueryInfo [WIP]
+- testSuite > TestTimestampTimeZone [DONE]
+- testSuite > TestTimestampDefaultValueTimeZone [DONE]
+- testSuite > TestTiDBCurrentTS [DONE]
+- testSuite > TestTiDBLastTxnInfo [DONE]
+- testSuite > TestTiDBLastQueryInfo [DONE]
 - testSuite > TestSelectForUpdate
 - testSuite > TestSelectForUpdateOf
 - testSuite > TestEmptyEnum
@@ -4302,6 +4302,51 @@ tidb $
 
 ---
 
+```bash
+[2021/10/31 15:31:46.338 +05:30] [INFO] [ddl_worker.go:718] ["[ddl] run DDL job"] [worker="worker 3, tp general"] [job="ID:62, Type:create table, State:none, SchemaState:queueing, SchemaID:1, TableID:59, RowCount:0, ArgLen:0, start time: 2021-10-31 15:31:46.337 +0530 IST, Err:<nil>, ErrCount:0, SnapshotVersion:0"]
+=== CONT  TestSuite/Tests/TestTiDBLastQueryInfo
+    assertion_compare.go:313: 
+        	Error Trace:	executor_test.go:3401
+        	Error:      	"0" is not greater than "428782257789468674"
+        	Test:       	TestSuite/Tests/TestTiDBLastQueryInfo
+        	Messages:   	[]
+
+...
+
+Test:       	TestSuite/Tests/TestTimestampDefaultValueTimeZone
+        	Messages:   	sql:create table t (a int, b timestamp default "2019-01-17 14:46:14"), [], error stack [schema:1050]Table 'test.t' already exists
+
+
+...
+
+Test:       	TestSuite/Tests/TestTiDBLastTxnInfo
+        	Messages:   	sql:create table t (a int primary key), [], error stack [schema:1050]Table 't' already exists
+
+...
+
+=== CONT  TestSuite/Tests/TestTimestampTimeZone
+    testkit.go:77: 
+        	Error Trace:	testkit.go:77
+        	            				executor_test.go:3092
+        	Error:      	Received unexpected error:
+        	            	[schema:1050]Table 't' already exists
+```
+
+---
+
+```bash
+=== CONT  TestSuite/Tests/TestTiDBLastQueryInfo
+    assertion_compare.go:332: 
+        	Error Trace:	executor_test.go:3412
+        	Error:      	"428785038855241728" is not less than "428785038854979588"
+        	Test:       	TestSuite/Tests/TestTiDBLastQueryInfo
+        	Messages:   	[]
+```
+
+---
+
 [POSSIBLY-FLAKY] [TODO]
 
 - TestSuite3/Tests/TestAdmin
+
+
