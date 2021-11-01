@@ -333,4 +333,72 @@ x-ms-served-by: 56c1db0b-2eb4-4d35-9e30-5675fac45060_132753955049796345
 
 ---
 
+delete operation
+- get exist resource
+- not able get the resource due to some error
+    - resource does not exist error
+        - all good, already deleted or never existed in the first place. Both are fine as we wanted to however delete the resource
+    - some other error
+        - Example - authn / authz errors
+        - Generic Example - HTTP API errors
+            4xx - client errors
+            5xx - server errors
+        - problematic
+
+- resource exists
+    - able to delete - all good!
+        - example - 200 OK, 204 No content, 202 Accepted
+    - not able to delete due to some error
+        - Example - authn / authz error
+        - Generic Example - HTTP API errors
+            4xx - client errors
+            5xx - server errors
+        - problematic
+
+
+The above is just one idea. But the actual current code just tries to directly delete the resource without getting the resource as I think delete API takes care of everything behind the scenes at the server side - that is, getting and checking if the resource already exists or not etc
+
+Let's see how we can do this in async!
+
+Let's look at https://github.com/kubernetes-sigs/cluster-api-provider-azure/pull/1745
+
+---
+
+```bash
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/disks/client.go | pbcopy
+cluster-api-provider-azure $ ./hack/tools/bin/mockgen -source azure/services/disks/disks.go | pbcopy
+```
+
+I'm starting to write some code in the `Delete` method of the disks service and make small changes in other places to put things together
+
+Fortunately, the scope of disks is machine scope, which implements the `AsyncStatusUpdater` interface so it has all the methods of `AsyncStatusUpdater` implemented which is necessary for us to be able to use
+
+```go
+async.DeleteResource(ctx, s.Scope, s.client, diskSpec, serviceName)
+```
+
+[TODO] [Level-3]
+- I need to add some missing methods to DiskSpec next to implement `azure.ResourceSpecGetter` for which I need to first migrate / move DiskSpec to `sigs.k8s.io/cluster-api-provider-azure/azure/services/disks` package [DONE]
+- Start implementing the disks Delete method while also writing tests in disks_test.go
+- Start implementing the disk spec methods - resource group name
+  - Start introducing resource group name field in the disk spec and check where all disk spec is created and fill up the resource group name in all those places as part of creation / initialization
+- Start implementing the disks client Delete async method
+- Start implementing the disks client isDone method
+
+---
+
+cyclic import issues
+
+scope -> disks -> azure
+
+scope -> azure
+
+disks (in test) -> scope (due to MachineScope.DiskSpecs method test using scope package functions)
+
+Resolutions
+- Rename `disks` package in test file to `disks_test`, this would need the `client` field in `disks` `Service` to be exported using `Client`
+- Move the `MachineScope.DiskSpecs` method test to machine_test.go file which is also in scope package so all is good if it's moved there
+
+I chose to move the `MachineScope.DiskSpecs` method test to machine_test.go
+
 
