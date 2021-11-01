@@ -81,7 +81,7 @@ As part of https://github.com/pingcap/tidb/issues/28542 , I figured - let me mig
 
 - testSuite > TestScanControlSelection [DONE]
 - testSuite > TestSimpleDAG [DONE]
-- testSuite > TestTimestampTimeZone [DONE]
+- testSuite > TestTimestampTimeZone [DONEn]
 - testSuite > TestTimestampDefaultValueTimeZone [DONE]
 - testSuite > TestTiDBCurrentTS [DONE]
 - testSuite > TestTiDBLastTxnInfo [DONE]
