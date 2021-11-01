@@ -257,7 +257,7 @@ After deletion was complete, GET API -
 request
 
 ```
-GET https://management.azure.com/subscriptions/87fbb054-796e-47cc-a777-c7a052901de1/resourceGroups/dummy/providers/Microsoft.Network/publicIPAddresses/dummy?api-version=2021-03-01
+GET https://management.azure.com/subscriptions/dummy-subscription-id/resourceGroups/dummy/providers/Microsoft.Network/publicIPAddresses/dummy?api-version=2021-03-01
 Authorization: Bearer token
 ```
 
@@ -650,7 +650,6 @@ defer cancel()
 
 - Write tests for `Delete` method in `azure/services/publicips/publicips_test.go` and write the code in `azure/services/publicips/publicips.go` `Delete` method
 
-
 ---
 
 It's interesting to see how an Azure cluster is deleted in the Azure cluster reconciler - it's the same way how I have tried to cleanup clusters in test automation scripts - simply delete the Azure resource group containing all the resources of the cluster. The only tricky thing is - if the resource group is not managed, then we will have to delete each cluster resource one by one - why? Because the resource group may have extra resources which are not managed by capz and are used by other entities (humans, other systems) and if capz deletes the unmanaged resource group, then it will delete everything - the capz managed cluster and everything in the resource group. So that's why we need to delete every cluster resource one by one when resource group is not managed
@@ -850,6 +849,7 @@ func TestDeletePublicIP(t *testing.T) {
 ---
 
 Different error scenarios for `Delete` in public ips service, within it's computation
+
 - Error while getting management state of the public ip
   - resource not found error [DONE]
   - some error, but not resource-not-found [DONE]
@@ -868,20 +868,22 @@ https://github.com/kubernetes-sigs/cluster-api-provider-azure/blob/main/docs/pro
 [TODO]
 
 Update details about PR
+
 - What changes it has
 - The TODOs it has
 - Questions
 
 Testing
+
 - Run build, test, verify etc similar to #1696 PR tests and check if everything is good to go
 
 ---
 
 Run
+
 - `make test`
 - `make verify`
 - Check more at https://capz.sigs.k8s.io/developers/jobs.html or https://github.com/kubernetes-sigs/cluster-api-provider-azure/blob/main/docs/book/src/developers/jobs.md
-
 
 ---
 
@@ -949,10 +951,10 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmextensions	3.026s
 ?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmextensions/mock_vmextensions	[no test files]
 ok  	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmssextensions	2.882s
 ?   	sigs.k8s.io/cluster-api-provider-azure/azure/services/vmssextensions/mock_vmssextensions	[no test files]
-I1004 23:20:48.129422   61108 azuremachine_controller.go:249]  "msg"="Reconciling AzureMachine"  
-I1004 23:20:48.129917   61108 azuremachine_controller.go:264]  "msg"="Cluster infrastructure is not ready yet"  
-I1004 23:20:48.130045   61108 azuremachine_controller.go:249]  "msg"="Reconciling AzureMachine"  
-I1004 23:20:48.130315   61108 azuremachine_controller.go:271]  "msg"="Bootstrap data secret reference is not yet available"  
+I1004 23:20:48.129422   61108 azuremachine_controller.go:249]  "msg"="Reconciling AzureMachine"
+I1004 23:20:48.129917   61108 azuremachine_controller.go:264]  "msg"="Cluster infrastructure is not ready yet"
+I1004 23:20:48.130045   61108 azuremachine_controller.go:249]  "msg"="Reconciling AzureMachine"
+I1004 23:20:48.130315   61108 azuremachine_controller.go:271]  "msg"="Bootstrap data secret reference is not yet available"
 2021-10-04T23:20:48.135+0530	INFO	azurecluster-resource	default	{"name": "foo"}
 Running Suite: Controller Suite
 ===============================
@@ -1017,7 +1019,7 @@ github.com/onsi/ginkgo/internal/leafnodes.(*runner).runAsync.func1
 	/Users/karuppiahn/go/pkg/mod/github.com/onsi/ginkgo@v1.16.4/internal/leafnodes/runner.go:86
 STEP: bootstrapping test environment
 Panic [1.982 seconds]
-[BeforeSuite] BeforeSuite 
+[BeforeSuite] BeforeSuite
 /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/controllers/suite_test.go:49
 
   Test Panicked
@@ -1074,7 +1076,7 @@ Will run 2 of 2 specs
 
 STEP: bootstrapping test environment
 Panic [2.065 seconds]
-[BeforeSuite] BeforeSuite 
+[BeforeSuite] BeforeSuite
 /Users/karuppiahn/projects/github.com/kubernetes-sigs/cluster-api-provider-azure/exp/controllers/suite_test.go:50
 
   Test Panicked
@@ -1151,7 +1153,7 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/util/system	(cached)
 ?   	sigs.k8s.io/cluster-api-provider-azure/version	[no test files]
 FAIL
 make: *** [go-test] Error 1
-cluster-api-provider-azure $ 
+cluster-api-provider-azure $
 ```
 
 ---
@@ -1278,64 +1280,64 @@ echo "---" >> /home/ubuntu/cluster-api-provider-azure/test/e2e/data/infrastructu
 /home/ubuntu/cluster-api-provider-azure/hack/tools/bin/kustomize-v4.1.3 build /home/ubuntu/cluster-api-provider-azure/test/e2e/data/infrastructure-azure/v1alpha4/cluster-template-upgrades --load-restrictor LoadRestrictionsNone > /home/ubuntu/cluster-api-provider-azure/test/e2e/data/infrastructure-azure/v1alpha4/cluster-template-upgrades.yaml
 /home/ubuntu/cluster-api-provider-azure/hack/tools/bin/kustomize-v4.1.3 build /home/ubuntu/cluster-api-provider-azure/test/e2e/data/infrastructure-azure/v1alpha4/cluster-template-kcp-scale-in --load-restrictor LoadRestrictionsNone > /home/ubuntu/cluster-api-provider-azure/test/e2e/data/infrastructure-azure/v1alpha4/cluster-template-kcp-scale-in.yaml
 make[1]: Leaving directory '/home/ubuntu/cluster-api-provider-azure'
-ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$ 
-ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$ 
+ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$
+ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$
 ```
 
 ```bash
 ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$ make lint
 ./hack/lint-latest.sh
 /home/ubuntu/cluster-api-provider-azure/hack/tools/bin/golangci-lint-v1.41.1 run -v
-INFO [config_reader] Config search paths: [./ /home/ubuntu/cluster-api-provider-azure /home/ubuntu /home /] 
-INFO [config_reader] Used config file .golangci.yml 
-INFO [lintersdb] Active 23 linters: [deadcode errcheck errorlint goconst gocyclo godot gofmt goimports golint gosec gosimple govet ineffassign interfacer misspell nakedret prealloc staticcheck structcheck unconvert unused varcheck whitespace] 
-INFO [loader] Go packages loading at mode 575 (compiled_files|exports_file|imports|name|deps|files|types_sizes) took 21.892404147s 
-WARN [runner] The linter 'golint' is deprecated (since v1.41.0) due to: The repository of the linter has been archived by the owner.  Replaced by revive. 
-WARN [runner] The linter 'interfacer' is deprecated (since v1.38.0) due to: The repository of the linter has been archived by the owner.  
-INFO [runner/filename_unadjuster] Pre-built 0 adjustments in 31.367741ms 
-INFO [linters context/goanalysis] analyzers took 3m23.008269776s with top 10 stages: buildir: 1m30.148198916s, buildssa: 18.699034019s, goimports: 5.652617953s, unconvert: 5.055185221s, nilness: 4.515946561s, gosec: 4.107924529s, interfacer: 3.392799247s, inspect: 3.319629222s, whitespace: 2.854495738s, gofmt: 2.804513001s 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/inboundnatrules/mock_inboundnatrules by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/vmextensions/mock_vmextensions by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/subnets/mock_subnets by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir exp/controllers/mocks by pattern mock* 
-INFO [runner/skip dirs] Skipped 2 issues from dir azure/services/agentpools/mock_agentpools by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir azure/services/resourceskus/mock_resourceskus by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir azure/services/async/mock_async by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/groups/mock_groups by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/routetables/mock_routetables by pattern mock* 
-INFO [runner/skip dirs] Skipped 5 issues from dir internal/test/matchers/gomock by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/natgateways/mock_natgateways by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/virtualmachines/mock_virtualmachines by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/publicips/mock_publicips by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir azure/mock_azure by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/disks/mock_disks by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/loadbalancers/mock_loadbalancers by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir util/cache/ttllru/mocks by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir azure/scope/mocks by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/managedclusters/mock_managedclusters by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/roleassignments/mock_roleassignments by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/virtualnetworks/mock_virtualnetworks by pattern mock* 
-INFO [runner/skip dirs] Skipped 3 issues from dir internal/test/mock_log by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/scalesets/mock_scalesets by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/networkinterfaces/mock_networkinterfaces by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/securitygroups/mock_securitygroups by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/bastionhosts/mocks_bastionhosts by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/availabilitysets/mock_availabilitysets by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/privatedns/mock_privatedns by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/scalesetvms/mock_scalesetvms by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/tags/mock_tags by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/vmssextensions/mock_vmssextensions by pattern mock* 
-INFO [runner/skip dirs] Skipped 4 issues from dir pkg/coalescing/mocks by pattern mock* 
-INFO [runner] Issues before processing: 592, after processing: 0 
-INFO [runner] Processors filtering stat (out/in): path_prettifier: 592/592, autogenerated_exclude: 55/55, nolint: 0/3, cgo: 592/592, filename_unadjuster: 592/592, skip_files: 175/592, skip_dirs: 55/175, identifier_marker: 55/55, exclude: 55/55, exclude-rules: 3/55 
-INFO [runner] processing took 8.799995ms with stages: nolint: 2.977989ms, path_prettifier: 2.268045ms, identifier_marker: 1.008072ms, skip_files: 819.262µs, skip_dirs: 703.19µs, autogenerated_exclude: 467.159µs, exclude-rules: 419.406µs, cgo: 61.355µs, filename_unadjuster: 56.808µs, max_same_issues: 2.807µs, diff: 2.029µs, uniq_by_line: 1.866µs, path_shortener: 1.669µs, source_code: 1.61µs, max_from_linter: 1.548µs, severity-rules: 1.51µs, max_per_file_from_linter: 1.476µs, sort_results: 1.426µs, exclude: 1.402µs, path_prefixer: 1.366µs 
-INFO [runner] linters took 21.800242564s with stages: goanalysis_metalinter: 21.791266205s 
-INFO File cache stats: 366 entries of total size 2.7MiB 
-INFO Memory: 413 samples, avg is 723.3MB, max is 1963.4MB 
-INFO Execution took 43.731529704s                 
+INFO [config_reader] Config search paths: [./ /home/ubuntu/cluster-api-provider-azure /home/ubuntu /home /]
+INFO [config_reader] Used config file .golangci.yml
+INFO [lintersdb] Active 23 linters: [deadcode errcheck errorlint goconst gocyclo godot gofmt goimports golint gosec gosimple govet ineffassign interfacer misspell nakedret prealloc staticcheck structcheck unconvert unused varcheck whitespace]
+INFO [loader] Go packages loading at mode 575 (compiled_files|exports_file|imports|name|deps|files|types_sizes) took 21.892404147s
+WARN [runner] The linter 'golint' is deprecated (since v1.41.0) due to: The repository of the linter has been archived by the owner.  Replaced by revive.
+WARN [runner] The linter 'interfacer' is deprecated (since v1.38.0) due to: The repository of the linter has been archived by the owner.
+INFO [runner/filename_unadjuster] Pre-built 0 adjustments in 31.367741ms
+INFO [linters context/goanalysis] analyzers took 3m23.008269776s with top 10 stages: buildir: 1m30.148198916s, buildssa: 18.699034019s, goimports: 5.652617953s, unconvert: 5.055185221s, nilness: 4.515946561s, gosec: 4.107924529s, interfacer: 3.392799247s, inspect: 3.319629222s, whitespace: 2.854495738s, gofmt: 2.804513001s
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/inboundnatrules/mock_inboundnatrules by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/vmextensions/mock_vmextensions by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/subnets/mock_subnets by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir exp/controllers/mocks by pattern mock*
+INFO [runner/skip dirs] Skipped 2 issues from dir azure/services/agentpools/mock_agentpools by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir azure/services/resourceskus/mock_resourceskus by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir azure/services/async/mock_async by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/groups/mock_groups by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/routetables/mock_routetables by pattern mock*
+INFO [runner/skip dirs] Skipped 5 issues from dir internal/test/matchers/gomock by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/natgateways/mock_natgateways by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/virtualmachines/mock_virtualmachines by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/publicips/mock_publicips by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir azure/mock_azure by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/disks/mock_disks by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/loadbalancers/mock_loadbalancers by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir util/cache/ttllru/mocks by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir azure/scope/mocks by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/managedclusters/mock_managedclusters by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/roleassignments/mock_roleassignments by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/virtualnetworks/mock_virtualnetworks by pattern mock*
+INFO [runner/skip dirs] Skipped 3 issues from dir internal/test/mock_log by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/scalesets/mock_scalesets by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/networkinterfaces/mock_networkinterfaces by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/securitygroups/mock_securitygroups by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/bastionhosts/mocks_bastionhosts by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/availabilitysets/mock_availabilitysets by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/privatedns/mock_privatedns by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/scalesetvms/mock_scalesetvms by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/tags/mock_tags by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir azure/services/vmssextensions/mock_vmssextensions by pattern mock*
+INFO [runner/skip dirs] Skipped 4 issues from dir pkg/coalescing/mocks by pattern mock*
+INFO [runner] Issues before processing: 592, after processing: 0
+INFO [runner] Processors filtering stat (out/in): path_prettifier: 592/592, autogenerated_exclude: 55/55, nolint: 0/3, cgo: 592/592, filename_unadjuster: 592/592, skip_files: 175/592, skip_dirs: 55/175, identifier_marker: 55/55, exclude: 55/55, exclude-rules: 3/55
+INFO [runner] processing took 8.799995ms with stages: nolint: 2.977989ms, path_prettifier: 2.268045ms, identifier_marker: 1.008072ms, skip_files: 819.262µs, skip_dirs: 703.19µs, autogenerated_exclude: 467.159µs, exclude-rules: 419.406µs, cgo: 61.355µs, filename_unadjuster: 56.808µs, max_same_issues: 2.807µs, diff: 2.029µs, uniq_by_line: 1.866µs, path_shortener: 1.669µs, source_code: 1.61µs, max_from_linter: 1.548µs, severity-rules: 1.51µs, max_per_file_from_linter: 1.476µs, sort_results: 1.426µs, exclude: 1.402µs, path_prefixer: 1.366µs
+INFO [runner] linters took 21.800242564s with stages: goanalysis_metalinter: 21.791266205s
+INFO File cache stats: 366 entries of total size 2.7MiB
+INFO Memory: 413 samples, avg is 723.3MB, max is 1963.4MB
+INFO Execution took 43.731529704s
 ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$ echo $?
 0
-ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$ 
+ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$
 ```
 
 ```bash
@@ -1449,7 +1451,7 @@ ok  	sigs.k8s.io/cluster-api-provider-azure/util/system	0.032s
 ?   	sigs.k8s.io/cluster-api-provider-azure/version	[no test files]
 ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$ echo $?
 0
-ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$ 
+ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$
 ```
 
 ```bash
@@ -1548,7 +1550,7 @@ On branch make-publicips-async
 Your branch is up to date with 'origin/make-publicips-async'.
 
 nothing to commit, working tree clean
-ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$ 
+ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$
 ```
 
 ---
@@ -1565,7 +1567,6 @@ PR summary
 - Make changes to `MachineScope`'s `PublicIPSpecs` method test to accomodate the latest changes in code and to ensure the latest changes are tested too
 - Add test for `MachineScope`'s `AdditionalTags` method
 - Fix `bastionhosts_test.go` test as there were some compile errors due to changing `CreateOrUpdate` method name in `publicips` client to `CreateOrUpdateAsync`. Raised issue regarding other issues in the file #1753 and also fixed it separately in #1754 . If that gets merged then I can rebase this PR on top of that
-
 
 Not much testing at publicips client level - I noticed that the client field being used is a concrete type and not an interface that can be mocked and injected. That is the client field `publicips` of type `network.PublicIPAddressesClient` in here
 
