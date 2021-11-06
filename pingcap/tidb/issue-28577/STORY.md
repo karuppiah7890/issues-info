@@ -86,8 +86,8 @@ As part of https://github.com/pingcap/tidb/issues/28542 , I figured - let me mig
 - testSuite > TestTiDBCurrentTS [DONE]
 - testSuite > TestTiDBLastTxnInfo [DONE]
 - testSuite > TestTiDBLastQueryInfo [DONE]
-- testSuite > TestSelectForUpdate
-- testSuite > TestSelectForUpdateOf
+- testSuite > TestSelectForUpdate [DONE]
+- testSuite > TestSelectForUpdateOf [DONE]
 - testSuite > TestEmptyEnum
 - testSuite > TestIssue4024
 - testSuite > TestTimezonePushDown
@@ -896,6 +896,10 @@ For all `TestSuiteP1` sub tests -
 ```bash
 { make failpoint-enable; go test -v -run ^TestSelectForUpdate$ github.com/pingcap/tidb/executor; make failpoint-disable; }
 ```
+
+`executor: migrate TestSelectForUpdateOf to testify (#28577)`
+
+TestSelectForUpdateOf
 
 ---
 
