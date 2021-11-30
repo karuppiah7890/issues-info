@@ -1567,6 +1567,12 @@ ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$
 - `azure/services/publicips/publicips.go` - line 114 - `cannot use s.Client (variable of type Client) as async.Deleter value in argument to async.DeleteResource: missing method ResultcompilerInvalidIfaceAssign`
 - `azure/services/virtualmachines/virtualmachines_test.go` line 166 - `cannot use publicIPMock (variable of type *mock_publicips.MockClient) as publicips.Client value in struct literal: wrong type for method CreateOrUpdateAsync (have func(arg0 context.Context, arg1 sigs.k8s.io/cluster-api-provider-azure/azure.ResourceSpecGetter) (github.com/Azure/go-autorest/autorest/azure.FutureAPI, error), want func(context.Context, sigs.k8s.io/cluster-api-provider-azure/azure.ResourceSpecGetter) (interface{}, github.com/Azure/go-autorest/autorest/azure.FutureAPI, error))compilerInvalidIfaceAssign`
 
+- Resolve PR conversations - resolution + mark resolved on GitHub
+	- https://github.com/kubernetes-sigs/cluster-api-provider-azure/pull/1745#discussion_r737563425
+	- https://github.com/kubernetes-sigs/cluster-api-provider-azure/pull/1745#discussion_r737560126
+	- https://github.com/kubernetes-sigs/cluster-api-provider-azure/pull/1745#discussion_r737561421
+	- https://github.com/kubernetes-sigs/cluster-api-provider-azure/pull/1745#discussion_r737564052
+
 ---
 
 PR summary
