@@ -1555,6 +1555,20 @@ ubuntu@ip-10-0-0-234:~/cluster-api-provider-azure$
 
 ---
 
+[TODO]
+- Rebase with `main` and git push
+	- Rebase [DONE]
+	- git push
+- `azure/services/bastionhosts/bastionhosts_test.go` line 180 - `cannot use publicIPsMock (variable of type *mock_publicips.MockClient) as publicips.Client value in struct literal: wrong type for method CreateOrUpdateAsync (have func(arg0 context.Context, arg1 sigs.k8s.io/cluster-api-provider-azure/azure.ResourceSpecGetter) (github.com/Azure/go-autorest/autorest/azure.FutureAPI, error), want func(context.Context, sigs.k8s.io/cluster-api-provider-azure/azure.ResourceSpecGetter) (interface{}, github.com/Azure/go-autorest/autorest/azure.FutureAPI, error))compilerInvalidIfaceAssign`
+- `azure/services/bastionhosts/bastionhosts_test.go` line 239 - `cannot use publicIPsMock (variable of type *mock_publicips.MockClient) as publicips.Client value in struct literal: wrong type for method CreateOrUpdateAsync (have func(arg0 context.Context, arg1 sigs.k8s.io/cluster-api-provider-azure/azure.ResourceSpecGetter) (github.com/Azure/go-autorest/autorest/azure.FutureAPI, error), want func(context.Context, sigs.k8s.io/cluster-api-provider-azure/azure.ResourceSpecGetter) (interface{}, github.com/Azure/go-autorest/autorest/azure.FutureAPI, error))compilerInvalidIfaceAssign`
+- `azure/services/publicips/publicips_test.go` line 199 - `cannot use clientMock (variable of type *mock_publicips.MockClient) as publicips.Client value in struct literal: wrong type for method CreateOrUpdateAsync (have func(arg0 context.Context, arg1 sigs.k8s.io/cluster-api-provider-azure/azure.ResourceSpecGetter) (github.com/Azure/go-autorest/autorest/azure.FutureAPI, error), want func(context.Context, sigs.k8s.io/cluster-api-provider-azure/azure.ResourceSpecGetter) (interface{}, github.com/Azure/go-autorest/autorest/azure.FutureAPI, error))compilerInvalidIfaceAssign`
+- `azure/services/publicips/publicips_test.go` line 478 - `cannot use clientMock (variable of type *mock_publicips.MockClient) as publicips.Client value in struct literal: wrong type for method CreateOrUpdateAsync (have func(arg0 context.Context, arg1 sigs.k8s.io/cluster-api-provider-azure/azure.ResourceSpecGetter) (github.com/Azure/go-autorest/autorest/azure.FutureAPI, error), want func(context.Context, sigs.k8s.io/cluster-api-provider-azure/azure.ResourceSpecGetter) (interface{}, github.com/Azure/go-autorest/autorest/azure.FutureAPI, error))compilerInvalidIfaceAssign`
+- `azure/services/publicips/publicips.go` - line 71 - `cannot use s.Client (variable of type Client) as async.Creator value in argument to async.CreateResource: missing method Result compilerInvalidIfaceAssign` - Need to make change in public ips client
+- `azure/services/publicips/publicips.go` - line 114 - `cannot use s.Client (variable of type Client) as async.Deleter value in argument to async.DeleteResource: missing method ResultcompilerInvalidIfaceAssign`
+- `azure/services/virtualmachines/virtualmachines_test.go` line 166 - `cannot use publicIPMock (variable of type *mock_publicips.MockClient) as publicips.Client value in struct literal: wrong type for method CreateOrUpdateAsync (have func(arg0 context.Context, arg1 sigs.k8s.io/cluster-api-provider-azure/azure.ResourceSpecGetter) (github.com/Azure/go-autorest/autorest/azure.FutureAPI, error), want func(context.Context, sigs.k8s.io/cluster-api-provider-azure/azure.ResourceSpecGetter) (interface{}, github.com/Azure/go-autorest/autorest/azure.FutureAPI, error))compilerInvalidIfaceAssign`
+
+---
+
 PR summary
 
 - Make `publicips` service `Reconcile` and `Delete` async
