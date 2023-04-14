@@ -12985,3 +12985,1223 @@ CGO_ENABLED=1 go build -tags=release -ldflags "-X 'github.com/tigrisdata/tigris/
 karuppiah@Karuppiahs-MacBook-Pro tigris % echo $?
 0
 karuppiah@Karuppiahs-MacBook-Pro tigris % 
+karuppiah@Karuppiahs-MacBook-Pro tigris % make test
+mkdir -p /tmp/tigris_coverdata && chmod a+w /tmp/tigris_coverdata; rm -f /tmp/tigris_coverdata/*
+mkdir -p /tmp/tigris_coverdata2 && chmod a+w /tmp/tigris_coverdata2; rm -f /tmp/tigris_coverdata2/*
+COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose -f test/docker/docker-compose.yml up --build tigris_test tigris_test
+[+] Building 33.7s (46/46) FINISHED                                                                                 
+ => [tigris_test internal] load build definition from Dockerfile                                               0.0s
+ => => transferring dockerfile: 794B                                                                           0.0s
+ => [tigris_server internal] load build definition from Dockerfile                                             0.0s
+ => => transferring dockerfile: 32B                                                                            0.0s
+ => [tigris_server2 internal] load build definition from Dockerfile                                            0.0s
+ => => transferring dockerfile: 32B                                                                            0.0s
+ => [tigris_test internal] load .dockerignore                                                                  0.0s
+ => => transferring context: 2B                                                                                0.0s
+ => [tigris_server internal] load .dockerignore                                                                0.0s
+ => => transferring context: 2B                                                                                0.0s
+ => [tigris_server2 internal] load .dockerignore                                                               0.0s
+ => => transferring context: 2B                                                                                0.0s
+ => [tigris_server internal] load metadata for docker.io/tigrisdata/tigris-build-base:latest                  11.6s
+ => [tigris_server internal] load metadata for docker.io/library/ubuntu:20.04                                 11.5s
+ => [auth] tigrisdata/tigris-build-base:pull token for registry-1.docker.io                                    0.0s
+ => [auth] library/ubuntu:pull token for registry-1.docker.io                                                  0.0s
+ => [tigris_test 1/5] FROM docker.io/tigrisdata/tigris-build-base:latest@sha256:1b1735e2700a98a8e990484ea9a0f  0.0s
+ => [tigris_test internal] load build context                                                                  0.7s
+ => => transferring context: 28B                                                                               0.6s
+ => [tigris_server2 internal] load build context                                                               1.7s
+ => => transferring context: 62.04MB                                                                           1.6s
+ => [tigris_server server  1/10] FROM docker.io/library/ubuntu:20.04@sha256:24a0df437301598d1a4b62ddf59fa0ed2  0.0s
+ => [tigris_server build 1/6] FROM docker.io/tigrisdata/tigris-build-base@sha256:1b1735e2700a98a8e990484ea9a0  0.0s
+ => [tigris_server internal] load build context                                                                1.4s
+ => => transferring context: 62.08MB                                                                           1.4s
+ => CACHED [tigris_test 2/5] COPY go.mod /go/src/tigris/                                                       0.0s
+ => CACHED [tigris_test 3/5] WORKDIR /go/src/tigris                                                            0.0s
+ => CACHED [tigris_test 4/5] RUN GO111MODULE=on go mod download                                                0.0s
+ => CACHED [tigris_test 5/5] RUN rm -rf ./*                                                                    0.0s
+ => [tigris_server] exporting to image                                                                         0.5s
+ => => exporting layers                                                                                        0.3s
+ => => writing image sha256:bdc580f861e8e85f49378561724c01a0f037daddc3272666c5143945f25d1de7                   0.0s
+ => => naming to docker.io/library/tigris_test                                                                 0.0s
+ => => writing image sha256:0f18b6c90207599dde7435a58ec4a749197d40ebb4aa1df09d8d152b86a0f155                   0.0s
+ => => naming to docker.io/library/tigris_server2                                                              0.0s
+ => => writing image sha256:a0bd503fde5a52419e9378a9008e61eb94a01c0043542b3d3f83551aaec1cb71                   0.0s
+ => => naming to docker.io/library/tigris_server                                                               0.0s
+ => CACHED [tigris_server build 2/6] COPY go.mod /build                                                        0.0s
+ => CACHED [tigris_server build 3/6] WORKDIR /build                                                            0.0s
+ => CACHED [tigris_server build 4/6] RUN go mod download                                                       0.0s
+ => [tigris_server build 5/6] COPY . /build                                                                    1.2s
+ => CACHED [tigris_server2 build 2/6] COPY go.mod /build                                                       0.0s
+ => CACHED [tigris_server2 build 3/6] WORKDIR /build                                                           0.0s
+ => CACHED [tigris_server2 build 4/6] RUN go mod download                                                      0.0s
+ => [tigris_server2 build 5/6] COPY . /build                                                                   1.0s
+ => [tigris_server build 6/6] RUN --mount=type=cache,target=/root/.cache/go-build rm -f server/service && BU  17.8s
+ => [tigris_server2 build 6/6] RUN --mount=type=cache,target=/root/.cache/go-build rm -f server/service && B  17.7s
+ => CACHED [tigris_server server  2/10] RUN apt-get update &&     apt-get install -y --no-install-recommends   0.0s
+ => CACHED [tigris_server server  3/10] RUN groupadd -r tigris && useradd -r -s /bin/false -g tigris tigris    0.0s
+ => CACHED [tigris_server server  4/10] RUN mkdir -p /server /etc/tigrisdata/tigris /etc/foundationdb/         0.0s
+ => [tigris_server2 server  5/10] COPY --from=build /build/server/service /server/service                      0.1s
+ => [tigris_server2 server  6/10] COPY --from=build /build/config/server.test.yaml /etc/tigrisdata/tigris      0.0s
+ => [tigris_server2 server  7/10] COPY --from=build /usr/lib/libfdb_c.so /usr/lib/libfdb_c.so                  0.1s
+ => CACHED [tigris_server server  5/10] COPY --from=build /build/server/service /server/service                0.0s
+ => [tigris_server server  6/10] COPY --from=build /build/config/server.yaml /etc/tigrisdata/tigris            0.0s
+ => [tigris_server2 server  8/10] COPY --from=build /usr/bin/fdbcli /usr/bin/fdbcli                            0.1s
+ => [tigris_server server  7/10] COPY --from=build /usr/lib/libfdb_c.so /usr/lib/libfdb_c.so                   0.1s
+ => [tigris_server2 server  9/10] RUN chown -R tigris:tigris /server /etc/tigrisdata/tigris                    0.4s
+ => [tigris_server server  8/10] COPY --from=build /usr/bin/fdbcli /usr/bin/fdbcli                             0.1s
+ => [tigris_server server  9/10] RUN chown -R tigris:tigris /server /etc/tigrisdata/tigris                     0.4s
+ => [tigris_server2 server 10/10] WORKDIR /server                                                              0.0s
+ => [tigris_server server 10/10] WORKDIR /server                                                               0.0s
+[+] Running 12/12
+ ⠿ Network docker_default         Created                                                                      0.0s
+ ⠿ Volume "docker_dbdata"         Created                                                                      0.0s
+ ⠿ Volume "docker_go_test_cache"  Created                                                                      0.0s
+ ⠿ Container tigris_search        Created                                                                      0.1s
+ ⠿ Container tigris_cache         Created                                                                      0.1s
+ ⠿ Container tigris_db            Created                                                                      0.3s
+ ⠿ Container tigris_db2           Created                                                                      0.1s
+ ⠿ Container tigris_server        Created                                                                      0.1s
+ ⠿ Container tigris_gotrue        Created                                                                      0.1s
+ ⠿ Container tigris_realtime      Created                                                                      0.1s
+ ⠿ Container tigris_server2       Created                                                                      0.1s
+ ⠿ Container tigris_test          Created                                                                      1.5s
+Attaching to tigris_test
+tigris_test  | make -C api/proto generate GEN_DIR=../../api/server/v1 API_DIR=..
+tigris_test  | make[1]: Entering directory '/go/src/tigris/api/proto'
+tigris_test  | make[1]: Nothing to be done for 'generate'.
+tigris_test  | make[1]: Leaving directory '/go/src/tigris/api/proto'
+tigris_test  | yq --exit-status 'tag == "!!map" or tag== "!!seq"' .github/workflows/*.yaml config/*.yaml >/dev/null
+tigris_test  | shellcheck scripts/*
+tigris_test  | shellcheck test/docker/grafana/*
+tigris_test  | golangci-lint --timeout=5m run --fix
+tigris_test  | go test -cover -race -tags=test,integration  ./...
+tigris_test  | ?   	github.com/tigrisdata/tigris/cmd/consistency	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/cmd/consistency/workload	[no test files]
+tigris_test  | ok  	github.com/tigrisdata/tigris/api/server/v1	0.103s	coverage: 1.9% of statements
+tigris_test  | ?   	github.com/tigrisdata/tigris/cmd/realtime	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/cmd/realtime/app	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/errors	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/lib/uuid	[no test files]
+tigris_test  | ok  	github.com/tigrisdata/tigris/internal	0.057s	coverage: 25.9% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/keys	0.051s	coverage: 21.4% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/lib/container	0.056s	coverage: 57.6% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/lib/date	0.030s	coverage: 100.0% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/query/aggregation	0.053s	coverage: 61.2% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/query/expression	0.052s	coverage: 76.7% of statements
+tigris_test  | --- FAIL: TestKeyBuilderStrictEq (0.00s)
+tigris_test  |     key_builder_test.go:134: 
+tigris_test  |         	Error Trace:	/go/src/tigris/query/filter/key_builder_test.go:134
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: <nil>(<nil>)
+tigris_test  |         	            	actual  : *api.TigrisError(&api.TigrisError{Code:3, Message:"filters doesn't contains primary key fields", Details:[]protoiface.MessageV1(nil)})
+tigris_test  |         	Test:       	TestKeyBuilderStrictEq
+tigris_test  | FAIL
+tigris_test  | 	github.com/tigrisdata/tigris/query/filter	coverage: 61.0% of statements
+tigris_test  | FAIL	github.com/tigrisdata/tigris/query/filter	0.075s
+tigris_test  | ok  	github.com/tigrisdata/tigris/query/read	0.064s	coverage: 27.1% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/query/search	0.073s	coverage: 33.6% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/query/sort	0.061s	coverage: 91.7% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/query/update	0.152s	coverage: 85.3% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/schema	0.293s	coverage: 73.6% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/schema/lang	0.613s	coverage: 82.7% of statements
+tigris_test  | ?   	github.com/tigrisdata/tigris/server	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/cdc	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/config	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/defaults	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/muxer	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/services/v1/cache	[no test files]
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/metadata	4.922s	coverage: 57.9% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/metrics	0.144s	coverage: 73.6% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/middleware	0.091s	coverage: 11.1% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/quota	0.668s	coverage: 88.6% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/request	0.092s	coverage: 18.7% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/search	0.069s	coverage: 42.9% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1	0.115s	coverage: 0.3% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1/auth	0.289s	coverage: 2.7% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1/billing	0.058s	coverage: 91.1% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1/common	0.115s	coverage: 81.1% of statements
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/tracing	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/types	[no test files]
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1/database	0.908s	coverage: 21.7% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1/realtime	1.408s	coverage: 19.1% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1/search	0.100s	coverage: 10.1% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/transaction	0.056s	coverage: 0.9% of statements
+tigris_test  | ?   	github.com/tigrisdata/tigris/store/search	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/templates	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/test/config	[no test files]
+tigris_test  | ok  	github.com/tigrisdata/tigris/store/cache	1.639s	coverage: 54.4% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/store/kv	1.975s	coverage: 47.0% of statements
+tigris_test  | --- FAIL: TestClient (0.46s)
+tigris_test  |     client_test.go:191: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/client_test.go:191
+tigris_test  |         	            				/root/go/pkg/mod/github.com/tigrisdata/tigris-client-go@v1.0.0-beta.25/tigris/tx.go:72
+tigris_test  |         	            				/root/go/pkg/mod/github.com/tigrisdata/tigris-client-go@v1.0.0-beta.25/tigris/tx.go:87
+tigris_test  |         	            				/go/src/tigris/test/v1/client/client_test.go:150
+tigris_test  |         	            				/go/src/tigris/test/v1/client/client_test.go:227
+tigris_test  |         	Error:      	Received unexpected error:
+tigris_test  |         	            	document not found
+tigris_test  |         	Test:       	TestClient
+tigris_test  | --- FAIL: TestDriverGRPCC (0.65s)
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:305
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:429
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverGRPCC
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:305
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:429
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverGRPCC
+tigris_test  | --- FAIL: TestDriverHTTP (0.58s)
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:305
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:437
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverHTTP
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:305
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:437
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverHTTP
+tigris_test  | --- FAIL: TestDriverTxGRPC (0.46s)
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:377
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:445
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverTxGRPC
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:377
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:445
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverTxGRPC
+tigris_test  | --- FAIL: TestDriverTxHTTP (0.40s)
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:377
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:453
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverTxHTTP
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:377
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:453
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverTxHTTP
+tigris_test  | FAIL
+tigris_test  | coverage: [no statements]
+tigris_test  | FAIL	github.com/tigrisdata/tigris/test/v1/client	2.634s
+tigris_test  | ?   	github.com/tigrisdata/tigris/util/log	[no test files]
+
+tigris_test  | --- FAIL: TestInsert_ReadNullsAndByte (0.11s)
+tigris_test  |     document_test.go:575: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:575
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"array_value":[]interface {}{map[string]interface {}{"id":1, "product":interface {}(nil)}}, "bool_value":interface {}(nil), "bytes_value":"NjJlYTZhOTQzZDQ0YjEwZTFiNmI4Nzk3", "date_time_value":interface {}(nil), "double_value":interface {}(nil), "int_value":interface {}(nil), "object_value":map[string]interface {}{"name":interface {}(nil)}, "pkey_int":10, "simple_array_value":[]interface {}{"abc", interface {}(nil), "def"}, "string_value":interface {}(nil), "uuid_value":interface {}(nil)}
+tigris_test  |         	            	actual  : map[string]interface {}{"array_value":[]interface {}{map[string]interface {}{"id":1, "product":interface {}(nil)}}, "bytes_value":"NjJlYTZhOTQzZDQ0YjEwZTFiNmI4Nzk3", "pkey_int":10, "simple_array_value":[]interface {}{"abc", interface {}(nil), "def"}}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,2 +1,2 @@
+tigris_test  |         	            	-(map[string]interface {}) (len=11) {
+tigris_test  |         	            	+(map[string]interface {}) (len=4) {
+tigris_test  |         	            	  (string) (len=11) "array_value": ([]interface {}) (len=1) {
+tigris_test  |         	            	@@ -7,10 +7,3 @@
+tigris_test  |         	            	  },
+tigris_test  |         	            	- (string) (len=10) "bool_value": (interface {}) <nil>,
+tigris_test  |         	            	  (string) (len=11) "bytes_value": (string) (len=32) "NjJlYTZhOTQzZDQ0YjEwZTFiNmI4Nzk3",
+tigris_test  |         	            	- (string) (len=15) "date_time_value": (interface {}) <nil>,
+tigris_test  |         	            	- (string) (len=12) "double_value": (interface {}) <nil>,
+tigris_test  |         	            	- (string) (len=9) "int_value": (interface {}) <nil>,
+tigris_test  |         	            	- (string) (len=12) "object_value": (map[string]interface {}) (len=1) {
+tigris_test  |         	            	-  (string) (len=4) "name": (interface {}) <nil>
+tigris_test  |         	            	- },
+tigris_test  |         	            	  (string) (len=8) "pkey_int": (float64) 10,
+tigris_test  |         	            	@@ -20,5 +13,3 @@
+tigris_test  |         	            	   (string) (len=3) "def"
+tigris_test  |         	            	- },
+tigris_test  |         	            	- (string) (len=12) "string_value": (interface {}) <nil>,
+tigris_test  |         	            	- (string) (len=10) "uuid_value": (interface {}) <nil>
+tigris_test  |         	            	+ }
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestInsert_ReadNullsAndByte
+tigris_test  | --- FAIL: TestInsert_MultipleRows (0.12s)
+tigris_test  |     document_test.go:683: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:683
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bool_value":true, "bytes_value":"InNpbXBsZV9pbnNlcnQxIg==", "double_value":20.00001, "int_value":20, "pkey_int":20, "string_value":"simple_insert1"}
+tigris_test  |         	            	actual  : map[string]interface {}{"bool_value":false, "bytes_value":"InNpbXBsZV9pbnNlcnQyIg==", "double_value":20.0002, "int_value":30, "pkey_int":30, "string_value":"simple_insert2"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,8 +1,8 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=6) {
+tigris_test  |         	            	- (string) (len=10) "bool_value": (bool) true,
+tigris_test  |         	            	- (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxIg==",
+tigris_test  |         	            	- (string) (len=12) "double_value": (float64) 20.00001,
+tigris_test  |         	            	- (string) (len=9) "int_value": (float64) 20,
+tigris_test  |         	            	- (string) (len=8) "pkey_int": (float64) 20,
+tigris_test  |         	            	- (string) (len=12) "string_value": (string) (len=14) "simple_insert1"
+tigris_test  |         	            	+ (string) (len=10) "bool_value": (bool) false,
+tigris_test  |         	            	+ (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQyIg==",
+tigris_test  |         	            	+ (string) (len=12) "double_value": (float64) 20.0002,
+tigris_test  |         	            	+ (string) (len=9) "int_value": (float64) 30,
+tigris_test  |         	            	+ (string) (len=8) "pkey_int": (float64) 30,
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=14) "simple_insert2"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestInsert_MultipleRows
+tigris_test  | --- FAIL: TestUpdate_NullField (0.12s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:1580
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bool_value":false, "bytes_value":"InNpbXBsZV9pbnNlcnQxX3VwZGF0ZV9tb2RpZmllZCI=", "double_value":200.00001, "int_value":interface {}(nil), "pkey_int":100, "string_value":"simple_insert1_update_modified"}
+tigris_test  |         	            	actual  : map[string]interface {}{"bool_value":false, "bytes_value":"InNpbXBsZV9pbnNlcnQxX3VwZGF0ZV9tb2RpZmllZCI=", "double_value":200.00001, "pkey_int":100, "string_value":"simple_insert1_update_modified"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,2 +1,2 @@
+tigris_test  |         	            	-(map[string]interface {}) (len=6) {
+tigris_test  |         	            	+(map[string]interface {}) (len=5) {
+tigris_test  |         	            	  (string) (len=10) "bool_value": (bool) false,
+tigris_test  |         	            	@@ -4,3 +4,2 @@
+tigris_test  |         	            	  (string) (len=12) "double_value": (float64) 200.00001,
+tigris_test  |         	            	- (string) (len=9) "int_value": (interface {}) <nil>,
+tigris_test  |         	            	  (string) (len=8) "pkey_int": (float64) 100,
+tigris_test  |         	Test:       	TestUpdate_NullField
+tigris_test  |         	Messages:   	exp '{"string_value":"simple_insert1_update_modified","bool_value":false,"double_value":200.00001,"bytes_value":"InNpbXBsZV9pbnNlcnQxX3VwZGF0ZV9tb2RpZmllZCI=","int_value":null,"pkey_int":100}' actual '{"pkey_int":100,"string_value":"simple_insert1_update_modified","bool_value":false,"bytes_value":"InNpbXBsZV9pbnNlcnQxX3VwZGF0ZV9tb2RpZmllZCI=","double_value":200.00001}'
+tigris_test  | --- FAIL: TestUpdate_MultipleRows (0.16s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:1703
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bool_value":true, "bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi", "double_value":1000.000001, "int_value":1000, "pkey_int":110, "string_value":"simple_insert110"}
+tigris_test  |         	            	actual  : map[string]interface {}{"bool_value":true, "bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi", "double_value":3000.999999, "int_value":3000, "pkey_int":130, "string_value":"simple_insert130"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -2,7 +2,7 @@
+tigris_test  |         	            	  (string) (len=10) "bool_value": (bool) true,
+tigris_test  |         	            	- (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMTAi",
+tigris_test  |         	            	- (string) (len=12) "double_value": (float64) 1000.000001,
+tigris_test  |         	            	- (string) (len=9) "int_value": (float64) 1000,
+tigris_test  |         	            	- (string) (len=8) "pkey_int": (float64) 110,
+tigris_test  |         	            	- (string) (len=12) "string_value": (string) (len=16) "simple_insert110"
+tigris_test  |         	            	+ (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMzAi",
+tigris_test  |         	            	+ (string) (len=12) "double_value": (float64) 3000.999999,
+tigris_test  |         	            	+ (string) (len=9) "int_value": (float64) 3000,
+tigris_test  |         	            	+ (string) (len=8) "pkey_int": (float64) 130,
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=16) "simple_insert130"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestUpdate_MultipleRows
+tigris_test  |         	Messages:   	exp '{"pkey_int":110,"int_value":1000,"string_value":"simple_insert110","bool_value":true,"double_value":1000.000001,"bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi"}' actual '{"pkey_int":130,"bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi","double_value":3000.999999,"int_value":3000,"string_value":"simple_insert130","bool_value":true}'
+tigris_test  | --- FAIL: TestUpdate_Limit (0.14s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:1848
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bool_value":true, "bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi", "double_value":1000.000001, "int_value":1000, "pkey_int":110, "string_value":"simple_insert110"}
+tigris_test  |         	            	actual  : map[string]interface {}{"bool_value":true, "bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi", "double_value":3000.999999, "int_value":3000, "pkey_int":130, "string_value":"simple_insert130"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -2,7 +2,7 @@
+tigris_test  |         	            	  (string) (len=10) "bool_value": (bool) true,
+tigris_test  |         	            	- (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMTAi",
+tigris_test  |         	            	- (string) (len=12) "double_value": (float64) 1000.000001,
+tigris_test  |         	            	- (string) (len=9) "int_value": (float64) 1000,
+tigris_test  |         	            	- (string) (len=8) "pkey_int": (float64) 110,
+tigris_test  |         	            	- (string) (len=12) "string_value": (string) (len=16) "simple_insert110"
+tigris_test  |         	            	+ (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMzAi",
+tigris_test  |         	            	+ (string) (len=12) "double_value": (float64) 3000.999999,
+tigris_test  |         	            	+ (string) (len=9) "int_value": (float64) 3000,
+tigris_test  |         	            	+ (string) (len=8) "pkey_int": (float64) 130,
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=16) "simple_insert130"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestUpdate_Limit
+tigris_test  |         	Messages:   	exp '{"bool_value":true,"double_value":1000.000001,"bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi","pkey_int":110,"int_value":1000,"string_value":"simple_insert110"}' actual '{"pkey_int":130,"string_value":"simple_insert130","bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi","double_value":3000.999999,"int_value":3000,"bool_value":true}'
+tigris_test  | --- FAIL: TestUpdate_SetAndUnset (0.14s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:2364
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bool_value":false, "double_value":200.00001, "int_value":200, "pkey_int":100}
+tigris_test  |         	            	actual  : map[string]interface {}{"bool_value":false, "bytes_value":"InNpbXBsZV9pbnNlcnQxX3VwZGF0ZSI=", "double_value":200.00001, "int_value":200, "pkey_int":100, "string_value":"simple_insert1_update"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,6 +1,8 @@
+tigris_test  |         	            	-(map[string]interface {}) (len=4) {
+tigris_test  |         	            	+(map[string]interface {}) (len=6) {
+tigris_test  |         	            	  (string) (len=10) "bool_value": (bool) false,
+tigris_test  |         	            	+ (string) (len=11) "bytes_value": (string) (len=32) "InNpbXBsZV9pbnNlcnQxX3VwZGF0ZSI=",
+tigris_test  |         	            	  (string) (len=12) "double_value": (float64) 200.00001,
+tigris_test  |         	            	  (string) (len=9) "int_value": (float64) 200,
+tigris_test  |         	            	- (string) (len=8) "pkey_int": (float64) 100
+tigris_test  |         	            	+ (string) (len=8) "pkey_int": (float64) 100,
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=21) "simple_insert1_update"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestUpdate_SetAndUnset
+tigris_test  |         	Messages:   	exp '{"pkey_int":100,"int_value":200,"bool_value":false,"double_value":200.00001}' actual '{"pkey_int":100,"bytes_value":"InNpbXBsZV9pbnNlcnQxX3VwZGF0ZSI=","int_value":200,"string_value":"simple_insert1_update","bool_value":false,"double_value":200.00001}'
+tigris_test  | --- FAIL: TestUpdate_MutatePrimaryKey (0.75s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:2793
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"a":1, "b":"1", "e":1}
+tigris_test  |         	            	actual  : map[string]interface {}{"a":1, "b":"1", "c":1, "d":"1", "e":1}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,4 +1,6 @@
+tigris_test  |         	            	-(map[string]interface {}) (len=3) {
+tigris_test  |         	            	+(map[string]interface {}) (len=5) {
+tigris_test  |         	            	  (string) (len=1) "a": (float64) 1,
+tigris_test  |         	            	  (string) (len=1) "b": (string) (len=1) "1",
+tigris_test  |         	            	+ (string) (len=1) "c": (float64) 1,
+tigris_test  |         	            	+ (string) (len=1) "d": (string) (len=1) "1",
+tigris_test  |         	            	  (string) (len=1) "e": (float64) 1
+tigris_test  |         	Test:       	TestUpdate_MutatePrimaryKey
+tigris_test  |         	Messages:   	exp '{"a":1,"b":"1","e":1}' actual '{"a":1,"b":"1","c":1,"d":"1","e":1}'
+tigris_test  | --- FAIL: TestDelete_MultipleRows (0.11s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:3009
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"pkey_int":50, "string_value":"simple_insert50"}
+tigris_test  |         	            	actual  : map[string]interface {}{"pkey_int":70, "string_value":"simple_insert70"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,4 +1,4 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=2) {
+tigris_test  |         	            	- (string) (len=8) "pkey_int": (float64) 50,
+tigris_test  |         	            	- (string) (len=12) "string_value": (string) (len=15) "simple_insert50"
+tigris_test  |         	            	+ (string) (len=8) "pkey_int": (float64) 70,
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=15) "simple_insert70"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDelete_MultipleRows
+tigris_test  |         	Messages:   	exp '{"pkey_int":50,"string_value":"simple_insert50"}' actual '{"string_value":"simple_insert70","pkey_int":70}'
+tigris_test  | --- FAIL: TestRead_MultipleRows (0.12s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:3588
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi", "int_value":1000, "string_value":"simple_insert110"}
+tigris_test  |         	            	actual  : map[string]interface {}{"bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi", "string_value":"simple_insert130"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,4 @@
+tigris_test  |         	            	-(map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMTAi",
+tigris_test  |         	            	- (string) (len=9) "int_value": (float64) 1000,
+tigris_test  |         	            	- (string) (len=12) "string_value": (string) (len=16) "simple_insert110"
+tigris_test  |         	            	+(map[string]interface {}) (len=2) {
+tigris_test  |         	            	+ (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMzAi",
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=16) "simple_insert130"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestRead_MultipleRows
+tigris_test  |         	Messages:   	exp '{"int_value":1000,"string_value":"simple_insert110","bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi"}' actual '{"bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi","string_value":"simple_insert130"}'
+tigris_test  | --- FAIL: TestRead_AcceptApplicationJSON (0.12s)
+tigris_test  |     document_test.go:5077: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5077
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:3956
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bool_value":true, "bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi", "double_value":1000.000001, "int_value":1000, "pkey_int":210, "string_value":"simple_insert110"}
+tigris_test  |         	            	actual  : map[string]interface {}{"bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi", "pkey_int":230, "string_value":"simple_insert130"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,8 +1,5 @@
+tigris_test  |         	            	-(map[string]interface {}) (len=6) {
+tigris_test  |         	            	- (string) (len=10) "bool_value": (bool) true,
+tigris_test  |         	            	- (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMTAi",
+tigris_test  |         	            	- (string) (len=12) "double_value": (float64) 1000.000001,
+tigris_test  |         	            	- (string) (len=9) "int_value": (float64) 1000,
+tigris_test  |         	            	- (string) (len=8) "pkey_int": (float64) 210,
+tigris_test  |         	            	- (string) (len=12) "string_value": (string) (len=16) "simple_insert110"
+tigris_test  |         	            	+(map[string]interface {}) (len=3) {
+tigris_test  |         	            	+ (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMzAi",
+tigris_test  |         	            	+ (string) (len=8) "pkey_int": (float64) 230,
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=16) "simple_insert130"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestRead_AcceptApplicationJSON
+tigris_test  | FAIL
+tigris_test  | 	github.com/tigrisdata/tigris/test/v1/server	coverage: 100.0% of statements
+tigris_test  | FAIL	github.com/tigrisdata/tigris/test/v1/server	73.038s
+tigris_test  | ok  	github.com/tigrisdata/tigris/util	0.030s	coverage: 28.2% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/value	0.070s	coverage: 44.7% of statements
+tigris_test  | FAIL
+tigris_test  | make: *** [Makefile:37: local_test] Error 1
+tigris_test exited with code 2
+make: *** [docker_test] Error 1
+karuppiah@Karuppiahs-MacBook-Pro tigris % 
+karuppiah@Karuppiahs-MacBook-Pro tigris % echo $?
+2
+karuppiah@Karuppiahs-MacBook-Pro tigris % make clean  
+COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose -f test/docker/docker-compose.yml down -v --remove-orphans
+[+] Running 12/12
+ ⠿ Container tigris_test        Removed                                                                        0.1s
+ ⠿ Container tigris_server2     Removed                                                                        0.2s
+ ⠿ Container tigris_db2         Removed                                                                        0.2s
+ ⠿ Container tigris_realtime    Removed                                                                        0.2s
+ ⠿ Container tigris_gotrue      Removed                                                                        0.2s
+ ⠿ Container tigris_server      Removed                                                                        0.2s
+ ⠿ Container tigris_search      Removed                                                                        1.7s
+ ⠿ Container tigris_cache       Removed                                                                        0.2s
+ ⠿ Container tigris_db          Removed                                                                        0.2s
+ ⠿ Volume docker_go_test_cache  Removed                                                                        0.4s
+ ⠿ Volume docker_dbdata         Removed                                                                        0.0s
+ ⠿ Network docker_default       Removed                                                                        0.1s
+rm -f server/service api/server/v1/*.pb.go \
+		api/server/v1/*.pb.gw.go \
+
+karuppiah@Karuppiahs-MacBook-Pro tigris % docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+karuppiah@Karuppiahs-MacBook-Pro tigris % make
+make -C api/proto generate GEN_DIR=../../api/server/v1 API_DIR=..
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/api.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/cache.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/health.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/auth.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/observability.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/management.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/realtime.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/search.proto
+make -C api/proto generate GEN_DIR=../../api/server/v1 API_DIR=..
+make[1]: Nothing to be done for `generate'.
+CGO_ENABLED=1 go build -tags=release -ldflags "-X 'github.com/tigrisdata/tigris/util.Version=2e60a63' -X 'github.com/tigrisdata/tigris/util.BuildHash=2e60a63'"  -o server/service ./server
+karuppiah@Karuppiahs-MacBook-Pro tigris % make test   
+mkdir -p /tmp/tigris_coverdata && chmod a+w /tmp/tigris_coverdata; rm -f /tmp/tigris_coverdata/*
+mkdir -p /tmp/tigris_coverdata2 && chmod a+w /tmp/tigris_coverdata2; rm -f /tmp/tigris_coverdata2/*
+COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose -f test/docker/docker-compose.yml up --build tigris_test tigris_test
+[+] Building 16.6s (46/46) FINISHED                                                                                 
+ => [tigris_test internal] load build definition from Dockerfile                                               0.0s
+ => => transferring dockerfile: 32B                                                                            0.0s
+ => [tigris_server internal] load build definition from Dockerfile                                             0.0s
+ => => transferring dockerfile: 32B                                                                            0.0s
+ => [tigris_server2 internal] load build definition from Dockerfile                                            0.0s
+ => => transferring dockerfile: 32B                                                                            0.0s
+ => [tigris_test internal] load .dockerignore                                                                  0.0s
+ => => transferring context: 2B                                                                                0.0s
+ => [tigris_server internal] load .dockerignore                                                                0.0s
+ => => transferring context: 2B                                                                                0.0s
+ => [tigris_server2 internal] load .dockerignore                                                               0.0s
+ => => transferring context: 2B                                                                                0.0s
+ => [tigris_server2 internal] load metadata for docker.io/tigrisdata/tigris-build-base:latest                  7.6s
+ => [tigris_server internal] load metadata for docker.io/library/ubuntu:20.04                                  7.5s
+ => [auth] tigrisdata/tigris-build-base:pull token for registry-1.docker.io                                    0.0s
+ => [auth] library/ubuntu:pull token for registry-1.docker.io                                                  0.0s
+ => [tigris_test internal] load build context                                                                  0.0s
+ => => transferring context: 28B                                                                               0.0s
+ => [tigris_test 1/5] FROM docker.io/tigrisdata/tigris-build-base:latest@sha256:1b1735e2700a98a8e990484ea9a0f  0.0s
+ => [tigris_server2 server  1/10] FROM docker.io/library/ubuntu:20.04@sha256:24a0df437301598d1a4b62ddf59fa0ed  0.0s
+ => [tigris_server2 build 1/6] FROM docker.io/tigrisdata/tigris-build-base@sha256:1b1735e2700a98a8e990484ea9a  0.0s
+ => [tigris_server2 internal] load build context                                                               1.2s
+ => => transferring context: 60.72MB                                                                           1.2s
+ => [tigris_server internal] load build context                                                                1.2s
+ => => transferring context: 60.72MB                                                                           1.2s
+ => CACHED [tigris_test 2/5] COPY go.mod /go/src/tigris/                                                       0.0s
+ => CACHED [tigris_test 3/5] WORKDIR /go/src/tigris                                                            0.0s
+ => CACHED [tigris_test 4/5] RUN GO111MODULE=on go mod download                                                0.0s
+ => CACHED [tigris_test 5/5] RUN rm -rf ./*                                                                    0.0s
+ => [tigris_server2] exporting to image                                                                        0.1s
+ => => exporting layers                                                                                        0.0s
+ => => writing image sha256:bdc580f861e8e85f49378561724c01a0f037daddc3272666c5143945f25d1de7                   0.0s
+ => => naming to docker.io/library/tigris_test                                                                 0.0s
+ => => writing image sha256:a0bd503fde5a52419e9378a9008e61eb94a01c0043542b3d3f83551aaec1cb71                   0.0s
+ => => naming to docker.io/library/tigris_server                                                               0.0s
+ => => writing image sha256:0f18b6c90207599dde7435a58ec4a749197d40ebb4aa1df09d8d152b86a0f155                   0.0s
+ => => naming to docker.io/library/tigris_server2                                                              0.0s
+ => CACHED [tigris_server build 2/6] COPY go.mod /build                                                        0.0s
+ => CACHED [tigris_server build 3/6] WORKDIR /build                                                            0.0s
+ => CACHED [tigris_server build 4/6] RUN go mod download                                                       0.0s
+ => [tigris_server build 5/6] COPY . /build                                                                    0.7s
+ => CACHED [tigris_server2 build 2/6] COPY go.mod /build                                                       0.0s
+ => CACHED [tigris_server2 build 3/6] WORKDIR /build                                                           0.0s
+ => CACHED [tigris_server2 build 4/6] RUN go mod download                                                      0.0s
+ => [tigris_server2 build 5/6] COPY . /build                                                                   0.7s
+ => [tigris_server build 6/6] RUN --mount=type=cache,target=/root/.cache/go-build rm -f server/service && BUI  6.5s
+ => [tigris_server2 build 6/6] RUN --mount=type=cache,target=/root/.cache/go-build rm -f server/service && BU  6.5s
+ => CACHED [tigris_server2 server  2/10] RUN apt-get update &&     apt-get install -y --no-install-recommends  0.0s
+ => CACHED [tigris_server2 server  3/10] RUN groupadd -r tigris && useradd -r -s /bin/false -g tigris tigris   0.0s
+ => CACHED [tigris_server2 server  4/10] RUN mkdir -p /server /etc/tigrisdata/tigris /etc/foundationdb/        0.0s
+ => CACHED [tigris_server server  5/10] COPY --from=build /build/server/service /server/service                0.0s
+ => CACHED [tigris_server server  6/10] COPY --from=build /build/config/server.yaml /etc/tigrisdata/tigris     0.0s
+ => CACHED [tigris_server server  7/10] COPY --from=build /usr/lib/libfdb_c.so /usr/lib/libfdb_c.so            0.0s
+ => CACHED [tigris_server server  8/10] COPY --from=build /usr/bin/fdbcli /usr/bin/fdbcli                      0.0s
+ => CACHED [tigris_server server  9/10] RUN chown -R tigris:tigris /server /etc/tigrisdata/tigris              0.0s
+ => CACHED [tigris_server server 10/10] WORKDIR /server                                                        0.0s
+ => CACHED [tigris_server2 server  5/10] COPY --from=build /build/server/service /server/service               0.0s
+ => CACHED [tigris_server2 server  6/10] COPY --from=build /build/config/server.test.yaml /etc/tigrisdata/tig  0.0s
+ => CACHED [tigris_server2 server  7/10] COPY --from=build /usr/lib/libfdb_c.so /usr/lib/libfdb_c.so           0.0s
+ => CACHED [tigris_server2 server  8/10] COPY --from=build /usr/bin/fdbcli /usr/bin/fdbcli                     0.0s
+ => CACHED [tigris_server2 server  9/10] RUN chown -R tigris:tigris /server /etc/tigrisdata/tigris             0.0s
+ => CACHED [tigris_server2 server 10/10] WORKDIR /server                                                       0.0s
+[+] Running 12/12
+ ⠿ Network docker_default         Created                                                                      0.0s
+ ⠿ Volume "docker_dbdata"         Created                                                                      0.0s
+ ⠿ Volume "docker_go_test_cache"  Created                                                                      0.0s
+ ⠿ Container tigris_db            Created                                                                      0.4s
+ ⠿ Container tigris_db2           Created                                                                      0.1s
+ ⠿ Container tigris_search        Created                                                                      0.1s
+ ⠿ Container tigris_cache         Created                                                                      0.1s
+ ⠿ Container tigris_server        Created                                                                      0.1s
+ ⠿ Container tigris_gotrue        Created                                                                      0.1s
+ ⠿ Container tigris_realtime      Created                                                                      0.1s
+ ⠿ Container tigris_server2       Created                                                                      0.1s
+ ⠿ Container tigris_test          Created                                                                      1.5s
+Attaching to tigris_test
+tigris_test  | make -C api/proto generate GEN_DIR=../../api/server/v1 API_DIR=..
+tigris_test  | make[1]: Entering directory '/go/src/tigris/api/proto'
+tigris_test  | make[1]: Nothing to be done for 'generate'.
+tigris_test  | make[1]: Leaving directory '/go/src/tigris/api/proto'
+tigris_test  | yq --exit-status 'tag == "!!map" or tag== "!!seq"' .github/workflows/*.yaml config/*.yaml >/dev/null
+tigris_test  | shellcheck scripts/*
+tigris_test  | shellcheck test/docker/grafana/*
+tigris_test  | golangci-lint --timeout=5m run --fix
+tigris_test  | go test -cover -race -tags=test,integration  ./...
+tigris_test  | ?   	github.com/tigrisdata/tigris/cmd/consistency	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/cmd/consistency/workload	[no test files]
+tigris_test  | ok  	github.com/tigrisdata/tigris/api/server/v1	0.099s	coverage: 1.9% of statements
+tigris_test  | ?   	github.com/tigrisdata/tigris/cmd/realtime	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/cmd/realtime/app	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/errors	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/lib/uuid	[no test files]
+tigris_test  | ok  	github.com/tigrisdata/tigris/internal	0.057s	coverage: 25.9% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/keys	0.080s	coverage: 21.4% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/lib/container	0.028s	coverage: 57.6% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/lib/date	0.039s	coverage: 100.0% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/query/aggregation	0.062s	coverage: 61.2% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/query/expression	0.052s	coverage: 76.7% of statements
+tigris_test  | --- FAIL: TestKeyBuilderStrictEq (0.00s)
+tigris_test  |     key_builder_test.go:134: 
+tigris_test  |         	Error Trace:	/go/src/tigris/query/filter/key_builder_test.go:134
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: <nil>(<nil>)
+tigris_test  |         	            	actual  : *api.TigrisError(&api.TigrisError{Code:3, Message:"filters doesn't contains primary key fields", Details:[]protoiface.MessageV1(nil)})
+tigris_test  |         	Test:       	TestKeyBuilderStrictEq
+tigris_test  | FAIL
+tigris_test  | 	github.com/tigrisdata/tigris/query/filter	coverage: 61.0% of statements
+tigris_test  | FAIL	github.com/tigrisdata/tigris/query/filter	0.095s
+tigris_test  | ok  	github.com/tigrisdata/tigris/query/read	0.067s	coverage: 27.1% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/query/search	0.079s	coverage: 33.6% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/query/sort	0.047s	coverage: 91.7% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/query/update	0.122s	coverage: 85.3% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/schema	0.290s	coverage: 73.6% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/schema/lang	0.672s	coverage: 82.7% of statements
+tigris_test  | ?   	github.com/tigrisdata/tigris/server	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/cdc	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/config	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/defaults	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/muxer	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/services/v1/cache	[no test files]
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/metadata	4.950s	coverage: 57.9% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/metrics	0.275s	coverage: 73.6% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/middleware	0.077s	coverage: 11.1% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/quota	0.605s	coverage: 88.6% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/request	0.077s	coverage: 18.7% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/search	0.064s	coverage: 42.9% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1	0.136s	coverage: 0.3% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1/auth	0.320s	coverage: 2.7% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1/billing	0.060s	coverage: 91.1% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1/common	0.074s	coverage: 81.1% of statements
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/tracing	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/server/types	[no test files]
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1/database	0.894s	coverage: 21.7% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1/realtime	1.412s	coverage: 19.1% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/services/v1/search	0.124s	coverage: 10.1% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/server/transaction	0.093s	coverage: 0.9% of statements
+tigris_test  | ?   	github.com/tigrisdata/tigris/store/search	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/templates	[no test files]
+tigris_test  | ?   	github.com/tigrisdata/tigris/test/config	[no test files]
+tigris_test  | ok  	github.com/tigrisdata/tigris/store/cache	1.670s	coverage: 54.4% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/store/kv	1.874s	coverage: 47.0% of statements
+tigris_test  | --- FAIL: TestClient (0.35s)
+tigris_test  |     client_test.go:191: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/client_test.go:191
+tigris_test  |         	            				/root/go/pkg/mod/github.com/tigrisdata/tigris-client-go@v1.0.0-beta.25/tigris/tx.go:72
+tigris_test  |         	            				/root/go/pkg/mod/github.com/tigrisdata/tigris-client-go@v1.0.0-beta.25/tigris/tx.go:87
+tigris_test  |         	            				/go/src/tigris/test/v1/client/client_test.go:150
+tigris_test  |         	            				/go/src/tigris/test/v1/client/client_test.go:227
+tigris_test  |         	Error:      	Received unexpected error:
+tigris_test  |         	            	document not found
+tigris_test  |         	Test:       	TestClient
+tigris_test  | --- FAIL: TestDriverGRPCC (0.56s)
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:305
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:429
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverGRPCC
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:305
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:429
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverGRPCC
+tigris_test  | --- FAIL: TestDriverHTTP (0.42s)
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:305
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:437
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverHTTP
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:305
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:437
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverHTTP
+tigris_test  | --- FAIL: TestDriverTxGRPC (0.51s)
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:377
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:445
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverTxGRPC
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:377
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:445
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverTxGRPC
+tigris_test  | --- FAIL: TestDriverTxHTTP (0.37s)
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:377
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:453
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverTxHTTP
+tigris_test  |     driver_test.go:68: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/client/driver_test.go:68
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:377
+tigris_test  |         	            				/go/src/tigris/test/v1/client/driver_test.go:453
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"D1":"vD3", "K1":"vK1", "K2":3}
+tigris_test  |         	            	actual  : map[string]interface {}{"D1":"vD1", "K1":"vK1", "K2":1}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,5 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=2) "D1": (string) (len=3) "vD3",
+tigris_test  |         	            	+ (string) (len=2) "D1": (string) (len=3) "vD1",
+tigris_test  |         	            	  (string) (len=2) "K1": (string) (len=3) "vK1",
+tigris_test  |         	            	- (string) (len=2) "K2": (float64) 3
+tigris_test  |         	            	+ (string) (len=2) "K2": (float64) 1
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDriverTxHTTP
+tigris_test  | FAIL
+tigris_test  | coverage: [no statements]
+tigris_test  | FAIL	github.com/tigrisdata/tigris/test/v1/client	2.270s
+tigris_test  | ?   	github.com/tigrisdata/tigris/util/log	[no test files]
+tigris_test  | --- FAIL: TestInsert_ReadNullsAndByte (0.11s)
+tigris_test  |     reporter.go:39: 
+tigris_test  |         	Error Trace:	/root/go/pkg/mod/gopkg.in/gavv/httpexpect.v1@v1.1.3/reporter.go:39
+tigris_test  |         	            				/root/go/pkg/mod/gopkg.in/gavv/httpexpect.v1@v1.1.3/chain.go:21
+tigris_test  |         	            				/root/go/pkg/mod/gopkg.in/gavv/httpexpect.v1@v1.1.3/response.go:516
+tigris_test  |         	            				/root/go/pkg/mod/gopkg.in/gavv/httpexpect.v1@v1.1.3/response.go:134
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:4958
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:560
+tigris_test  |         	Error:      	
+tigris_test  |         	            	expected status equal to:
+tigris_test  |         	            	 "200 OK"
+tigris_test  |         	            	
+tigris_test  |         	            	but got:
+tigris_test  |         	            	 "500 Internal Server Error"
+tigris_test  |         	Test:       	TestInsert_ReadNullsAndByte
+tigris_test  | --- FAIL: TestInsert_MultipleRows (0.12s)
+tigris_test  |     document_test.go:683: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:683
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bool_value":true, "bytes_value":"InNpbXBsZV9pbnNlcnQxIg==", "double_value":20.00001, "int_value":20, "pkey_int":20, "string_value":"simple_insert1"}
+tigris_test  |         	            	actual  : map[string]interface {}{"bool_value":false, "bytes_value":"InNpbXBsZV9pbnNlcnQyIg==", "double_value":20.0002, "int_value":30, "pkey_int":30, "string_value":"simple_insert2"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,8 +1,8 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=6) {
+tigris_test  |         	            	- (string) (len=10) "bool_value": (bool) true,
+tigris_test  |         	            	- (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxIg==",
+tigris_test  |         	            	- (string) (len=12) "double_value": (float64) 20.00001,
+tigris_test  |         	            	- (string) (len=9) "int_value": (float64) 20,
+tigris_test  |         	            	- (string) (len=8) "pkey_int": (float64) 20,
+tigris_test  |         	            	- (string) (len=12) "string_value": (string) (len=14) "simple_insert1"
+tigris_test  |         	            	+ (string) (len=10) "bool_value": (bool) false,
+tigris_test  |         	            	+ (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQyIg==",
+tigris_test  |         	            	+ (string) (len=12) "double_value": (float64) 20.0002,
+tigris_test  |         	            	+ (string) (len=9) "int_value": (float64) 30,
+tigris_test  |         	            	+ (string) (len=8) "pkey_int": (float64) 30,
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=14) "simple_insert2"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestInsert_MultipleRows
+tigris_test  | --- FAIL: TestUpdate_NullField (0.12s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:1580
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bool_value":false, "bytes_value":"InNpbXBsZV9pbnNlcnQxX3VwZGF0ZV9tb2RpZmllZCI=", "double_value":200.00001, "int_value":interface {}(nil), "pkey_int":100, "string_value":"simple_insert1_update_modified"}
+tigris_test  |         	            	actual  : map[string]interface {}{"bool_value":false, "bytes_value":"InNpbXBsZV9pbnNlcnQxX3VwZGF0ZV9tb2RpZmllZCI=", "double_value":200.00001, "pkey_int":100, "string_value":"simple_insert1_update_modified"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,2 +1,2 @@
+tigris_test  |         	            	-(map[string]interface {}) (len=6) {
+tigris_test  |         	            	+(map[string]interface {}) (len=5) {
+tigris_test  |         	            	  (string) (len=10) "bool_value": (bool) false,
+tigris_test  |         	            	@@ -4,3 +4,2 @@
+tigris_test  |         	            	  (string) (len=12) "double_value": (float64) 200.00001,
+tigris_test  |         	            	- (string) (len=9) "int_value": (interface {}) <nil>,
+tigris_test  |         	            	  (string) (len=8) "pkey_int": (float64) 100,
+tigris_test  |         	Test:       	TestUpdate_NullField
+tigris_test  |         	Messages:   	exp '{"int_value":null,"pkey_int":100,"string_value":"simple_insert1_update_modified","bool_value":false,"double_value":200.00001,"bytes_value":"InNpbXBsZV9pbnNlcnQxX3VwZGF0ZV9tb2RpZmllZCI="}' actual '{"string_value":"simple_insert1_update_modified","double_value":200.00001,"pkey_int":100,"bool_value":false,"bytes_value":"InNpbXBsZV9pbnNlcnQxX3VwZGF0ZV9tb2RpZmllZCI="}'
+tigris_test  | --- FAIL: TestUpdate_MultipleRows (0.11s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:1703
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bool_value":true, "bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi", "double_value":1000.000001, "int_value":1000, "pkey_int":110, "string_value":"simple_insert110"}
+tigris_test  |         	            	actual  : map[string]interface {}{"bool_value":true, "bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi", "double_value":3000.999999, "int_value":3000, "pkey_int":130, "string_value":"simple_insert130"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -2,7 +2,7 @@
+tigris_test  |         	            	  (string) (len=10) "bool_value": (bool) true,
+tigris_test  |         	            	- (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMTAi",
+tigris_test  |         	            	- (string) (len=12) "double_value": (float64) 1000.000001,
+tigris_test  |         	            	- (string) (len=9) "int_value": (float64) 1000,
+tigris_test  |         	            	- (string) (len=8) "pkey_int": (float64) 110,
+tigris_test  |         	            	- (string) (len=12) "string_value": (string) (len=16) "simple_insert110"
+tigris_test  |         	            	+ (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMzAi",
+tigris_test  |         	            	+ (string) (len=12) "double_value": (float64) 3000.999999,
+tigris_test  |         	            	+ (string) (len=9) "int_value": (float64) 3000,
+tigris_test  |         	            	+ (string) (len=8) "pkey_int": (float64) 130,
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=16) "simple_insert130"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestUpdate_MultipleRows
+tigris_test  |         	Messages:   	exp '{"bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi","pkey_int":110,"int_value":1000,"string_value":"simple_insert110","bool_value":true,"double_value":1000.000001}' actual '{"double_value":3000.999999,"pkey_int":130,"int_value":3000,"string_value":"simple_insert130","bool_value":true,"bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi"}'
+tigris_test  | --- FAIL: TestUpdate_Limit (0.12s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:1848
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bool_value":true, "bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi", "double_value":1000.000001, "int_value":1000, "pkey_int":110, "string_value":"simple_insert110"}
+tigris_test  |         	            	actual  : map[string]interface {}{"bool_value":true, "bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi", "double_value":3000.999999, "int_value":3000, "pkey_int":130, "string_value":"simple_insert130"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -2,7 +2,7 @@
+tigris_test  |         	            	  (string) (len=10) "bool_value": (bool) true,
+tigris_test  |         	            	- (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMTAi",
+tigris_test  |         	            	- (string) (len=12) "double_value": (float64) 1000.000001,
+tigris_test  |         	            	- (string) (len=9) "int_value": (float64) 1000,
+tigris_test  |         	            	- (string) (len=8) "pkey_int": (float64) 110,
+tigris_test  |         	            	- (string) (len=12) "string_value": (string) (len=16) "simple_insert110"
+tigris_test  |         	            	+ (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMzAi",
+tigris_test  |         	            	+ (string) (len=12) "double_value": (float64) 3000.999999,
+tigris_test  |         	            	+ (string) (len=9) "int_value": (float64) 3000,
+tigris_test  |         	            	+ (string) (len=8) "pkey_int": (float64) 130,
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=16) "simple_insert130"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestUpdate_Limit
+tigris_test  |         	Messages:   	exp '{"double_value":1000.000001,"bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi","pkey_int":110,"int_value":1000,"string_value":"simple_insert110","bool_value":true}' actual '{"bool_value":true,"bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi","double_value":3000.999999,"pkey_int":130,"int_value":3000,"string_value":"simple_insert130"}'
+tigris_test  | --- FAIL: TestUpdate_SetAndUnset (0.12s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:2364
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bool_value":false, "double_value":200.00001, "int_value":200, "pkey_int":100}
+tigris_test  |         	            	actual  : map[string]interface {}{"bool_value":false, "bytes_value":"InNpbXBsZV9pbnNlcnQxX3VwZGF0ZSI=", "double_value":200.00001, "int_value":200, "pkey_int":100, "string_value":"simple_insert1_update"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,6 +1,8 @@
+tigris_test  |         	            	-(map[string]interface {}) (len=4) {
+tigris_test  |         	            	+(map[string]interface {}) (len=6) {
+tigris_test  |         	            	  (string) (len=10) "bool_value": (bool) false,
+tigris_test  |         	            	+ (string) (len=11) "bytes_value": (string) (len=32) "InNpbXBsZV9pbnNlcnQxX3VwZGF0ZSI=",
+tigris_test  |         	            	  (string) (len=12) "double_value": (float64) 200.00001,
+tigris_test  |         	            	  (string) (len=9) "int_value": (float64) 200,
+tigris_test  |         	            	- (string) (len=8) "pkey_int": (float64) 100
+tigris_test  |         	            	+ (string) (len=8) "pkey_int": (float64) 100,
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=21) "simple_insert1_update"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestUpdate_SetAndUnset
+tigris_test  |         	Messages:   	exp '{"int_value":200,"bool_value":false,"double_value":200.00001,"pkey_int":100}' actual '{"bytes_value":"InNpbXBsZV9pbnNlcnQxX3VwZGF0ZSI=","int_value":200,"pkey_int":100,"string_value":"simple_insert1_update","bool_value":false,"double_value":200.00001}'
+tigris_test  | --- FAIL: TestUpdate_MutatePrimaryKey (0.64s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:2793
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"a":1, "b":"1", "e":1}
+tigris_test  |         	            	actual  : map[string]interface {}{"a":1, "b":"1", "c":1, "d":"1", "e":1}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,4 +1,6 @@
+tigris_test  |         	            	-(map[string]interface {}) (len=3) {
+tigris_test  |         	            	+(map[string]interface {}) (len=5) {
+tigris_test  |         	            	  (string) (len=1) "a": (float64) 1,
+tigris_test  |         	            	  (string) (len=1) "b": (string) (len=1) "1",
+tigris_test  |         	            	+ (string) (len=1) "c": (float64) 1,
+tigris_test  |         	            	+ (string) (len=1) "d": (string) (len=1) "1",
+tigris_test  |         	            	  (string) (len=1) "e": (float64) 1
+tigris_test  |         	Test:       	TestUpdate_MutatePrimaryKey
+tigris_test  |         	Messages:   	exp '{"a":1,"b":"1","e":1}' actual '{"a":1,"b":"1","c":1,"d":"1","e":1}'
+tigris_test  | --- FAIL: TestDelete_MultipleRows (0.12s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:3009
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"pkey_int":50, "string_value":"simple_insert50"}
+tigris_test  |         	            	actual  : map[string]interface {}{"pkey_int":70, "string_value":"simple_insert70"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,4 +1,4 @@
+tigris_test  |         	            	 (map[string]interface {}) (len=2) {
+tigris_test  |         	            	- (string) (len=8) "pkey_int": (float64) 50,
+tigris_test  |         	            	- (string) (len=12) "string_value": (string) (len=15) "simple_insert50"
+tigris_test  |         	            	+ (string) (len=8) "pkey_int": (float64) 70,
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=15) "simple_insert70"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestDelete_MultipleRows
+tigris_test  |         	Messages:   	exp '{"pkey_int":50,"string_value":"simple_insert50"}' actual '{"pkey_int":70,"string_value":"simple_insert70"}'
+tigris_test  | --- FAIL: TestRead_MultipleRows (0.12s)
+tigris_test  |     document_test.go:5115: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5115
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:5095
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:3588
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi", "int_value":1000, "string_value":"simple_insert110"}
+tigris_test  |         	            	actual  : map[string]interface {}{"bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi", "string_value":"simple_insert130"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,5 +1,4 @@
+tigris_test  |         	            	-(map[string]interface {}) (len=3) {
+tigris_test  |         	            	- (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMTAi",
+tigris_test  |         	            	- (string) (len=9) "int_value": (float64) 1000,
+tigris_test  |         	            	- (string) (len=12) "string_value": (string) (len=16) "simple_insert110"
+tigris_test  |         	            	+(map[string]interface {}) (len=2) {
+tigris_test  |         	            	+ (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMzAi",
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=16) "simple_insert130"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestRead_MultipleRows
+tigris_test  |         	Messages:   	exp '{"int_value":1000,"string_value":"simple_insert110","bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi"}' actual '{"bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi","string_value":"simple_insert130"}'
+tigris_test  | --- FAIL: TestRead_AcceptApplicationJSON (0.12s)
+tigris_test  |     document_test.go:5077: 
+tigris_test  |         	Error Trace:	/go/src/tigris/test/v1/server/document_test.go:5077
+tigris_test  |         	            				/go/src/tigris/test/v1/server/document_test.go:3956
+tigris_test  |         	Error:      	Not equal: 
+tigris_test  |         	            	expected: map[string]interface {}{"bool_value":true, "bytes_value":"InNpbXBsZV9pbnNlcnQxMTAi", "double_value":1000.000001, "int_value":1000, "pkey_int":210, "string_value":"simple_insert110"}
+tigris_test  |         	            	actual  : map[string]interface {}{"bytes_value":"InNpbXBsZV9pbnNlcnQxMzAi", "pkey_int":230, "string_value":"simple_insert130"}
+tigris_test  |         	            	
+tigris_test  |         	            	Diff:
+tigris_test  |         	            	--- Expected
+tigris_test  |         	            	+++ Actual
+tigris_test  |         	            	@@ -1,8 +1,5 @@
+tigris_test  |         	            	-(map[string]interface {}) (len=6) {
+tigris_test  |         	            	- (string) (len=10) "bool_value": (bool) true,
+tigris_test  |         	            	- (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMTAi",
+tigris_test  |         	            	- (string) (len=12) "double_value": (float64) 1000.000001,
+tigris_test  |         	            	- (string) (len=9) "int_value": (float64) 1000,
+tigris_test  |         	            	- (string) (len=8) "pkey_int": (float64) 210,
+tigris_test  |         	            	- (string) (len=12) "string_value": (string) (len=16) "simple_insert110"
+tigris_test  |         	            	+(map[string]interface {}) (len=3) {
+tigris_test  |         	            	+ (string) (len=11) "bytes_value": (string) (len=24) "InNpbXBsZV9pbnNlcnQxMzAi",
+tigris_test  |         	            	+ (string) (len=8) "pkey_int": (float64) 230,
+tigris_test  |         	            	+ (string) (len=12) "string_value": (string) (len=16) "simple_insert130"
+tigris_test  |         	            	 }
+tigris_test  |         	Test:       	TestRead_AcceptApplicationJSON
+tigris_test  | FAIL
+tigris_test  | 	github.com/tigrisdata/tigris/test/v1/server	coverage: 100.0% of statements
+tigris_test  | FAIL	github.com/tigrisdata/tigris/test/v1/server	73.307s
+tigris_test  | ok  	github.com/tigrisdata/tigris/util	0.034s	coverage: 28.2% of statements
+tigris_test  | ok  	github.com/tigrisdata/tigris/value	0.067s	coverage: 44.7% of statements
+tigris_test  | FAIL
+tigris_test  | make: *** [Makefile:37: local_test] Error 1
+tigris_test exited with code 2
+make: *** [docker_test] Error 1
+karuppiah@Karuppiahs-MacBook-Pro tigris % 
