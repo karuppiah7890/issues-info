@@ -1,0 +1,547 @@
+karuppiah@Karuppiahs-MacBook-Pro tigris % fdbcli   
+Using cluster file `/usr/local/etc/foundationdb/fdb.cluster'.
+
+The database is available.
+
+Welcome to the fdbcli. For help, type `help'.
+fdb> help
+
+List of commands:
+
+ advanceversion:
+      Force the cluster to recover at the specified version
+ begin:
+      begin a new transaction
+ cache_range:
+      Mark a key range to add to or remove from storage caches.
+ clear:
+      clear a key from the database
+ clearrange:
+      clear a range of keys from the database
+ commit:
+      commit the current transaction
+ configure:
+      change the database configuration
+ consistencycheck:
+      permits or prevents consistency checking
+ coordinators:
+      change cluster coordinators or description
+ createtenant:
+      creates a new tenant in the cluster
+ defaulttenant:
+      configures transactions to not use a named tenant
+ deletetenant:
+      deletes a tenant from the cluster
+ exclude:
+      exclude servers from the database by IP address or locality
+ exit:
+      exit the CLI
+ fileconfigure:
+      change the database configuration from a file
+ force_recovery_with_data_loss:
+      Force the database to recover into DCID
+ get:
+      fetch the value for a given key
+ getrange:
+      fetch key/value pairs in a range of keys
+ getrangekeys:
+      fetch keys in a range of keys
+ gettenant:
+      prints the metadata for a tenant
+ getversion:
+      Fetch the current read version
+ help:
+      get help about a topic or command
+ include:
+      permit previously-excluded servers and localities to rejoin the database
+ kill:
+      attempts to kill one or more processes in the cluster
+ listtenants:
+      print a list of tenants in the cluster
+ lock:
+      lock the database with a randomly generated lockUID
+ maintenance:
+      mark a zone for maintenance
+ option:
+      enables or disables an option
+ profile:
+      namespace for all the profiling-related commands.
+ reset:
+      reset the current transaction
+ rollback:
+      rolls back the current transaction
+ set:
+      set a value for a given key
+ setclass:
+      change the class of a process
+ sleep:
+      sleep for a period of time
+ status:
+      get the status of a FoundationDB cluster
+ suspend:
+      attempts to suspend one or more processes in the cluster
+ throttle:
+      view and control throttled tags
+ triggerddteaminfolog:
+      trigger the data distributor teams logging
+ tssq:
+      start/stop tss quarantine
+ unlock:
+      unlock the database with the provided lockUID
+ usetenant:
+      prints or configures the tenant used for transactions
+ versionepoch:
+      Read or write the version epoch
+ writemode:
+      enables or disables sets and clears
+
+For information on a specific command, type `help <command>'.
+For information on escaping keys and values, type `help escaping'.
+For information on available options, type `help options'.
+
+fdb> get ok
+`ok': not found
+fdb> set ok hmm
+ERROR: writemode must be enabled to set or clear keys in the database.
+fdb> writemode 
+Usage: writemode <on|off>
+fdb> writemode on
+fdb> set ok hmm
+Committed (1009594905605)
+fdb> get ok
+`ok' is `hmm'
+fdb> get ok another
+Usage: get <KEY>
+fdb> get ok-another
+`ok-another': not found
+fdb> get 'ok another'
+Usage: get <KEY>
+fdb> get "ok another"
+`ok another': not found
+fdb> set "ok another"
+Usage: set <KEY> <VALUE>
+fdb> set "ok another" oh
+Committed (1009638898242)
+fdb> set ok another oh
+Usage: set <KEY> <VALUE>
+fdb> get "ok another"
+`ok another' is `oh'
+fdb> 
+
+karuppiah@Karuppiahs-MacBook-Pro tigris % 
+karuppiah@Karuppiahs-MacBook-Pro tigris % fdbcli
+Using cluster file `/usr/local/etc/foundationdb/fdb.cluster'.
+
+The database is available.
+
+Welcome to the fdbcli. For help, type `help'.
+fdb> get ok
+`ok' is `hmm'
+fdb> get o*
+`o*': not found
+fdb> helpl
+ERROR: Unknown command `helpl'. Try `help'?
+fdb> help
+
+List of commands:
+
+ advanceversion:
+      Force the cluster to recover at the specified version
+ begin:
+      begin a new transaction
+ cache_range:
+      Mark a key range to add to or remove from storage caches.
+ clear:
+      clear a key from the database
+ clearrange:
+      clear a range of keys from the database
+ commit:
+      commit the current transaction
+ configure:
+      change the database configuration
+ consistencycheck:
+      permits or prevents consistency checking
+ coordinators:
+      change cluster coordinators or description
+ createtenant:
+      creates a new tenant in the cluster
+ defaulttenant:
+      configures transactions to not use a named tenant
+ deletetenant:
+      deletes a tenant from the cluster
+ exclude:
+      exclude servers from the database by IP address or locality
+ exit:
+      exit the CLI
+ fileconfigure:
+      change the database configuration from a file
+ force_recovery_with_data_loss:
+      Force the database to recover into DCID
+ get:
+      fetch the value for a given key
+ getrange:
+      fetch key/value pairs in a range of keys
+ getrangekeys:
+      fetch keys in a range of keys
+ gettenant:
+      prints the metadata for a tenant
+ getversion:
+      Fetch the current read version
+ help:
+      get help about a topic or command
+ include:
+      permit previously-excluded servers and localities to rejoin the database
+ kill:
+      attempts to kill one or more processes in the cluster
+ listtenants:
+      print a list of tenants in the cluster
+ lock:
+      lock the database with a randomly generated lockUID
+ maintenance:
+      mark a zone for maintenance
+ option:
+      enables or disables an option
+ profile:
+      namespace for all the profiling-related commands.
+ reset:
+      reset the current transaction
+ rollback:
+      rolls back the current transaction
+ set:
+      set a value for a given key
+ setclass:
+      change the class of a process
+ sleep:
+      sleep for a period of time
+ status:
+      get the status of a FoundationDB cluster
+ suspend:
+      attempts to suspend one or more processes in the cluster
+ throttle:
+      view and control throttled tags
+ triggerddteaminfolog:
+      trigger the data distributor teams logging
+ tssq:
+      start/stop tss quarantine
+ unlock:
+      unlock the database with the provided lockUID
+ usetenant:
+      prints or configures the tenant used for transactions
+ versionepoch:
+      Read or write the version epoch
+ writemode:
+      enables or disables sets and clears
+
+For information on a specific command, type `help <command>'.
+For information on escaping keys and values, type `help escaping'.
+For information on available options, type `help options'.
+
+fdb> help get
+
+get <KEY>
+
+Fetch the value for a given key.
+
+Displays the value of KEY in the database, or `not found' if KEY is not present.
+
+For information on escaping keys, type `help escaping'.
+
+fdb> help escaping
+
+When parsing commands, fdbcli considers a space to delimit individual tokens.
+To include a space in a single token, you may either enclose the token in
+quotation marks ("hello world"), prefix the space with a backslash
+(hello\ world), or encode the space as a hex byte (hello\x20world).
+
+To include a literal quotation mark in a token, precede it with a backslash
+(\"hello\ world\").
+
+To express a binary value, encode each byte as a two-digit hex byte, preceded
+by \x (e.g. \x20 for a space character, or \x0a\x00\x00\x00 for a
+32-bit, little-endian representation of the integer 10).
+
+All keys and values are displayed by the fdbcli with non-printable characters
+and spaces encoded as two-digit hex bytes.
+
+fdb> help options
+
+The following options are available to be set using the `option' command:
+
+ACCESS_SYSTEM_KEYS - Allows this transaction to read and modify system keys
+(those that start with the byte 0xFF). Implies raw_access.
+
+AUTO_THROTTLE_TAG - Adds a tag to the transaction that can be used to apply
+manual or automatic targeted throttling. At most 5 tags can be set on a
+transaction. (String) String identifier used to associated this transaction with
+a throttling group. Must not exceed 16 characters.
+
+BYPASS_UNREADABLE - Allows ``get`` operations to read from sections of keyspace
+that have become unreadable because of versionstamp operations. These reads will
+view versionstamp operations as if they were set operations that did not fill in
+the versionstamp.
+
+CAUSAL_READ_RISKY - The read version will be committed, and usually will be the
+latest committed, but might not be the latest committed in the event of a
+simultaneous fault and misbehaving clock.
+
+CAUSAL_WRITE_RISKY - The transaction, if not self-conflicting, may be committed
+a second time after commit succeeds, in the event of a fault
+
+COMMIT_ON_FIRST_PROXY - Committing this transaction will bypass the normal load
+balancing across commit proxies and go directly to the specifically nominated
+'first commit proxy'.
+
+DEBUG_TRANSACTION_IDENTIFIER - Sets a client provided identifier for the
+transaction that will be used in scenarios like tracing or profiling. Client
+trace logging or transaction profiling must be separately enabled. (String)
+String identifier to be used when tracing or profiling this transaction. The
+identifier must not exceed 100 characters.
+
+EXPENSIVE_CLEAR_COST_ESTIMATION_ENABLE - Asks storage servers for how many bytes
+a clear key range contains. Otherwise uses the location cache to roughly
+estimate this.
+
+FIRST_IN_BATCH - No other transactions will be applied before this transaction
+within the same commit version.
+
+INCLUDE_PORT_IN_ADDRESS - Addresses returned by get_addresses_for_key include
+the port when enabled. As of api version 630, this option is enabled by default
+and setting this has no effect.
+
+INITIALIZE_NEW_DATABASE - This is a write-only transaction which sets the
+initial configuration. This option is designed for use by database system tools
+only.
+
+LOCK_AWARE - The transaction can read and write to locked databases, and is
+responsible for checking that it took the lock.
+
+LOG_TRANSACTION - Enables tracing for this transaction and logs results to the
+client trace logs. The DEBUG_TRANSACTION_IDENTIFIER option must be set before
+using this option, and client trace logging must be enabled to get log output.
+
+MAX_RETRY_DELAY - Set the maximum amount of backoff delay incurred in the call
+to ``onError`` if the error is retryable. Defaults to 1000 ms. Valid parameter
+values are ``[0, INT_MAX]``. If the maximum retry delay is less than the current
+retry delay of the transaction, then the current retry delay will be clamped to
+the maximum retry delay. Prior to API version 610, like all other transaction
+options, the maximum retry delay must be reset after a call to ``onError``. If
+the API version is 610 or greater, the retry limit is not reset after an
+``onError`` call. Note that at all API versions, it is safe and legal to set the
+maximum retry delay each time the transaction begins, so most code written
+assuming the older behavior can be upgraded to the newer behavior without
+requiring any modification, and the caller is not required to implement special
+logic in retry loops to only conditionally set this option. (Int) value in
+milliseconds of maximum delay
+
+NEXT_WRITE_NO_WRITE_CONFLICT_RANGE - The next write performed on this
+transaction will not generate a write conflict range. As a result, other
+transactions which read the key(s) being modified by the next write will not
+conflict with this transaction. Care needs to be taken when using this option on
+a transaction that is shared between multiple threads. When setting this option,
+write conflict ranges will be disabled on the next write operation, regardless
+of what thread it is on.
+
+PRIORITY_BATCH - Specifies that this transaction should be treated as low
+priority and that default priority transactions will be processed first. Batch
+priority transactions will also be throttled at load levels smaller than for
+other types of transactions and may be fully cut off in the event of machine
+failures. Useful for doing batch work simultaneously with latency-sensitive work
+
+PRIORITY_SYSTEM_IMMEDIATE - Specifies that this transaction should be treated as
+highest priority and that lower priority transactions should block behind this
+one. Use is discouraged outside of low-level tools
+
+RAW_ACCESS - Allows this transaction to access the raw key-space when tenant
+mode is on.
+
+READ_LOCK_AWARE - The transaction can read from locked databases.
+
+READ_SYSTEM_KEYS - Allows this transaction to read system keys (those that start
+with the byte 0xFF). Implies raw_access.
+
+READ_YOUR_WRITES_DISABLE - Reads performed by a transaction will not see any
+prior mutations that occured in that transaction, instead seeing the value which
+was in the database at the transaction's read version. This option may provide a
+small performance benefit for the client, but also disables a number of
+client-side optimizations which are beneficial for transactions which tend to
+read and write the same keys within a single transaction. It is an error to set
+this option after performing any reads or writes on the transaction.
+
+REPORT_CONFLICTING_KEYS - The transaction can retrieve keys that are conflicting
+with other transactions.
+
+RETRY_LIMIT - Set a maximum number of retries after which additional calls to
+``onError`` will throw the most recently seen error code. Valid parameter values
+are ``[-1, INT_MAX]``. If set to -1, will disable the retry limit. Prior to API
+version 610, like all other transaction options, the retry limit must be reset
+after a call to ``onError``. If the API version is 610 or greater, the retry
+limit is not reset after an ``onError`` call. Note that at all API versions, it
+is safe and legal to set the retry limit each time the transaction begins, so
+most code written assuming the older behavior can be upgraded to the newer
+behavior without requiring any modification, and the caller is not required to
+implement special logic in retry loops to only conditionally set this option.
+(Int) number of times to retry
+
+SERVER_REQUEST_TRACING - Sets an identifier for server tracing of this
+transaction. When committed, this identifier triggers logging when each part of
+the transaction authority encounters it, which is helpful in diagnosing slowness
+in misbehaving clusters. The identifier is randomly generated. When there is
+also a debug_transaction_identifier, both IDs are logged together.
+
+SIZE_LIMIT - Set the transaction size limit in bytes. The size is calculated by
+combining the sizes of all keys and values written or mutated, all key ranges
+cleared, and all read and write conflict ranges. (In other words, it includes
+the total size of all data included in the request to the cluster to commit the
+transaction.) Large transactions can cause performance problems on FoundationDB
+clusters, so setting this limit to a smaller value than the default can help
+prevent the client from accidentally degrading the cluster's performance. This
+value must be at least 32 and cannot be set to higher than 10,000,000, the
+default transaction size limit. (Int) value in bytes
+
+SKIP_GRV_CACHE - Specifically instruct this transaction to NOT use cached GRV.
+Primarily used for the read version cache's background updater to avoid
+attempting to read a cached entry in specific situations.
+
+SNAPSHOT_RYW_DISABLE - Snapshot read operations will not see the results of
+writes done in the same transaction. This was the default behavior prior to API
+version 300.
+
+SNAPSHOT_RYW_ENABLE - Snapshot read operations will see the results of writes
+done in the same transaction. This is the default behavior.
+
+SPAN_PARENT - Adds a parent to the Span of this transaction. Used for
+transaction tracing. A span can be identified with any 16 bytes (Bytes) A byte
+string of length 16 used to associate the span of this transaction with a parent
+
+SPECIAL_KEY_SPACE_ENABLE_WRITES - By default, users are not allowed to write to
+special keys. Enable this option will implicitly enable all options required to
+achieve the configuration change.
+
+SPECIAL_KEY_SPACE_RELAXED - By default, the special key space will only allow
+users to read from exactly one module (a subspace in the special key space). Use
+this option to allow reading from zero or more modules. Users who set this
+option should be prepared for new modules, which may have different behaviors
+than the modules they're currently reading. For example, a new module might
+block or return an error.
+
+TAG - Adds a tag to the transaction that can be used to apply manual targeted
+throttling. At most 5 tags can be set on a transaction. (String) String
+identifier used to associated this transaction with a throttling group. Must not
+exceed 16 characters.
+
+TIMEOUT - Set a timeout in milliseconds which, when elapsed, will cause the
+transaction automatically to be cancelled. Valid parameter values are ``[0,
+INT_MAX]``. If set to 0, will disable all timeouts. All pending and any future
+uses of the transaction will throw an exception. The transaction can be used
+again after it is reset. Prior to API version 610, like all other transaction
+options, the timeout must be reset after a call to ``onError``. If the API
+version is 610 or greater, the timeout is not reset after an ``onError`` call.
+This allows the user to specify a longer timeout on specific transactions than
+the default timeout specified through the ``transaction_timeout`` database
+option without the shorter database timeout cancelling transactions that
+encounter a retryable error. Note that at all API versions, it is safe and legal
+to set the timeout each time the transaction begins, so most code written
+assuming the older behavior can be upgraded to the newer behavior without
+requiring any modification, and the caller is not required to implement special
+logic in retry loops to only conditionally set this option. (Int) value in
+milliseconds of timeout
+
+TRANSACTION_LOGGING_MAX_FIELD_LENGTH - Sets the maximum escaped length of key
+and value fields to be logged to the trace file via the LOG_TRANSACTION option,
+after which the field will be truncated. A negative value disables truncation.
+(Int) Maximum length of escaped key and value fields.
+
+USED_DURING_COMMIT_PROTECTION_DISABLE - By default, operations that are
+performed on a transaction while it is being committed will not only fail
+themselves, but they will attempt to fail other in-flight operations (such as
+the commit) as well. This behavior is intended to help developers discover
+situations where operations could be unintentionally executed after the
+transaction has been reset. Setting this option removes that protection, causing
+only the offending operation to fail.
+
+USE_GRV_CACHE - Allows this transaction to use cached GRV from the database
+context. Defaults to off. Upon first usage, starts a background updater to
+periodically update the cache to avoid stale read versions.
+
+USE_PROVISIONAL_PROXIES - This option should only be used by tools which change
+the database configuration.
+
+fdb> begin
+Transaction started
+fdb> commit
+Nothing to commit
+fdb> begin
+Transaction started
+fdb> get ok
+`ok' is `hmm'
+fdb> set ok dummy
+ERROR: writemode must be enabled to set or clear keys in the database.
+fdb> writemode on
+fdb> set ok dummy
+fdb> get blah
+ERROR: Transaction is too old to perform reads or be committed (1007)
+Rolling back current transaction
+fdb> begin
+Transaction started
+fdb> get ok
+`ok' is `hmm'
+fdb> set ok dummy
+fdb> get blah
+ERROR: Transaction is too old to perform reads or be committed (1007)
+Rolling back current transaction
+fdb> get blah
+`blah': not found
+fdb> get ok
+`ok' is `hmm'
+fdb> begin
+Transaction started
+fdb> set ok dummy
+fdb> get ok
+`ok' is `dummy'
+fdb> reset
+Transaction reset
+fdb> get ok
+`ok' is `hmm'
+fdb> rollback 
+Transaction rolled back
+fdb> get ok
+`ok' is `hmm'
+fdb> rollback 
+ERROR: No active transaction
+fdb> begin 
+Transaction started
+fdb> set ok dummy
+fdb> rollback 
+Transaction rolled back
+fdb> get ok
+`ok' is `hmm'
+fdb> begin get ok
+Usage: begin
+fdb> begin 
+Transaction started
+fdb> get ok
+`ok' is `hmm'
+fdb> set ok dummy
+fdb> get ok
+`ok' is `dummy'
+fdb> commit
+ERROR: Transaction is too old to perform reads or be committed (1007)
+Rolling back current transaction
+fdb> begin
+Transaction started
+fdb> set ok dummy
+fdb> commit
+Committed (1010808912230)
+fdb> get ok
+`ok' is `dummy'
+fdb> begin
+Transaction started
+fdb> get ok
+`ok' is `dummy'
+fdb> set ok dummy1
+fdb> commit
+ERROR: Transaction is too old to perform reads or be committed (1007)
+Rolling back current transaction
+fdb> 
+
+karuppiah@Karuppiahs-MacBook-Pro tigris % 

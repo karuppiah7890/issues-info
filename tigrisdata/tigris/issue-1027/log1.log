@@ -14205,3 +14205,78 @@ tigris_test  | make: *** [Makefile:37: local_test] Error 1
 tigris_test exited with code 2
 make: *** [docker_test] Error 1
 karuppiah@Karuppiahs-MacBook-Pro tigris % 
+karuppiah@Karuppiahs-MacBook-Pro tigris % docker ps -a
+CONTAINER ID   IMAGE                           COMMAND                  CREATED         STATUS                      PORTS                              NAMES
+f64342d2e79c   tigris_test                     "/bin/sh -c 'make lo…"   5 minutes ago   Exited (2) 48 seconds ago                                      tigris_test
+a1f726d06b54   tigris_server2                  "bash -c /server/ser…"   5 minutes ago   Up 5 minutes                0.0.0.0:8082->8081/tcp             tigris_server2
+8141c4638e2a   tigrisdata/gotrue               "/bin/sh -c '/home/n…"   5 minutes ago   Up 5 minutes                0.0.0.0:8086->8086/tcp             tigris_gotrue
+bfee639ac46b   tigris_server                   "bash -c /server/ser…"   5 minutes ago   Up 5 minutes                8081/tcp, 0.0.0.0:8083->8083/tcp   tigris_realtime
+f3ebdf13bd79   tigris_server                   "bash -c '[ ! -f /et…"   5 minutes ago   Up 5 minutes                0.0.0.0:8081->8081/tcp             tigris_server
+e5e808a71b83   eqalpha/keydb:latest            "docker-entrypoint.s…"   5 minutes ago   Up 5 minutes                0.0.0.0:6379->6379/tcp             tigris_cache
+4af3a48886f3   tigrisdata/foundationdb:7.1.7   "/usr/bin/tini -g --…"   5 minutes ago   Up 5 minutes                0.0.0.0:4500->4500/tcp             tigris_db2
+a238cce8b9bd   tigrisdata/foundationdb:7.1.7   "/usr/bin/tini -g --…"   5 minutes ago   Up 5 minutes                                                   tigris_db
+22041b8d91e0   typesense/typesense:0.24.0      "/opt/typesense-serv…"   5 minutes ago   Up 5 minutes                0.0.0.0:8108->8108/tcp             tigris_search
+karuppiah@Karuppiahs-MacBook-Pro tigris % make clean
+COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose -f test/docker/docker-compose.yml down -v --remove-orphans
+[+] Running 12/12
+ ⠿ Container tigris_test        Removed                                                                        0.1s
+ ⠿ Container tigris_server2     Removed                                                                        0.2s
+ ⠿ Container tigris_gotrue      Removed                                                                        0.3s
+ ⠿ Container tigris_db2         Removed                                                                        0.3s
+ ⠿ Container tigris_realtime    Removed                                                                        0.2s
+ ⠿ Container tigris_server      Removed                                                                        0.3s
+ ⠿ Container tigris_db          Removed                                                                        0.2s
+ ⠿ Container tigris_search      Removed                                                                        1.3s
+ ⠿ Container tigris_cache       Removed                                                                        0.2s
+ ⠿ Volume docker_go_test_cache  Removed                                                                        0.4s
+ ⠿ Volume docker_dbdata         Removed                                                                        0.0s
+ ⠿ Network docker_default       Removed                                                                        0.2s
+rm -f server/service api/server/v1/*.pb.go \
+		api/server/v1/*.pb.gw.go \
+
+karuppiah@Karuppiahs-MacBook-Pro tigris % make
+make -C api/proto generate GEN_DIR=../../api/server/v1 API_DIR=..
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/api.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/cache.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/health.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/auth.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/observability.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/management.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/realtime.proto
+protoc -I. \
+		--go_out=.. --go_opt=paths=source_relative \
+		--go-grpc_out=.. --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
+		--grpc-gateway_out=.. --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
+		server/v1/search.proto
+make -C api/proto generate GEN_DIR=../../api/server/v1 API_DIR=..
+make[1]: Nothing to be done for `generate'.
+CGO_ENABLED=1 go build -tags=release -ldflags "-X 'github.com/tigrisdata/tigris/util.Version=2e60a63' -X 'github.com/tigrisdata/tigris/util.BuildHash=2e60a63'"  -o server/service ./server
+karuppiah@Karuppiahs-MacBook-Pro tigris % 
